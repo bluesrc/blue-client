@@ -9,10 +9,6 @@ Panel
     !text: tr('Show left panel')
 
   OptionCheckBox
-    id: showRightExtraPanel
-    !text: tr('Show an extra right panel')
-
-  OptionCheckBox
     id: openMaximized
     !text: tr('Open containers maximized')
 

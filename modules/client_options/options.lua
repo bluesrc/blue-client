@@ -16,7 +16,6 @@ local defaultOptions = {
     showPrivateMessagesInConsole = true,
     showPrivateMessagesOnScreen = true,
     showLeftPanel = true,
-    showRightExtraPanel = false,
     openMaximized = false,
     backgroundFrameRate = 201,
     enableAudio = true,
@@ -256,8 +255,6 @@ function setOption(key, value, force)
         soundPanel:getChildById('musicSoundVolumeLabel'):setText(tr('Music volume: %d', value))
     elseif key == 'showLeftPanel' then
         modules.game_interface.getLeftPanel():setOn(value)
-    elseif key == 'showRightExtraPanel' then
-        modules.game_interface.getRightExtraPanel():setOn(value)
     elseif key == 'backgroundFrameRate' then
         local text, v = value, value
         if value <= 0 or value >= 201 then

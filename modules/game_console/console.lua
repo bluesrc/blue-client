@@ -137,6 +137,7 @@ MAX_HISTORY = 500
 MAX_LINES = 100
 HELP_CHANNEL = 9
 
+bottomPanel = nil
 consolePanel = nil
 consoleContentPanel = nil
 consoleTabBar = nil
@@ -184,7 +185,8 @@ function init()
         onChannelEvent = onChannelEvent
     })
 
-    consolePanel = g_ui.loadUI('console', modules.game_interface.getBottomPanel())
+    bottomPanel = modules.game_interface.getBottomPanel()
+    consolePanel = g_ui.loadUI('console', bottomPanel)
     consoleTextEdit = consolePanel:getChildById('consoleTextEdit')
     consoleContentPanel = consolePanel:getChildById('consoleContentPanel')
     consoleTabBar = consolePanel:getChildById('consoleTabBar')
@@ -228,9 +230,7 @@ function init()
     g_keyboard.bindKeyPress('Shift+Tab', function()
         consoleTabBar:selectPrevTab()
     end, consolePanel)
-    g_keyboard.bindKeyDown('Enter', switchChatOnCall, consolePanel)
-    g_keyboard.bindKeyDown('Enter', sendCurrentMessage, consolePanel)
-    g_keyboard.bindKeyDown('Escape', disableChatOnCall, consolePanel)
+    g_keyboard.bindKeyDown('Enter', toggleChat)
     g_keyboard.bindKeyPress('Ctrl+A', function()
         consoleTextEdit:clearText()
     end, consolePanel)
@@ -278,15 +278,6 @@ function selectAll(consoleBuffer)
     end
 end
 
-function toggleChat()
-    consoleToggleChat:setChecked(not consoleToggleChat:isChecked())
-end
-
--- id of object first and then action
-function updateChatMode()
-    switchChat(not consoleToggleChat:isChecked())
-end
-
 local function unbindMovingKeys()
     local gameInterface = modules.game_interface
     gameInterface.unbindWalkKey('W')
@@ -323,45 +314,13 @@ local function bindMovingKeys()
     gameInterface.bindTurnKey('Ctrl+A', West)
 end
 
-function switchChat(enabled)
-    -- enabled should be true if we enabling the chat and false if disabling it
-    -- consoleToggleChat:setChecked(not consoleToggleChat:isChecked())
-    if not (enabled and consoleTextEdit:isVisible()) then
-        consoleTextEdit:setVisible(enabled)
-        consoleTextEdit:setText('')
-    end
-
-    if enabled then
+function toggleChat()
+    if consolePanel:isVisible() then
+        sendCurrentMessage()
+    else
         unbindMovingKeys()
-        consoleToggleChat:setTooltip(tr('Disable chat mode, allow to walk using WASD'))
-    else
-        bindMovingKeys()
-        consoleToggleChat:setTooltip(tr('Enable chat mode'))
-    end
-end
-
-function switchChatOnCall()
-    if not g_game.isOnline() or modules.game_hotkeys.areHotkeysDisabled() then
-        return
-    end
-
-    if isChatEnabled() and consoleToggleChat:isChecked() then
-        toggleChat()
-    else
-        local message = consoleTextEdit:getText()
-        if message == '' then
-            toggleChat()
-        end
-    end
-end
-
-function disableChatOnCall()
-    if not g_game.isOnline() or modules.game_hotkeys.areHotkeysDisabled() then
-        return
-    end
-
-    if isChatEnabled() and not consoleToggleChat:isChecked() then
-        toggleChat()
+        consolePanel:setVisible(true)
+        consolePanel:addAnchor(AnchorRight, 'parent', AnchorRight) -- gambiarra
     end
 end
 
@@ -1238,9 +1197,8 @@ end
 function sendCurrentMessage()
     local message = consoleTextEdit:getText()
     if #message == 0 then
-        return
-    end
-    if not isChatEnabled() then
+        consolePanel:setVisible(false)
+        bindMovingKeys()
         return
     end
     consoleTextEdit:clearText()
