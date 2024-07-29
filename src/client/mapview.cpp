@@ -44,7 +44,7 @@ MapView::MapView() : m_pool(g_drawPool.get(DrawPoolType::MAP)), m_lightView(std:
 {
     m_floors.resize(g_gameConfig.getMapMaxZ() + 1);
 
-    setVisibleDimension(Size(15, 11));
+    setVisibleDimension(Size(25, 13));
 }
 
 MapView::~MapView()

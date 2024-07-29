@@ -3,21 +3,16 @@ WALK_STEPS_RETRY = 10
 gameRootPanel = nil
 gameMapPanel = nil
 gameRightPanel = nil
-gameRightExtraPanel = nil
 gameLeftPanel = nil
 gameSelectedPanel = nil
 panelsList = {}
-panelsRadioGroup = nil
 gameBottomPanel = nil
-showTopMenuButton = nil
 logoutButton = nil
 mouseGrabberWidget = nil
 countWindow = nil
 logoutWindow = nil
 exitWindow = nil
 bottomSplitter = nil
-limitedZoom = false
-currentViewMode = 0
 smartWalkDirs = {}
 smartWalkDir = nil
 firstStep = false
@@ -64,7 +59,6 @@ function init()
     bottomSplitter = gameRootPanel:getChildById('bottomSplitter')
     gameMapPanel = gameRootPanel:getChildById('gameMapPanel')
     gameRightPanel = gameRootPanel:getChildById('gameRightPanel')
-    gameRightExtraPanel = gameRootPanel:getChildById('gameRightExtraPanel')
     gameLeftPanel = gameRootPanel:getChildById('gameLeftPanel')
     gameBottomPanel = gameRootPanel:getChildById('gameBottomPanel')
 
@@ -72,36 +66,16 @@ function init()
         panel = gameRightPanel,
         checkbox = gameRootPanel:getChildById('gameSelectRightColumn')
     }, {
-        panel = gameRightExtraPanel,
-        checkbox = gameRootPanel:getChildById('gameSelectRightExtraColumn')
-    }, {
         panel = gameLeftPanel,
         checkbox = gameRootPanel:getChildById('gameSelectLeftColumn')
     } }
 
-    panelsRadioGroup = UIRadioGroup.create()
-    for k, v in pairs(panelsList) do
-        panelsRadioGroup:addWidget(v.checkbox)
-        connect(v.checkbox, {
-            onCheckChange = onSelectPanel
-        })
-    end
-    panelsRadioGroup:selectWidget(panelsList[1].checkbox)
-
     connect(gameLeftPanel, {
-        onVisibilityChange = onExtraPanelVisibilityChange
-    })
-    connect(gameRightExtraPanel, {
         onVisibilityChange = onExtraPanelVisibilityChange
     })
 
     logoutButton = modules.client_topmenu.addLeftButton('logoutButton', tr('Exit'), '/images/topbuttons/logout',
         tryLogout, true)
-
-    showTopMenuButton = gameMapPanel:getChildById('showTopMenuButton')
-    showTopMenuButton.onClick = function()
-        modules.client_topmenu.toggle()
-    end
 
     bindKeys()
 
@@ -165,10 +139,6 @@ function bindKeys()
         g_map.cleanTexts()
         modules.game_textmessage.clearMessages()
     end, gameRootPanel)
-
-    if not g_app.isScaled() then
-        g_keyboard.bindKeyDown('Ctrl+.', nextViewMode, gameRootPanel)
-    end
 end
 
 function bindWalkKey(key, dir)
@@ -234,9 +204,6 @@ function terminate()
     disconnect(gameLeftPanel, {
         onVisibilityChange = onExtraPanelVisibilityChange
     })
-    disconnect(gameRightExtraPanel, {
-        onVisibilityChange = onExtraPanelVisibilityChange
-    })
 
     for k, v in pairs(panelsList) do
         disconnect(v.checkbox, {
@@ -272,29 +239,16 @@ function show()
     gameRootPanel:focus()
     gameMapPanel:followCreature(g_game.getLocalPlayer())
 
-    updateStretchShrink()
+    updateStretchShrink()    
     logoutButton:setTooltip(tr('Logout'))
 
-    setupViewMode(0)
-    if g_app.isScaled() then
-        setupViewMode(1)
-        setupViewMode(2)
-    end
+    setupView()
 
     gameMapPanel:clearTiles();
-    addEvent(function()
-        if not limitedZoom or g_game.isGM() then
-            gameMapPanel:setMaxZoomOut(513)
-            gameMapPanel:setLimitVisibleRange(false)
-        else
-            gameMapPanel:setMaxZoomOut(11)
-            gameMapPanel:setLimitVisibleRange(true)
-        end
-    end)
 end
 
 function hide()
-    setupViewMode(0)
+    modules.client_topmenu.getTopMenu():setImageColor('white')
 
     disconnect(g_app, {
         onClose = tryExit
@@ -1125,20 +1079,12 @@ function getLeftPanel()
     return gameLeftPanel
 end
 
-function getRightExtraPanel()
-    return gameRightExtraPanel
-end
-
 function getSelectedPanel()
     return gameSelectedPanel
 end
 
 function getBottomPanel()
     return gameBottomPanel
-end
-
-function getShowTopMenuButton()
-    return showTopMenuButton
 end
 
 function findContentPanelAvailable(child, minContentHeight)
@@ -1164,108 +1110,30 @@ function onExtraPanelVisibilityChange(extraPanel, visible)
                 children[i]:setParent(gameRightPanel)
             end
         end
-
-        -- unselect hiding panel
-        if extraPanel == getSelectedPanel() then
-            panelsRadioGroup:selectWidget(panelsList[1].checkbox)
-        end
-
-        -- hide checkbox of hidden panel
-        for k, v in pairs(panelsList) do
-            if v.panel == extraPanel then
-                v.checkbox:setVisible(false)
-            end
-        end
-
-        -- if there is only the right panel visible, hide its checkbox too
-        if not gameRightExtraPanel:isVisible() and not gameLeftPanel:isVisible() then
-            panelsList[1].checkbox:setVisible(false)
-        end
-    else
-        -- this means that, besided the right panel, there is another panel visible
-        -- so we'll enable the checkboxes from the one at right, and the one being shown
-        for k, v in pairs(panelsList) do
-            if v.panel == extraPanel then
-                v.checkbox:setVisible(true)
-            end
-        end
-        panelsList[1].checkbox:setVisible(true)
     end
 end
 
-function nextViewMode()
-    setupViewMode((currentViewMode + 1) % 3)
-end
+function setupView()
+    gameMapPanel:addAnchor(AnchorLeft, 'gameLeftPanel', AnchorRight)
+    gameMapPanel:addAnchor(AnchorRight, 'gameRightPanel', AnchorLeft)
+    gameMapPanel:addAnchor(AnchorBottom, 'gameBottomPanel', AnchorTop)
+    gameRootPanel:addAnchor(AnchorTop, 'topMenu', AnchorBottom)
+    gameLeftPanel:setMarginTop(0)
+    gameRightPanel:setMarginTop(0)
 
-function setupViewMode(mode)
-    if mode == currentViewMode then
-        return
-    end
+    gameMapPanel:fill('parent')
+    gameRootPanel:fill('parent')
+    gameLeftPanel:setImageColor('alpha')
+    gameRightPanel:setImageColor('alpha')
+    gameBottomPanel:setImageColor('alpha')
+    modules.client_topmenu.getTopMenu():setImageColor('#ffffff66')
+    gameLeftPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameLeftPanel:getPaddingTop())
+    gameRightPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightPanel:getPaddingTop())
+    gameLeftPanel:setOn(true)
+    gameLeftPanel:setVisible(true)
+    gameRightPanel:setOn(true)
+    gameMapPanel:setOn(true)
 
-    if currentViewMode == 2 then
-        gameMapPanel:addAnchor(AnchorLeft, 'gameLeftPanel', AnchorRight)
-        gameMapPanel:addAnchor(AnchorRight, 'gameRightPanel', AnchorLeft)
-        gameMapPanel:addAnchor(AnchorRight, 'gameRightExtraPanel', AnchorLeft)
-        gameMapPanel:addAnchor(AnchorBottom, 'gameBottomPanel', AnchorTop)
-        gameRootPanel:addAnchor(AnchorTop, 'topMenu', AnchorBottom)
-        gameLeftPanel:setOn(modules.client_options.getOption('showLeftPanel'))
-        gameRightExtraPanel:setOn(modules.client_options.getOption('showRightExtraPanel'))
-        gameLeftPanel:setImageColor('white')
-        gameRightPanel:setImageColor('white')
-        gameRightExtraPanel:setImageColor('white')
-        gameLeftPanel:setMarginTop(0)
-        gameRightPanel:setMarginTop(0)
-        gameRightExtraPanel:setMarginTop(0)
-        gameBottomPanel:setImageColor('white')
-        modules.client_topmenu.getTopMenu():setImageColor('white')
-    end
-
-    if mode == 0 then
-        gameMapPanel:setKeepAspectRatio(true)
-        gameMapPanel:setLimitVisibleRange(false)
-        gameMapPanel:setZoom(11)
-        gameMapPanel:setVisibleDimension({
-            width = 15,
-            height = 11
-        })
-    elseif mode == 1 then
-        gameMapPanel:setKeepAspectRatio(false)
-        gameMapPanel:setLimitVisibleRange(true)
-        gameMapPanel:setZoom(11)
-        gameMapPanel:setVisibleDimension({
-            width = 15,
-            height = 11
-        })
-    elseif mode == 2 then
-        local limit = limitedZoom and not g_game.isGM()
-        gameMapPanel:setLimitVisibleRange(limit)
-        gameMapPanel:setZoom(11)
-        gameMapPanel:setVisibleDimension({
-            width = 15,
-            height = 11
-        })
-        gameMapPanel:fill('parent')
-        gameRootPanel:fill('parent')
-        gameLeftPanel:setImageColor('alpha')
-        gameRightPanel:setImageColor('alpha')
-        gameRightExtraPanel:setImageColor('alpha')
-        gameLeftPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameLeftPanel:getPaddingTop())
-        gameRightPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() - gameRightPanel:getPaddingTop())
-        gameRightExtraPanel:setMarginTop(modules.client_topmenu.getTopMenu():getHeight() -
-            gameRightExtraPanel:getPaddingTop())
-        gameLeftPanel:setOn(true)
-        gameLeftPanel:setVisible(true)
-        gameRightPanel:setOn(true)
-        gameRightExtraPanel:setOn(true)
-        gameRightExtraPanel:setVisible(true)
-        gameMapPanel:setOn(true)
-        gameBottomPanel:setImageColor('#ffffff88')
-        modules.client_topmenu.getTopMenu():setImageColor('#ffffff66')
-    end
-
-    currentViewMode = mode
-end
-
-function limitZoom()
-    limitedZoom = true
+    modules.game_console.toggleChat()
+    modules.game_actionbar.terminate() -- warning destroying two times
 end

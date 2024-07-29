@@ -32,7 +32,7 @@
 UIMap::UIMap()
 {
     setProp(PropDraggable, true, false);
-    m_keepAspectRatio = true;
+    m_keepAspectRatio = false;
     m_limitVisibleRange = false;
     m_maxZoomIn = 3;
     m_maxZoomOut = 513;
