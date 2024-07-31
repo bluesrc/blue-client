@@ -59,7 +59,7 @@ controller:registerEvents(g_game, {
         if version >= 870 then
             g_game.enableFeature(GameDoubleExperience);
             g_game.enableFeature(GamePlayerMounts);
-            g_game.enableFeature(GameSpellList);
+            g_game.enableFeature(GameMoveList);
         end
 
         if version >= 910 then
@@ -213,7 +213,7 @@ controller:registerEvents(g_game, {
 
         if version >= 1300 then
             g_game.enableFeature(GameDoubleHealth);
-            g_game.enableFeature(GameUshortSpell);
+            g_game.enableFeature(GameUshortMove);
             g_game.enableFeature(GameConcotions);
             g_game.enableFeature(GameAnthem);
         end

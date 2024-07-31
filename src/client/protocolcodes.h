@@ -137,8 +137,8 @@ namespace Proto
         GameServerPlayerState = 162,
         GameServerClearTarget = 163,
         GameServerPlayerModes = 167,
-        GameServerSpellDelay = 164, // 870
-        GameServerSpellGroupDelay = 165, // 870
+        GameServerMoveDelay = 164, // 870
+        GameServerMoveGroupDelay = 165, // 870
         GameServerMultiUseDelay = 166, // 870
         GameServerSetStoreDeepLink = 168, // 1097
         GameServerSendRestingAreaState = 169,

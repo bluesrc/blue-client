@@ -8,8 +8,8 @@ actionBar = nil
 actionBarPanel = nil
 bottomPanel = nil
 slotToEdit = nil
-spellAssignWindow = nil
-spellsPanel = nil
+moveAssignWindow = nil
+movesPanel = nil
 textAssignWindow = nil
 objectAssignWindow = nil
 mouseGrabberWidget = nil
@@ -51,8 +51,8 @@ function init()
     connect(g_game, {
         onGameStart = online,
         onGameEnd = offline,
-        onSpellGroupCooldown = onSpellGroupCooldown,
-        onSpellCooldown = onSpellCooldown
+        onMoveGroupCooldown = onMoveGroupCooldown,
+        onMoveCooldown = onMoveCooldown
     })
 
 end
@@ -63,11 +63,11 @@ function terminate()
     disconnect(g_game, {
         onGameStart = online,
         onGameEnd = offline,
-        onSpellGroupCooldown = onSpellGroupCooldown,
-        onSpellCooldown = onSpellCooldown
+        onMoveGroupCooldown = onMoveGroupCooldown,
+        onMoveCooldown = onMoveCooldown
     })
-    if spellAssignWindow then
-        closeSpellAssignWindow()
+    if moveAssignWindow then
+        closeMoveAssignWindow()
     end
     if objectAssignWindow then
         closeObjectAssignWindow()
@@ -78,13 +78,13 @@ function terminate()
     if editHotkeyWindow then
         closeEditHotkeyWindow()
     end
-    if spellsPanel then
-        disconnect(spellsPanel, {
+    if movesPanel then
+        disconnect(movesPanel, {
             onChildFocusChange = function(self, focusedChild)
                 if focusedChild == nil then
                     return
                 end
-                updatePreviewSpell(focusedChild)
+                updatePreviewMove(focusedChild)
             end
         })
     end
@@ -209,8 +209,8 @@ end
 function createMenu(slotId)
     local menu = g_ui.createWidget('PopupMenu')
     slotToEdit = slotId
-    menu:addOption('Assign Spell', function()
-        openSpellAssignWindow()
+    menu:addOption('Assign Move', function()
+        openMoveAssignWindow()
     end)
     menu:addOption('Assign Object', function()
         startChooseItem()
@@ -232,117 +232,117 @@ function createMenu(slotId)
     menu:display()
 end
 
-function openSpellAssignWindow()
-    spellAssignWindow = g_ui.loadUI('assign_spell', g_ui.getRootWidget())
-    spellsPanel = spellAssignWindow:getChildById('spellsPanel')
+function openMoveAssignWindow()
+    moveAssignWindow = g_ui.loadUI('assign_move', g_ui.getRootWidget())
+    movesPanel = moveAssignWindow:getChildById('movesPanel')
     addEvent(function()
-        initializeSpelllist()
+        initializeMovelist()
     end)
-    spellAssignWindow:raise()
-    spellAssignWindow:focus()
-    spellAssignWindow:getChildById('filterTextEdit'):focus()
+    moveAssignWindow:raise()
+    moveAssignWindow:focus()
+    moveAssignWindow:getChildById('filterTextEdit'):focus()
     modules.game_hotkeys.enableHotkeys(false)
 end
 
-function closeSpellAssignWindow()
-    spellAssignWindow:destroy()
-    spellAssignWindow = nil
-    spellsPanel = nil
+function closeMoveAssignWindow()
+    moveAssignWindow:destroy()
+    moveAssignWindow = nil
+    movesPanel = nil
     modules.game_hotkeys.enableHotkeys(true)
 end
 
-function initializeSpelllist()
+function initializeMovelist()
     g_keyboard.bindKeyPress('Down', function()
-        spellsPanel:focusNextChild(KeyboardFocusReason)
-    end, spellsPanel:getParent())
+        movesPanel:focusNextChild(KeyboardFocusReason)
+    end, movesPanel:getParent())
     g_keyboard.bindKeyPress('Up', function()
-        spellsPanel:focusPreviousChild(KeyboardFocusReason)
-    end, spellsPanel:getParent())
+        movesPanel:focusPreviousChild(KeyboardFocusReason)
+    end, movesPanel:getParent())
 
-    for spellProfile, _ in pairs(SpelllistSettings) do
-        for i = 1, #SpelllistSettings[spellProfile].spellOrder do
-            local spell = SpelllistSettings[spellProfile].spellOrder[i]
-            local info = SpellInfo[spellProfile][spell]
+    for moveProfile, _ in pairs(MovelistSettings) do
+        for i = 1, #MovelistSettings[moveProfile].moveOrder do
+            local move = MovelistSettings[moveProfile].moveOrder[i]
+            local info = MoveInfo[moveProfile][move]
             if info then
-                local tmpLabel = g_ui.createWidget('SpellListLabel', spellsPanel)
-                tmpLabel:setId(spell)
-                tmpLabel:setText(spell .. '\n\'' .. info.words .. '\'')
+                local tmpLabel = g_ui.createWidget('MoveListLabel', movesPanel)
+                tmpLabel:setId(move)
+                tmpLabel:setText(move .. '\n\'' .. info.words .. '\'')
                 tmpLabel:setPhantom(false)
                 tmpLabel.defaultHeight = tmpLabel:getHeight()
                 tmpLabel.words = info.words:lower()
-                tmpLabel.name = spell:lower()
+                tmpLabel.name = move:lower()
 
                 local iconId = tonumber(info.icon)
-                if not iconId and SpellIcons[info.icon] then
-                    iconId = SpellIcons[info.icon][1]
+                if not iconId and MoveIcons[info.icon] then
+                    iconId = MoveIcons[info.icon][1]
                 end
 
-                tmpLabel:setHeight(SpelllistSettings[spellProfile].iconSize.height + 4)
-                tmpLabel:setTextOffset(topoint((SpelllistSettings[spellProfile].iconSize.width + 10) .. ' ' ..
-                                                   (SpelllistSettings[spellProfile].iconSize.height - 32) / 2 + 3))
-                tmpLabel:setImageSource(SpelllistSettings[spellProfile].iconFile)
-                tmpLabel:setImageClip(Spells.getImageClip(iconId, spellProfile))
-                tmpLabel:setImageSize(tosize(SpelllistSettings[spellProfile].iconSize.width .. ' ' ..
-                                                 SpelllistSettings[spellProfile].iconSize.height))
+                tmpLabel:setHeight(MovelistSettings[moveProfile].iconSize.height + 4)
+                tmpLabel:setTextOffset(topoint((MovelistSettings[moveProfile].iconSize.width + 10) .. ' ' ..
+                                                   (MovelistSettings[moveProfile].iconSize.height - 32) / 2 + 3))
+                tmpLabel:setImageSource(MovelistSettings[moveProfile].iconFile)
+                tmpLabel:setImageClip(Moves.getImageClip(iconId, moveProfile))
+                tmpLabel:setImageSize(tosize(MovelistSettings[moveProfile].iconSize.width .. ' ' ..
+                                                 MovelistSettings[moveProfile].iconSize.height))
             end
         end
     end
 
-    for v, k in ipairs(spellsPanel:getChildren()) do
+    for v, k in ipairs(movesPanel:getChildren()) do
         if k:isVisible() then
-            spellsPanel:focusChild(k, KeyboardFocusReason)
-            updatePreviewSpell(k)
+            movesPanel:focusChild(k, KeyboardFocusReason)
+            updatePreviewMove(k)
             break
         end
     end
-    connect(spellsPanel, {
+    connect(movesPanel, {
         onChildFocusChange = function(self, focusedChild)
             if focusedChild == nil then
                 return
             end
-            updatePreviewSpell(focusedChild)
+            updatePreviewMove(focusedChild)
         end
     })
 end
 
-function updatePreviewSpell(focusedChild)
-    local spellName = focusedChild:getId()
-    iconId = tonumber(Spells.getClientId(spellName))
-    local spell = Spells.getSpellByName(spellName)
-    local profile = Spells.getSpellProfileByName(spellName)
-    spellsPanel:getParent():getChildById('previewSpell'):setImageSource(SpelllistSettings[profile].iconFile)
-    spellsPanel:getParent():getChildById('previewSpell'):setImageClip(Spells.getImageClip(iconId, profile))
-    spellsPanel:getParent():getChildById('previewSpellName'):setText(spellName)
-    spellsPanel:getParent():getChildById('previewSpellWords'):setText('\'' .. spell.words .. '\'')
-    if spell.parameter then
-        spellAssignWindow:getChildById('parameterTextEdit'):enable()
+function updatePreviewMove(focusedChild)
+    local moveName = focusedChild:getId()
+    iconId = tonumber(Moves.getClientId(moveName))
+    local move = Moves.getMoveByName(moveName)
+    local profile = Moves.getMoveProfileByName(moveName)
+    movesPanel:getParent():getChildById('previewMove'):setImageSource(MovelistSettings[profile].iconFile)
+    movesPanel:getParent():getChildById('previewMove'):setImageClip(Moves.getImageClip(iconId, profile))
+    movesPanel:getParent():getChildById('previewMoveName'):setText(moveName)
+    movesPanel:getParent():getChildById('previewMoveWords'):setText('\'' .. move.words .. '\'')
+    if move.parameter then
+        moveAssignWindow:getChildById('parameterTextEdit'):enable()
     else
-        spellAssignWindow:getChildById('parameterTextEdit'):disable()
+        moveAssignWindow:getChildById('parameterTextEdit'):disable()
     end
 end
 
-function spellAssignAccept()
+function moveAssignAccept()
     clearSlot()
-    local focusedChild = spellsPanel:getFocusedChild()
+    local focusedChild = movesPanel:getFocusedChild()
     if not focusedChild then
         return
     end
-    local spellName = focusedChild:getId()
-    iconId = tonumber(Spells.getClientId(spellName))
-    local spell = Spells.getSpellByName(spellName)
-    local profile = Spells.getSpellProfileByName(spellName)
+    local moveName = focusedChild:getId()
+    iconId = tonumber(Moves.getClientId(moveName))
+    local move = Moves.getMoveByName(moveName)
+    local profile = Moves.getMoveProfileByName(moveName)
     local slot = actionBarPanel:getChildById(slotToEdit)
-    slot:setImageSource(Spells.getIconFileByProfile(profile))
-    slot:setImageClip(Spells.getImageClip(iconId, profile))
-    slot.words = spell.words
+    slot:setImageSource(Moves.getIconFileByProfile(profile))
+    slot:setImageClip(Moves.getImageClip(iconId, profile))
+    slot.words = move.words
     slot.itemId = 469
     slot:setItemId(469)
-    if spell.parameter then
-        slot.parameter = spellAssignWindow:getChildById('parameterTextEdit'):getText():gsub('"', '')
+    if move.parameter then
+        slot.parameter = moveAssignWindow:getChildById('parameterTextEdit'):getText():gsub('"', '')
     else
         slot.parameter = nil
     end
-    closeSpellAssignWindow()
+    closeMoveAssignWindow()
     setupHotkeys()
 end
 
@@ -409,18 +409,18 @@ function textAssignAccept()
         name = text
     end
 
-    local spell, profile, spellName = Spells.getSpellByWords(name)
+    local move, profile, moveName = Moves.getMoveByWords(name)
 
     local slot = actionBarPanel:getChildById(slotToEdit)
-    if spellName then
-        iconId = tonumber(Spells.getClientId(spellName))
+    if moveName then
+        iconId = tonumber(Moves.getClientId(moveName))
         clearSlot()
-        slot:setImageSource(Spells.getIconFileByProfile(profile))
-        slot:setImageClip(Spells.getImageClip(iconId, profile))
-        slot.words = spell.words
+        slot:setImageSource(Moves.getIconFileByProfile(profile))
+        slot:setImageClip(Moves.getImageClip(iconId, profile))
+        slot.words = move.words
         slot.itemId = 469
         slot:setItemId(469)
-        if parameter and spell.parameter then
+        if parameter and move.parameter then
             slot.parameter = parameter
         else
             slot.parameter = nil
@@ -805,11 +805,11 @@ function saveActionBar()
     g_settings.save()
 end
 
-function loadSpell(slot)
-    local spell, profile, spellName = Spells.getSpellByWords(slot.words)
-    iconId = tonumber(Spells.getClientId(spellName))
-    slot:setImageSource(Spells.getIconFileByProfile(profile))
-    slot:setImageClip(Spells.getImageClip(iconId, profile))
+function loadMove(slot)
+    local move, profile, moveName = Moves.getMoveByWords(slot.words)
+    iconId = tonumber(Moves.getClientId(moveName))
+    slot:setImageSource(Moves.getIconFileByProfile(profile))
+    slot:setImageClip(Moves.getImageClip(iconId, profile))
     slot:getChildById('text'):setText('')
     slot:setBorderWidth(0)
     setupHotkeys()
@@ -871,7 +871,7 @@ function loadActionBar()
                     slot:getChildById('key'):setText(text)
                 end
                 if slot.words then
-                    loadSpell(slot)
+                    loadMove(slot)
                 elseif slot.text then
                     loadText(slot)
                 elseif slot.itemId and slot.itemId > 0 then
@@ -887,7 +887,7 @@ function round(n)
     return n % 1 >= 0.5 and math.ceil(n) or math.floor(n)
 end
 
-function updateCooldown(progressRect, duration, spellId, count)
+function updateCooldown(progressRect, duration, moveId, count)
     progressRect:setPercent(progressRect:getPercent() + 10000 / duration)
     local cd = round(duration - (progressRect:getPercent() * duration / 100)) / 1000
     if cd > 0 then
@@ -896,12 +896,12 @@ function updateCooldown(progressRect, duration, spellId, count)
 
     if progressRect:getPercent() < 100 then
         removeEvent(progressRect.event)
-        cooldown[spellId] = duration - count * 100
+        cooldown[moveId] = duration - count * 100
         progressRect.event = scheduleEvent(function()
-            updateCooldown(progressRect, duration, spellId, count + 1)
+            updateCooldown(progressRect, duration, moveId, count + 1)
         end, 100)
     else
-        cooldown[spellId] = nil
+        cooldown[moveId] = nil
         progressRect:destroy()
     end
 end
@@ -924,20 +924,20 @@ function updateGroupCooldown(progressRect, duration, groupId)
     end
 end
 
-function onSpellCooldown(spellId, duration)
+function onMoveCooldown(moveId, duration)
     local slot
     for v, k in pairs(actionBarPanel:getChildren()) do
-        local spell, profile, spellName = Spells.getSpellByIcon(spellId)
-        if not spell then
-            print('[WARNING] Can not set cooldown on spell with id: ' .. spellId)
+        local move, profile, moveName = Moves.getMoveByIcon(moveId)
+        if not move then
+            print('[WARNING] Can not set cooldown on move with id: ' .. moveId)
             return true
         end
-        if k.words == spell.words or spell.clientId and spell.clientId == k.itemId then
+        if k.words == move.words or move.clientId and move.clientId == k.itemId then
             slot = k
-            local progressRect = slot:recursiveGetChildById('progress' .. spell.id)
+            local progressRect = slot:recursiveGetChildById('progress' .. move.id)
             if not progressRect then
-                progressRect = g_ui.createWidget('SpellProgressRect', slot)
-                progressRect:setId('progress' .. spell.id)
+                progressRect = g_ui.createWidget('MoveProgressRect', slot)
+                progressRect:setId('progress' .. move.id)
                 progressRect.item = slot
                 progressRect:fill('parent')
                 progressRect:setFont('verdana-11px-rounded')
@@ -946,49 +946,49 @@ function onSpellCooldown(spellId, duration)
             end
 
             local updateFunc = function()
-                updateCooldown(progressRect, duration, spell.id, 0)
+                updateCooldown(progressRect, duration, move.id, 0)
             end
             local finishFunc = function()
-                cooldown[spell.id] = nil
+                cooldown[move.id] = nil
                 progressRect:hide()
             end
             progressRect:setPercent(0)
             updateFunc()
-            cooldown[spell.id] = duration
+            cooldown[move.id] = duration
         end
     end
 end
 
-function onSpellGroupCooldown(groupId, duration)
+function onMoveGroupCooldown(groupId, duration)
     local slot
-    local spellGroup = 0
+    local moveGroup = 0
     for v, k in pairs(actionBarPanel:getChildren()) do
-        local spell, profile, spellName
+        local move, profile, moveName
         if k.words then
-            spell, profile, spellName = Spells.getSpellByWords(k.words)
+            move, profile, moveName = Moves.getMoveByWords(k.words)
         else
             if k.itemId and k.itemId > 0 then
-                spell, profile, spellName = Spells.getSpellByClientId(k.itemId)
+                move, profile, moveName = Moves.getMoveByClientId(k.itemId)
             end
         end
-        if spell then
-            if spell.group[groupId] ~= nil then
+        if move then
+            if move.group[groupId] ~= nil then
                 local continue = false
-                if not cooldown[spell.id] or cooldown[spell.id] and cooldown[spell.id] < duration then
-                    local oldProgressBar = k:recursiveGetChildById('progress' .. spell.id)
+                if not cooldown[move.id] or cooldown[move.id] and cooldown[move.id] < duration then
+                    local oldProgressBar = k:recursiveGetChildById('progress' .. move.id)
                     if oldProgressBar then
-                        cooldown[spell.id] = nil
+                        cooldown[move.id] = nil
                         oldProgressBar:hide()
                     end
                     continue = true
-                elseif cooldown[spell.id] and cooldown[spell.id] >= duration then
+                elseif cooldown[move.id] and cooldown[move.id] >= duration then
                     continue = false
                 end
                 if continue then
                     slot = k
                     local progressRect = slot:recursiveGetChildById('progress' .. groupId)
                     if not progressRect then
-                        progressRect = g_ui.createWidget('SpellProgressRect', slot)
+                        progressRect = g_ui.createWidget('MoveProgressRect', slot)
                         progressRect:setId('progress' .. groupId)
                         progressRect.item = slot
                         progressRect:fill('parent')
@@ -1013,35 +1013,35 @@ function onSpellGroupCooldown(groupId, duration)
     end
 end
 
-function filterSpells(text)
+function filterMoves(text)
     if #text > 0 then
         text = text:lower()
 
-        for index, spellListLabel in pairs(spellsPanel:getChildren()) do
-            if string.find(spellListLabel.name:lower(), text) or string.find(spellListLabel.words:lower(), text) then
-                showSpell(spellListLabel)
+        for index, moveListLabel in pairs(movesPanel:getChildren()) do
+            if string.find(moveListLabel.name:lower(), text) or string.find(moveListLabel.words:lower(), text) then
+                showMove(moveListLabel)
             else
-                hideSpell(spellListLabel)
+                hideMove(moveListLabel)
             end
         end
 
     else
-        for index, spellListLabel in pairs(spellsPanel:getChildren()) do
-            showSpell(spellListLabel)
+        for index, moveListLabel in pairs(movesPanel:getChildren()) do
+            showMove(moveListLabel)
         end
     end
 end
 
-function hideSpell(spellListLabel)
-    if spellListLabel:isVisible() then
-        spellListLabel:hide()
-        spellListLabel:setHeight(0)
+function hideMove(moveListLabel)
+    if moveListLabel:isVisible() then
+        moveListLabel:hide()
+        moveListLabel:setHeight(0)
     end
 end
 
-function showSpell(spellListLabel)
-    if not spellListLabel:isVisible() then
-        spellListLabel:setHeight(spellListLabel.defaultHeight)
-        spellListLabel:show()
+function showMove(moveListLabel)
+    if not moveListLabel:isVisible() then
+        moveListLabel:setHeight(moveListLabel.defaultHeight)
+        moveListLabel:show()
     end
 end

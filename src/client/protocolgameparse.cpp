@@ -322,11 +322,11 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                     parseQuestLine(msg);
                     break;
                     // PROTOCOL>=870
-                case Proto::GameServerSpellDelay:
-                    parseSpellCooldown(msg);
+                case Proto::GameServerMoveDelay:
+                    parseMoveCooldown(msg);
                     break;
-                case Proto::GameServerSpellGroupDelay:
-                    parseSpellGroupCooldown(msg);
+                case Proto::GameServerMoveGroupDelay:
+                    parseMoveGroupCooldown(msg);
                     break;
                 case Proto::GameServerMultiUseDelay:
                     parseMultiUseCooldown(msg);
@@ -1677,13 +1677,13 @@ void ProtocolGame::parsePlayerInfo(const InputMessagePtr& msg) const
         msg->getU8(); // prey enabled
     }
 
-    const uint16_t spellCount = msg->getU16();
-    std::vector<uint16_t> spells;
-    for (int_fast32_t i = 0; i < spellCount; ++i) {
-        if (g_game.getFeature(Otc::GameUshortSpell)) {
-            spells.push_back(msg->getU16()); // spell id
+    const uint16_t moveCount = msg->getU16();
+    std::vector<uint16_t> moves;
+    for (int_fast32_t i = 0; i < moveCount; ++i) {
+        if (g_game.getFeature(Otc::GameUshortMove)) {
+            moves.push_back(msg->getU16()); // move id
         } else {
-            spells.push_back(static_cast<uint16_t>(msg->getU8())); // spell id
+            moves.push_back(static_cast<uint16_t>(msg->getU8())); // move id
         }
     }
 
@@ -1693,7 +1693,7 @@ void ProtocolGame::parsePlayerInfo(const InputMessagePtr& msg) const
 
     m_localPlayer->setPremium(premium);
     m_localPlayer->setVocation(vocation);
-    m_localPlayer->setSpells(spells);
+    m_localPlayer->setMoves(moves);
 }
 
 void ProtocolGame::parsePlayerStats(const InputMessagePtr& msg) const
@@ -1939,25 +1939,25 @@ void ProtocolGame::parsePlayerModes(const InputMessagePtr& msg)
     g_game.processPlayerModes(static_cast<Otc::FightModes>(fightMode), static_cast<Otc::ChaseModes>(chaseMode), safeMode, static_cast<Otc::PVPModes>(pvpMode));
 }
 
-void ProtocolGame::parseSpellCooldown(const InputMessagePtr& msg)
+void ProtocolGame::parseMoveCooldown(const InputMessagePtr& msg)
 {
-    uint16_t spellId;
-    if (g_game.getFeature(Otc::GameUshortSpell)) {
-        spellId = msg->getU16();
+    uint16_t moveId;
+    if (g_game.getFeature(Otc::GameUshortMove)) {
+        moveId = msg->getU16();
     } else {
-        spellId = msg->getU8();
+        moveId = msg->getU8();
     }
     const uint32_t delay = msg->getU32();
 
-    g_lua.callGlobalField("g_game", "onSpellCooldown", spellId, delay);
+    g_lua.callGlobalField("g_game", "onMoveCooldown", moveId, delay);
 }
 
-void ProtocolGame::parseSpellGroupCooldown(const InputMessagePtr& msg)
+void ProtocolGame::parseMoveGroupCooldown(const InputMessagePtr& msg)
 {
     const uint8_t groupId = msg->getU8();
     const uint32_t delay = msg->getU32();
 
-    g_lua.callGlobalField("g_game", "onSpellGroupCooldown", groupId, delay);
+    g_lua.callGlobalField("g_game", "onMoveGroupCooldown", groupId, delay);
 }
 
 void ProtocolGame::parseMultiUseCooldown(const InputMessagePtr& msg)
@@ -1995,7 +1995,7 @@ void ProtocolGame::parseTalk(const InputMessagePtr& msg)
         case Otc::MessageNpcTo:
         case Otc::MessageBarkLow:
         case Otc::MessageBarkLoud:
-        case Otc::MessageSpell:
+        case Otc::MessageMove:
         case Otc::MessageNpcFromStartBlock:
             pos = getPosition(msg);
             break;

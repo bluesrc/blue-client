@@ -44,7 +44,7 @@ namespace Proto
             messageModesMap[Otc::MessageChannelManagement] = 6;
             messageModesMap[Otc::MessageChannel] = 7;
             messageModesMap[Otc::MessageChannelHighlight] = 8;
-            messageModesMap[Otc::MessageSpell] = 9;
+            messageModesMap[Otc::MessageMove] = 9;
             messageModesMap[Otc::MessageNpcFromStartBlock] = 10;
             messageModesMap[Otc::MessageNpcFrom] = 11;
             messageModesMap[Otc::MessageNpcTo] = 12;
@@ -95,7 +95,7 @@ namespace Proto
             messageModesMap[Otc::MessageChannelManagement] = 6;
             messageModesMap[Otc::MessageChannel] = 7;
             messageModesMap[Otc::MessageChannelHighlight] = 8;
-            messageModesMap[Otc::MessageSpell] = 9;
+            messageModesMap[Otc::MessageMove] = 9;
             messageModesMap[Otc::MessageNpcFromStartBlock] = 10;
             messageModesMap[Otc::MessageNpcFrom] = 11;
             messageModesMap[Otc::MessageNpcTo] = 12;

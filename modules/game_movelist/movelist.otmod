@@ -1,9 +1,9 @@
 Module
-  name: game_spelllist
-  description: View available spells
+  name: game_movelist
+  description: View available moves
   author: Summ, Edubart
   website: https://github.com/edubart/otclient
   sandboxed: true
-  scripts: [ spelllist ]
+  scripts: [ movelist ]
   @onLoad: init()
   @onUnload: terminate()

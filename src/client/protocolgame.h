@@ -225,8 +225,8 @@ private:
     void parsePlayerState(const InputMessagePtr& msg) const;
     void parsePlayerCancelAttack(const InputMessagePtr& msg);
     void parsePlayerModes(const InputMessagePtr& msg);
-    void parseSpellCooldown(const InputMessagePtr& msg);
-    void parseSpellGroupCooldown(const InputMessagePtr& msg);
+    void parseMoveCooldown(const InputMessagePtr& msg);
+    void parseMoveGroupCooldown(const InputMessagePtr& msg);
     void parseMultiUseCooldown(const InputMessagePtr& msg);
     void parseTalk(const InputMessagePtr& msg);
     void parseChannelList(const InputMessagePtr& msg);

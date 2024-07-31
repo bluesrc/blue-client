@@ -18,7 +18,7 @@ Module
     dofile 'market'
     dofile 'textmessages'
     dofile 'thing'
-    dofile 'spells'
+    dofile 'moves'
     dofile 'tile'
 
     dofile 'eventcontroller'

@@ -1,14 +1,14 @@
-PreviewSpell < UIItem
+PreviewMove < UIItem
   size: 40 40
   background-color: gray
   image-clip: 0 0 32 32
   image-size: 40 40
 
-Spell < UIItem
+Move < UIItem
   size: 32 32
   background-color: gray
 
-SpellListLabel < Label
+MoveListLabel < Label
   font: verdana-11px-monochrome
   background-color: alpha
   text-offset: 42 3
@@ -23,26 +23,26 @@ SpellListLabel < Label
     color: #ffffff
 
 MainWindow
-  text: Assign Spell
+  text: Assign Move
   size: 280 480
-  @onEscape: modules.game_actionbar.closeSpellAssignWindow()
-  @onEnter: modules.game_actionbar.spellAssignAccept()
-  PreviewSpell
-    id: previewSpell
+  @onEscape: modules.game_actionbar.closeMoveAssignWindow()
+  @onEnter: modules.game_actionbar.moveAssignAccept()
+  PreviewMove
+    id: previewMove
     anchors.left: parent.left
     anchors.top: parent.top
   Label
-    id: previewSpellName
-    anchors.left: previewSpell.right
+    id: previewMoveName
+    anchors.left: previewMove.right
     anchors.top: parent.top
     margin-top: 6
     margin-left: 5
     text: name
     text-auto-resize: true
   Label
-    id: previewSpellWords
-    anchors.left: previewSpell.right
-    anchors.top: previewSpellName.bottom
+    id: previewMoveWords
+    anchors.left: previewMove.right
+    anchors.top: previewMoveName.bottom
     text: words
     margin-left: 5
     text-auto-resize: true
@@ -50,7 +50,7 @@ MainWindow
     id: splitter
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.top: previewSpell.bottom
+    anchors.top: previewMove.bottom
     margin-top: 10
     height: 2
 
@@ -67,13 +67,13 @@ MainWindow
     anchors.left: prev.right
     margin-left: 5
     margin-top: 5
-    @onTextChange: modules.game_actionbar.filterSpells(self:getText())
+    @onTextChange: modules.game_actionbar.filterMoves(self:getText())
 
   TextList
-    id: spellsPanel
+    id: movesPanel
     layout:
       type: verticalBox
-    vertical-scrollbar: spellsPanelScrollbar
+    vertical-scrollbar: movesPanelScrollbar
     anchors.top: filterTextEdit.bottom
     anchors.bottom: parameterTextEdit.top
     anchors.left: parent.left
@@ -81,8 +81,8 @@ MainWindow
     margin-top: 10
     margin-bottom: 5
   VerticalScrollBar
-    id: spellsPanelScrollbar
-    anchors.top: spellsPanel.top
+    id: movesPanelScrollbar
+    anchors.top: movesPanel.top
     anchors.bottom: parameterTextEdit.top
     anchors.right: parent.right
     step: 48
@@ -108,10 +108,10 @@ MainWindow
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     text: Apply
-    @onClick: modules.game_actionbar.spellAssignAccept()
+    @onClick: modules.game_actionbar.moveAssignAccept()
   Button
     id: cancelButton
     anchors.bottom: parent.bottom
     anchors.right: parent.right
     text: Cancel
-    @onClick: modules.game_actionbar.closeSpellAssignWindow()
+    @onClick: modules.game_actionbar.closeMoveAssignWindow()

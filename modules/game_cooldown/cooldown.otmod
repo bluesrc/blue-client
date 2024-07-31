@@ -1,6 +1,6 @@
 Module
   name: game_cooldown
-  description: Spellcooldowns
+  description: Movecooldowns
   author: OTClient team
   website: https://github.com/edubart/otclient
   sandboxed: true

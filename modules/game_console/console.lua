@@ -105,7 +105,7 @@ SpeakTypes = {
     [MessageModes.NpcFromStartBlock] = SpeakTypesSettings.privateNpcToPlayer,
 
     -- ignored types
-    [MessageModes.Spell] = SpeakTypesSettings.none,
+    [MessageModes.Move] = SpeakTypesSettings.none,
     [MessageModes.BarkLow] = SpeakTypesSettings.none,
     [MessageModes.BarkLoud] = SpeakTypesSettings.none,
     [MessageModes.Potion] = SpeakTypesSettings.none
@@ -1451,7 +1451,7 @@ function onTalk(name, level, mode, message, channelId, creaturePos)
     end
 
     if (mode == MessageModes.Say or mode == MessageModes.Whisper or mode == MessageModes.Yell or mode ==
-            MessageModes.Spell or mode == MessageModes.PokemonSay or mode == MessageModes.PokemonYell or mode ==
+            MessageModes.Move or mode == MessageModes.PokemonSay or mode == MessageModes.PokemonYell or mode ==
             MessageModes.NpcFrom or mode == MessageModes.BarkLow or mode == MessageModes.BarkLoud or mode ==
             MessageModes.NpcFromStartBlock) and creaturePos then
         local staticText = StaticText.create()
