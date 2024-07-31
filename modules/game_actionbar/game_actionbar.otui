@@ -1,4 +1,4 @@
-SpellProgressRect < UIProgressRect
+MoveProgressRect < UIProgressRect
   background: #585858AA
   percent: 100
   focusable: false

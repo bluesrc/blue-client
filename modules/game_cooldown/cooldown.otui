@@ -1,18 +1,18 @@
-SpellGroupIcon < UIWidget
+MoveGroupIcon < UIWidget
   size: 22 22
   image-size: 22 22
-  image-source: /images/game/spells/cooldowns
+  image-source: /images/game/moves/cooldowns
   focusable: false
   margin-top: 3
 
-SecondarySpellGroupIcon < UIWidget
+SecondaryMoveGroupIcon < UIWidget
   size: 22 22
   image-size: 22 22
-  image-source: /images/game/spells/cooldowns
+  image-source: /images/game/moves/cooldowns
   focusable: false
   margin-top: 28
 
-SpellIcon < UIWidget
+MoveIcon < UIWidget
   size: 24 24
   image-size: 24 24
   focusable: false
@@ -20,7 +20,7 @@ SpellIcon < UIWidget
   $!first:
     margin-left: 1
 
-SpellProgressRect < UIProgressRect
+MoveProgressRect < UIProgressRect
   background: #585858AA
   percent: 100
   focusable: false
@@ -30,7 +30,7 @@ GroupCooldownParticles < UIParticles
 
 MiniWindow
   id: cooldownWindow
-  !text: tr('Spell Cooldowns')
+  !text: tr('Move Cooldowns')
   height: 110
   icon: /images/topbuttons/cooldowns
   @onOpen: modules.game_cooldown.onMiniWindowOpen()
@@ -38,7 +38,7 @@ MiniWindow
   &save: true
 
   MiniWindowContents
-    SpellGroupIcon
+    MoveGroupIcon
       id: groupIconAttack
       image-clip: 0 0 20 20
       anchors.top: parent.top
@@ -47,12 +47,12 @@ MiniWindow
       $on:
         image-clip: 0 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectAttack
       anchors.fill: groupIconAttack
       !tooltip: tr('Attack')
 
-    SpellGroupIcon
+    MoveGroupIcon
       id: groupIconHealing
       image-clip: 20 0 20 20
       anchors.top: parent.top
@@ -61,12 +61,12 @@ MiniWindow
       $on:
         image-clip: 20 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectHealing
       anchors.fill: groupIconHealing
       !tooltip: tr('Healing')
 
-    SpellGroupIcon
+    MoveGroupIcon
       id: groupIconSupport
       image-clip: 40 0 20 20
       anchors.top: parent.top
@@ -75,12 +75,12 @@ MiniWindow
       $on:
         image-clip: 40 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectSupport
       anchors.fill: groupIconSupport
       !tooltip: tr('Support')
 
-    SecondarySpellGroupIcon
+    SecondaryMoveGroupIcon
       id: groupIconSpecial
       image-clip: 60 0 20 20
       anchors.top: parent.top
@@ -89,12 +89,12 @@ MiniWindow
       $on:
         image-clip: 60 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectSpecial
       anchors.fill: groupIconSpecial
       !tooltip: tr('Special')
 
-    SecondarySpellGroupIcon
+    SecondaryMoveGroupIcon
       id: groupIconCrippling
       image-clip: 80 0 20 20
       anchors.top: parent.top
@@ -103,12 +103,12 @@ MiniWindow
       $on:
         image-clip: 80 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectCrippling
       anchors.fill: groupIconCrippling
       !tooltip: tr('Crippling')
 
-    SecondarySpellGroupIcon
+    SecondaryMoveGroupIcon
       id: groupIconFocus
       image-clip: 100 0 20 20
       anchors.top: parent.top
@@ -117,12 +117,12 @@ MiniWindow
       $on:
         image-clip: 100 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectFocus
       anchors.fill: groupIconFocus
       !tooltip: tr('Focus')
 
-    SecondarySpellGroupIcon
+    SecondaryMoveGroupIcon
       id: groupIconUltimateStrike
       image-clip: 120 0 20 20
       anchors.top: parent.top
@@ -131,12 +131,12 @@ MiniWindow
       $on:
         image-clip: 120 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectUltimateStrike
       anchors.fill: groupIconUltimateStrike
       !tooltip: tr('Ultimate Strike')
 
-    SecondarySpellGroupIcon
+    SecondaryMoveGroupIcon
       id: groupIconGreatBeams
       image-clip: 140 0 20 20
       anchors.top: parent.top
@@ -145,12 +145,12 @@ MiniWindow
       $on:
         image-clip: 140 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectGreatBeams
       anchors.fill: groupIconGreatBeams
       !tooltip: tr('Great Beams')
 
-    SecondarySpellGroupIcon
+    SecondaryMoveGroupIcon
       id: groupIconBurstOfNature
       image-clip: 160 0 20 20
       anchors.top: parent.top
@@ -159,7 +159,7 @@ MiniWindow
       $on:
         image-clip: 160 20 20 20
 
-    SpellProgressRect
+    MoveProgressRect
       id: progressRectBurstOfNature
       anchors.fill: groupIconBurstOfNature
       !tooltip: tr('Burst of Nature')

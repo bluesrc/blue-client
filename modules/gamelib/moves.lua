@@ -1,13 +1,13 @@
-SpelllistSettings = {
+MovelistSettings = {
     ['Default'] = {
-        iconFile = '/images/game/spells/defaultspells',
+        iconFile = '/images/game/moves/defaultmoves',
         iconSize = {
             width = 32,
             height = 32
         },
-        spellListWidth = 210,
-        spellWindowWidth = 550,
-        spellOrder = {'Animate Dead', 'Annihilation', "Apprentice's Strike", 'Arrow Call', 'Avalanche', 'Berserk',
+        moveListWidth = 210,
+        moveWindowWidth = 550,
+        moveOrder = {'Animate Dead', 'Annihilation', "Apprentice's Strike", 'Arrow Call', 'Avalanche', 'Berserk',
                       'Blood Rage', 'Bruise Bane', 'Brutal Strike', 'Buzz', 'Cancel Invisibility', 'Challenge',
                       'Chameleon', 'Charge', 'Chill Out', 'Conjure Arrow', 'Conjure Bolt', 'Conjure Explosive Arrow',
                       'Conjure Piercing Bolt', 'Conjure Poisoned Arrow', 'Conjure Power Bolt', 'Conjure Sniper Arrow',
@@ -35,9 +35,9 @@ SpelllistSettings = {
                       'Wrath of Nature'}
     } --[[,
   ['Custom'] =  {
-    iconFile = '/images/game/spells/custom',
+    iconFile = '/images/game/moves/custom',
     iconSize = {width = 32, height = 32},
-    spellOrder = {
+    moveOrder = {
       'Chain Lighting'
       ,'Chain Healing'
       ,'Divine Chain'
@@ -50,7 +50,7 @@ SpelllistSettings = {
   }]]
 }
 
-SpellInfo = {
+MoveInfo = {
     ['Default'] = {
         ['Death Strike'] = {
             id = 87,
@@ -2071,7 +2071,7 @@ SpellInfo = {
             vocations = {3, 7}
         },
 
-    -- fixed spells from OTCv8, version 11.40.5
+    -- fixed moves from OTCv8, version 11.40.5
         ['Summon Paladin Familiar'] = {
             id = 195,
             words = 'utevo gran res sac',
@@ -2270,9 +2270,9 @@ SpellInfo = {
             },
             vocations = {7}
         },
-    -- /fixed spells from OTCv8, version 11.40.5
+    -- /fixed moves from OTCv8, version 11.40.5
 
-    -- spells from version 9.80
+    -- moves from version 9.80
         ["Practise Healing"] = {
             id = 166,
             words = 'exura dis',
@@ -2334,9 +2334,9 @@ SpellInfo = {
             vocations = {1, 2, 5, 6}
         },
  
-    -- /spells from version 9.80
+    -- /moves from version 9.80
 
-    -- spells from version 10.55
+    -- moves from version 10.55
         ["Mud Attack"] = {
             id = 172,
             words = 'exori infir tera',
@@ -2442,10 +2442,10 @@ SpellInfo = {
             },
             vocations = {1, 5}
         },
-    -- /spells from version 10.55
+    -- /moves from version 10.55
 
 
-    -- spells from version 11.40.5.409 - removed in new version
+    -- moves from version 11.40.5.409 - removed in new version
         ["Conjure Diamond Arrow"] = {
             id = 192,
             words = 'exevo gran con hur',
@@ -2479,9 +2479,9 @@ SpellInfo = {
             vocations = {7}
         },
  
-    -- /spells from version 11.40.5.409 - removed in new version
+    -- /moves from version 11.40.5.409 - removed in new version
 
-    -- spells from version 12.80.11430
+    -- moves from version 12.80.11430
         ["Find Fiend"] = {
             id = 20,
             words = 'exiva moe res',
@@ -2497,9 +2497,9 @@ SpellInfo = {
             },
             vocations = {1, 2, 3, 4, 5, 6, 7, 8}
         },
-    -- /spells from version 12.80.11430
+    -- /moves from version 12.80.11430
 
-    -- spells from version 13.10.12852
+    -- moves from version 13.10.12852
 --[[
         -- adjust tfs id
         ["Avatar of Light"] = {
@@ -2670,7 +2670,7 @@ SpellInfo = {
             },
             vocations = {6}
         },
-    -- /spells from version 13.10.12852
+    -- /moves from version 13.10.12852
 ]]
 
     } --[[,
@@ -2688,7 +2688,7 @@ SpellInfo = {
 
 -- ['const_name'] =       {client_id, TFS_id}
 -- Conversion from TFS icon id to the id used by client (icons.png order)
-SpellIcons = {
+MoveIcons = {
 --[[
     ['terraburst'] = {164, __TFS_ID__},
     ['iceburst'] = {163, __TFS_ID__},
@@ -2886,7 +2886,7 @@ VocationNames = {
     [8] = 'Elite Knight'
 }
 
-SpellGroups = {
+MoveGroups = {
     [1] = 'Attack',
     [2] = 'Healing',
     [3] = 'Support',
@@ -2898,80 +2898,80 @@ SpellGroups = {
     [9] = 'Bursts of Nature'
 }
 
-Spells = {}
+Moves = {}
 
-function Spells.getClientId(spellName)
-    local profile = Spells.getSpellProfileByName(spellName)
+function Moves.getClientId(moveName)
+    local profile = Moves.getMoveProfileByName(moveName)
 
-    local id = SpellInfo[profile][spellName].icon
-    if not tonumber(id) and SpellIcons[id] then
-        return SpellIcons[id][1]
+    local id = MoveInfo[profile][moveName].icon
+    if not tonumber(id) and MoveIcons[id] then
+        return MoveIcons[id][1]
     end
     return tonumber(id)
 end
 
-function Spells.getSpellByClientId(id)
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            if spell.id == id then
-                return spell, profile, k
+function Moves.getMoveByClientId(id)
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            if move.id == id then
+                return move, profile, k
             end
         end
     end
     return nil
 end
 
-function Spells.getServerId(spellName)
-    local profile = Spells.getSpellProfileByName(spellName)
+function Moves.getServerId(moveName)
+    local profile = Moves.getMoveProfileByName(moveName)
 
-    local id = SpellInfo[profile][spellName].icon
-    if not tonumber(id) and SpellIcons[id] then
-        return SpellIcons[id][2]
+    local id = MoveInfo[profile][moveName].icon
+    if not tonumber(id) and MoveIcons[id] then
+        return MoveIcons[id][2]
     end
     return tonumber(id)
 end
 
-function Spells.getSpellByName(name)
-    return SpellInfo[Spells.getSpellProfileByName(name)][name]
+function Moves.getMoveByName(name)
+    return MoveInfo[Moves.getMoveProfileByName(name)][name]
 end
 
-function Spells.getSpellByWords(words)
+function Moves.getMoveByWords(words)
     local words = words:lower():trim()
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            if spell.words == words then
-                return spell, profile, k
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            if move.words == words then
+                return move, profile, k
             end
         end
     end
     return nil
 end
 
-function Spells.getSpellByIcon(iconId)
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            if spell.id == iconId then
-                return spell, profile, k
+function Moves.getMoveByIcon(iconId)
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            if move.id == iconId then
+                return move, profile, k
             end
         end
     end
     return nil
 end
 
-function Spells.getSpellIconIds()
+function Moves.getMoveIconIds()
     local ids = {}
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            table.insert(ids, spell.id)
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            table.insert(ids, move.id)
         end
     end
     return ids
 end
 
-function Spells.getSpellProfileById(id)
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            if spell.id == id then
+function Moves.getMoveProfileById(id)
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            if move.id == id then
                 return profile
             end
         end
@@ -2979,10 +2979,10 @@ function Spells.getSpellProfileById(id)
     return nil
 end
 
-function Spells.getSpellProfileByWords(words)
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            if spell.words == words then
+function Moves.getMoveProfileByWords(words)
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            if move.words == words then
                 return profile
             end
         end
@@ -2990,52 +2990,52 @@ function Spells.getSpellProfileByWords(words)
     return nil
 end
 
-function Spells.getSpellProfileByName(spellName)
-    for profile, data in pairs(SpellInfo) do
-        if table.findbykey(data, spellName:trim(), true) then
+function Moves.getMoveProfileByName(moveName)
+    for profile, data in pairs(MoveInfo) do
+        if table.findbykey(data, moveName:trim(), true) then
             return profile
         end
     end
     return nil
 end
 
-function Spells.getSpellsByVocationId(vocId)
-    local spells = {}
-    for profile, data in pairs(SpellInfo) do
-        for k, spell in pairs(data) do
-            if table.contains(spell.vocations, vocId) then
-                table.insert(spells, spell)
+function Moves.getMovesByVocationId(vocId)
+    local moves = {}
+    for profile, data in pairs(MoveInfo) do
+        for k, move in pairs(data) do
+            if table.contains(move.vocations, vocId) then
+                table.insert(moves, move)
             end
         end
     end
-    return spells
+    return moves
 end
 
-function Spells.filterSpellsByGroups(spells, groups)
+function Moves.filterMovesByGroups(moves, groups)
     local filtered = {}
-    for v, spell in pairs(spells) do
-        local spellGroups = Spells.getGroupIds(spell)
-        if table.equals(spellGroups, groups) then
-            table.insert(filtered, spell)
+    for v, move in pairs(moves) do
+        local moveGroups = Moves.getGroupIds(move)
+        if table.equals(moveGroups, groups) then
+            table.insert(filtered, move)
         end
     end
     return filtered
 end
 
-function Spells.getGroupIds(spell)
+function Moves.getGroupIds(move)
     local groups = {}
-    for k, _ in pairs(spell.group) do
+    for k, _ in pairs(move.group) do
         table.insert(groups, k)
     end
     return groups
 end
 
-function Spells.getImageClip(id, profile)
-    return (((id - 1) % 12) * SpelllistSettings[profile].iconSize.width) .. ' ' ..
-               ((math.ceil(id / 12) - 1) * SpelllistSettings[profile].iconSize.height) .. ' ' ..
-               SpelllistSettings[profile].iconSize.width .. ' ' .. SpelllistSettings[profile].iconSize.height
+function Moves.getImageClip(id, profile)
+    return (((id - 1) % 12) * MovelistSettings[profile].iconSize.width) .. ' ' ..
+               ((math.ceil(id / 12) - 1) * MovelistSettings[profile].iconSize.height) .. ' ' ..
+               MovelistSettings[profile].iconSize.width .. ' ' .. MovelistSettings[profile].iconSize.height
 end
 
-function Spells.getIconFileByProfile(profile)
-    return SpelllistSettings[profile]['iconFile']
+function Moves.getIconFileByProfile(profile)
+    return MovelistSettings[profile]['iconFile']
 end

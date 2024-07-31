@@ -459,15 +459,15 @@ void LocalPlayer::setOfflineTrainingTime(uint16_t offlineTrainingTime)
     callLuaField("onOfflineTrainingChange", offlineTrainingTime, oldOfflineTrainingTime);
 }
 
-void LocalPlayer::setSpells(const std::vector<uint16_t>& spells)
+void LocalPlayer::setMoves(const std::vector<uint16_t>& moves)
 {
-    if (m_spells == spells)
+    if (m_moves == moves)
         return;
 
-    const std::vector<uint16_t> oldSpells = m_spells;
-    m_spells = spells;
+    const std::vector<uint16_t> oldMoves = m_moves;
+    m_moves = moves;
 
-    callLuaField("onSpellsChange", spells, oldSpells);
+    callLuaField("onMovesChange", moves, oldMoves);
 }
 
 void LocalPlayer::setBlessings(uint16_t blessings)

@@ -59,8 +59,8 @@ void Spawn::load(pugi::xml_node node)
     setRadius(node.child("radius").text().as_int());
 
     CreatureTypePtr cType;
-    for (pugi::xml_node cNode = node.child("monster"); cNode; cNode = cNode.next_sibling()) {
-        if (cNode.name() != std::string("monster") && cNode.name() != std::string("npc"))
+    for (pugi::xml_node cNode = node.child("pokemon"); cNode; cNode = cNode.next_sibling()) {
+        if (cNode.name() != std::string("pokemon") && cNode.name() != std::string("npc"))
             throw Exception("invalid spawn-subnode %s", cNode.name());
 
         std::string cName = cNode.attribute("name").as_string();
@@ -84,7 +84,7 @@ void Spawn::load(pugi::xml_node node)
         placePos.y = centerPos.y + cNode.attribute("y").as_int();
         placePos.z = cNode.attribute("z").as_int();
 
-        cType->setRace(cNode.name() == std::string("npc") ? CreatureRaceNpc : CreatureRaceMonster);
+        cType->setRace(cNode.name() == std::string("npc") ? CreatureRaceNpc : CreatureRacePokemon);
         addCreature(placePos, cType);
     }
 }
@@ -99,7 +99,7 @@ void Spawn::save(pugi::xml_node node)
     node.append_child("radius").append_child(pugi::node_pcdata).set_value(std::to_string(getRadius()).c_str());
 
     for (const auto& [placePos, creature] : m_creatures) {
-        auto creatureNode = node.append_child(creature->getRace() == CreatureRaceNpc ? "npc" : "monster");
+        auto creatureNode = node.append_child(creature->getRace() == CreatureRaceNpc ? "npc" : "pokemon");
 
         if (!creatureNode)
             throw Exception("Spawn::save: Ran out of memory while allocating XML element!  Terminating now.");
@@ -177,19 +177,19 @@ void CreatureManager::clearSpawns()
     m_spawns.clear();
 }
 
-void CreatureManager::loadMonsters(const std::string& file)
+void CreatureManager::loadPokemons(const std::string& file)
 {
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(file.c_str());
     if (!result)
-        throw Exception("cannot open monsters file '%s': '%s'", file, result.description());
+        throw Exception("cannot open pokemons file '%s': '%s'", file, result.description());
 
     pugi::xml_node root = doc.first_child();
-    if (!root || root.name() != std::string("monsters"))
-        throw Exception("malformed monsters xml file");
+    if (!root || root.name() != std::string("pokemons"))
+        throw Exception("malformed pokemons xml file");
 
-    for (pugi::xml_node monster = root.first_child(); monster; monster = monster.next_sibling()) {
-        std::string fname = file.substr(0, file.find_last_of('/')) + '/' + monster.attribute("file").as_string();
+    for (pugi::xml_node pokemon = root.first_child(); pokemon; pokemon = pokemon.next_sibling()) {
+        std::string fname = file.substr(0, file.find_last_of('/')) + '/' + pokemon.attribute("file").as_string();
         if (fname.substr(fname.length() - 4) != ".xml")
             fname += ".xml";
 
@@ -287,7 +287,7 @@ void CreatureManager::loadCreatureBuffer(const std::string& buffer)
 
     pugi::xml_node root = doc.first_child();
 
-    if (!root || (std::string(root.name()) != "monster" && std::string(root.name()) != "npc"))
+    if (!root || (std::string(root.name()) != "pokemon" && std::string(root.name()) != "npc"))
         throw Exception("invalid root tag name");
 
     std::string cName = root.attribute("name").value();

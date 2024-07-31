@@ -307,8 +307,8 @@ index 63e9183..7cb8313 100644
  		void setOperatingSystem(OperatingSystem_t os) {operatingSystem = os;}
  		uint32_t getClientVersion() const {return clientVersion;}
 @@ -580,6 +581,9 @@ class Player : public Creature, public Cylinder
- 		void sendSpellGroupCooldown(SpellGroup_t groupId, uint32_t cooldown)
- 			{if(client) client->sendSpellGroupCooldown(groupId, cooldown);}
+ 		void sendMoveGroupCooldown(MoveGroup_t groupId, uint32_t cooldown)
+ 			{if(client) client->sendMoveGroupCooldown(groupId, cooldown);}
 
 +		void sendExtendedOpcode(uint8_t opcode, const std::string& buffer)
 +			{if(client) client->sendExtendedOpcode(opcode, buffer);}

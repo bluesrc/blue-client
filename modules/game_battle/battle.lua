@@ -6,7 +6,7 @@ local battleButtons = {} -- map of creature id
 local battleWindow, battleButton, battlePanel, mouseWidget, filterPanel, toggleFilterButton
 local lastBattleButtonSwitched, lastCreatureSelected
 
--- Hide Buttons ("hidePlayers", "hideNPCs", "hideMonsters", "hideSkulls", "hideParty")
+-- Hide Buttons ("hidePlayers", "hideNPCs", "hidePokemons", "hideSkulls", "hideParty")
 local hideButtons = {}
 
 local eventOnCheckCreature = nil
@@ -88,7 +88,7 @@ function init() -- Initiating the module (load)
     end
 
     -- Adding Filter options
-    local options = { 'hidePlayers', 'hideNPCs', 'hideMonsters', 'hideSkulls', 'hideParty' }
+    local options = { 'hidePlayers', 'hideNPCs', 'hidePokemons', 'hideSkulls', 'hideParty' }
     for i, v in ipairs(options) do
         hideButtons[v] = battleWindow:recursiveGetChildById(v)
     end
@@ -454,7 +454,7 @@ function doCreatureFitFilters(creature) -- Check if creature fit current applied
     for i, v in pairs(hideButtons) do
         if v:isChecked() then
             if (i == 'hidePlayers' and creature:isPlayer()) or (i == 'hideNPCs' and creature:isNpc()) or
-                (i == 'hideMonsters' and creature:isMonster()) or
+                (i == 'hidePokemons' and creature:isPokemon()) or
                 (i == 'hideSkulls' and (creature:isPlayer() and creature:getSkull() == SkullNone)) or
                 (i == 'hideParty' and creature:getShield() > ShieldWhiteBlue) then
                 return false
@@ -794,7 +794,7 @@ function updateCreatureEmblem(creature, emblemId) -- Update emblem
     end
 end
 
-function onCreaturePositionChange(creature, newPos, oldPos) -- Update battleButton once you or monsters move
+function onCreaturePositionChange(creature, newPos, oldPos) -- Update battleButton once you or pokemons move
     battlePanel:disableUpdateTemporarily()
 
     local localPlayer = g_game.getLocalPlayer()

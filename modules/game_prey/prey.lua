@@ -18,8 +18,8 @@ local PREY_BONUS_NONE = 4
 
 local PREY_ACTION_LISTREROLL = 0
 local PREY_ACTION_BONUSREROLL = 1
-local PREY_ACTION_MONSTERSELECTION = 2
-local PREY_ACTION_REQUEST_ALL_MONSTERS = 3
+local PREY_ACTION_POKEMONSELECTION = 2
+local PREY_ACTION_REQUEST_ALL_POKEMONS = 3
 local PREY_ACTION_CHANGE_FROM_ALL = 4
 local PREY_ACTION_LOCK_PREY = 5
 
@@ -64,7 +64,7 @@ function init()
         onPreyInactive = onPreyInactive,
         onPreyActive = onPreyActive,
         onPreySelection = onPreySelection,
-        onPreySelectionChangeMonster = onPreySelectionChangeMonster,
+        onPreySelectionChangePokemon = onPreySelectionChangePokemon,
         onPreyListSelection = onPreyListSelection,
         onPreyWildcardSelection = onPreyWildcardSelection
     })
@@ -91,7 +91,7 @@ local descriptionTable = {
     ['pickSpecificPrey'] = 'Available only for protocols 12+',
     ['rerollButton'] = 'If you like to select another prey crature, click here to get a new list with 9 creatures to choose from.\nThe newly selected prey will be active for 2 hours hunting time again.',
     ['preyCandidate'] = 'Select a new prey creature for the next 2 hours hunting time.',
-    ['choosePreyButton'] = 'Click on this button to confirm selected monsters as your prey creature for the next 2 hours hunting time.'
+    ['choosePreyButton'] = 'Click on this button to confirm selected pokemons as your prey creature for the next 2 hours hunting time.'
 }
 
 function onHover(widget)
@@ -125,7 +125,7 @@ function terminate()
         onPreyInactive = onPreyInactive,
         onPreyActive = onPreyActive,
         onPreySelection = onPreySelection,
-        onPreySelectionChangeMonster = onPreySelectionChangeMonster,
+        onPreySelectionChangePokemon = onPreySelectionChangePokemon,
         onPreyListSelection = onPreyListSelection,
         onPreyWildcardSelection = onPreyWildcardSelection
     })
@@ -519,7 +519,7 @@ function onPreySelection(slot, names, outfits, timeUntilFreeReroll, wildcards)
     prey.active:hide()
     prey.locked:hide()
     prey.inactive:show()
-    prey.title:setText(tr('Select monster'))
+    prey.title:setText(tr('Select pokemon'))
     local rerollButton = prey.inactive.reroll.button.rerollButton
     rerollButton.onClick = function()
         g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
@@ -535,14 +535,14 @@ function onPreySelection(slot, names, outfits, timeUntilFreeReroll, wildcards)
     prey.inactive.choose.choosePreyButton.onClick = function()
         for i, child in pairs(list:getChildren()) do
             if child:isChecked() then
-                return g_game.preyAction(slot, PREY_ACTION_MONSTERSELECTION, i - 1)
+                return g_game.preyAction(slot, PREY_ACTION_POKEMONSELECTION, i - 1)
             end
         end
-        return showMessage(tr('Error'), tr('Select monster to proceed.'))
+        return showMessage(tr('Error'), tr('Select pokemon to proceed.'))
     end
 end
 
-function onPreySelectionChangeMonster(slot, names, outfits, bonusType, bonusValue, bonusGrade, timeUntilFreeReroll,
+function onPreySelectionChangePokemon(slot, names, outfits, bonusType, bonusValue, bonusGrade, timeUntilFreeReroll,
                                       wildcards)
     -- tracker
     local tracker = preyTracker.contentsPanel['slot' .. (slot + 1)]
@@ -568,7 +568,7 @@ function onPreySelectionChangeMonster(slot, names, outfits, bonusType, bonusValu
     prey.active:hide()
     prey.locked:hide()
     prey.inactive:show()
-    prey.title:setText(tr('Select monster'))
+    prey.title:setText(tr('Select pokemon'))
     local rerollButton = prey.inactive.reroll.button.rerollButton
     rerollButton.onClick = function()
         g_game.preyAction(slot, PREY_ACTION_LISTREROLL, 0)
@@ -584,10 +584,10 @@ function onPreySelectionChangeMonster(slot, names, outfits, bonusType, bonusValu
     prey.inactive.choose.choosePreyButton.onClick = function()
         for i, child in pairs(list:getChildren()) do
             if child:isChecked() then
-                return g_game.preyAction(slot, PREY_ACTION_MONSTERSELECTION, i - 1)
+                return g_game.preyAction(slot, PREY_ACTION_POKEMONSELECTION, i - 1)
             end
         end
-        return showMessage(tr('Error'), tr('Select monster to proceed.'))
+        return showMessage(tr('Error'), tr('Select pokemon to proceed.'))
     end
 end
 

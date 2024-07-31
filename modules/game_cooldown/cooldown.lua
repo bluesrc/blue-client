@@ -16,8 +16,8 @@ function init()
     connect(g_game, {
         onGameEnd = offline,
         onGameStart = online,
-        onSpellGroupCooldown = onSpellGroupCooldown,
-        onSpellCooldown = onSpellCooldown
+        onMoveGroupCooldown = onMoveGroupCooldown,
+        onMoveCooldown = onMoveCooldown
     })
 
     cooldownButton = modules.client_topmenu.addRightGameToggleButton('cooldownButton', tr('Cooldowns'),
@@ -33,7 +33,7 @@ function init()
     cooldownPanel = contentsPanel:getChildById('cooldownPanel')
 
     -- preload cooldown images
-    for k, v in pairs(SpelllistSettings) do
+    for k, v in pairs(MovelistSettings) do
         g_textures.preload(v.iconFile)
     end
 
@@ -46,8 +46,8 @@ function terminate()
     disconnect(g_game, {
         onGameEnd = offline,
         onGameStart = online,
-        onSpellGroupCooldown = onSpellGroupCooldown,
-        onSpellCooldown = onSpellCooldown
+        onMoveGroupCooldown = onMoveGroupCooldown,
+        onMoveCooldown = onMoveCooldown
     })
 
     cooldownWindow:destroy()
@@ -55,34 +55,34 @@ function terminate()
 end
 
 function loadIcon(iconId)
-    local spell, profile, spellName = Spells.getSpellByIcon(iconId)
-    if not spellName then
-        print('[WARNING] loadIcon: empty spellName for tfs spell id: ' .. iconId)
+    local move, profile, moveName = Moves.getMoveByIcon(iconId)
+    if not moveName then
+        print('[WARNING] loadIcon: empty moveName for tfs move id: ' .. iconId)
         return
     end
     if not profile then
-        print('[WARNING] loadIcon: empty profile for tfs spell id: ' .. iconId)
+        print('[WARNING] loadIcon: empty profile for tfs move id: ' .. iconId)
         return
     end
 
-    clientIconId = Spells.getClientId(spellName)
+    clientIconId = Moves.getClientId(moveName)
     if not clientIconId then
-        print('[WARNING] loadIcon: empty clientIconId for tfs spell id: ' .. iconId)
+        print('[WARNING] loadIcon: empty clientIconId for tfs move id: ' .. iconId)
         return
     end
 
     local icon = cooldownPanel:getChildById(iconId)
     if not icon then
-        icon = g_ui.createWidget('SpellIcon')
+        icon = g_ui.createWidget('MoveIcon')
         icon:setId(iconId)
     end
 
-    local spellSettings = SpelllistSettings[profile]
-    if spellSettings then
-        icon:setImageSource(spellSettings.iconFile)
-        icon:setImageClip(Spells.getImageClip(clientIconId, profile))
+    local moveSettings = MovelistSettings[profile]
+    if moveSettings then
+        icon:setImageSource(moveSettings.iconFile)
+        icon:setImageClip(Moves.getImageClip(clientIconId, profile))
     else
-        print('[WARNING] loadIcon: empty spell icon for tfs spell id: ' .. iconId)
+        print('[WARNING] loadIcon: empty move icon for tfs move id: ' .. iconId)
         icon = nil
     end
     return icon
@@ -107,7 +107,7 @@ function toggle()
 end
 
 function online()
-    if g_game.getFeature(GameSpellList) then
+    if g_game.getFeature(GameMoveList) then
         cooldownWindow:setupOnStart() -- load character window configuration
         cooldownButton:show()
     else
@@ -122,7 +122,7 @@ function online()
 end
 
 function offline()
-    if g_game.getFeature(GameSpellList) then
+    if g_game.getFeature(GameMoveList) then
         cooldownWindow:setParent(nil, true)
     end
 end
@@ -187,24 +187,24 @@ function isCooldownIconActive(iconId)
     return cooldown[iconId]
 end
 
-function onSpellCooldown(iconId, duration)
+function onMoveCooldown(iconId, duration)
     local icon = loadIcon(iconId)
     if not icon then
-        print('[WARNING] Can not load cooldown icon on spell with id: ' .. iconId)
+        print('[WARNING] Can not load cooldown icon on move with id: ' .. iconId)
         return
     end
     icon:setParent(cooldownPanel)
 
     local progressRect = icon:getChildById(iconId)
     if not progressRect then
-        progressRect = g_ui.createWidget('SpellProgressRect', icon)
+        progressRect = g_ui.createWidget('MoveProgressRect', icon)
         progressRect:setId(iconId)
         progressRect.icon = icon
         progressRect:fill('parent')
     else
         progressRect:setPercent(0)
     end
-    progressRect:setTooltip(spellName)
+    progressRect:setTooltip(moveName)
 
     local updateFunc = function()
         updateCooldown(progressRect, duration)
@@ -217,13 +217,13 @@ function onSpellCooldown(iconId, duration)
     cooldown[iconId] = true
 end
 
-function onSpellGroupCooldown(groupId, duration)
-    if not SpellGroups[groupId] then
+function onMoveGroupCooldown(groupId, duration)
+    if not MoveGroups[groupId] then
         return
     end
 
-    local icon = contentsPanel:getChildById('groupIcon' .. SpellGroups[groupId])
-    local progressRect = contentsPanel:getChildById('progressRect' .. SpellGroups[groupId])
+    local icon = contentsPanel:getChildById('groupIcon' .. MoveGroups[groupId])
+    local progressRect = contentsPanel:getChildById('progressRect' .. MoveGroups[groupId])
     if icon then
         icon:setOn(true)
         removeEvent(icon.event)

@@ -79,7 +79,7 @@ AttachedEffectManager.register(5, 'Transform', 40, ThingCategoryCreature, {
     end
 })
 
-AttachedEffectManager.register(6, 'Lake Monster', 34, ThingCategoryEffect, {
+AttachedEffectManager.register(6, 'Lake Pokemon', 34, ThingCategoryEffect, {
     hideOwner = true,
     duration = 1500,
     -- loop = 1,

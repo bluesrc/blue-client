@@ -301,7 +301,7 @@ table.insert(events, globalevent)
 local creatureevent = CreatureEvent('TaskKill')
 
 function creatureevent.onKill(creature, target)
-    if (not creature:isPlayer() or not Monster(target)) then
+    if (not creature:isPlayer() or not Pokemon(target)) then
         return true
     end
 

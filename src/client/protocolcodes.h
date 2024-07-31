@@ -137,8 +137,8 @@ namespace Proto
         GameServerPlayerState = 162,
         GameServerClearTarget = 163,
         GameServerPlayerModes = 167,
-        GameServerSpellDelay = 164, // 870
-        GameServerSpellGroupDelay = 165, // 870
+        GameServerMoveDelay = 164, // 870
+        GameServerMoveGroupDelay = 165, // 870
         GameServerMultiUseDelay = 166, // 870
         GameServerSetStoreDeepLink = 168, // 1097
         GameServerSendRestingAreaState = 169,
@@ -329,7 +329,7 @@ namespace Proto
     enum CreatureType
     {
         CreatureTypePlayer = 0,
-        CreatureTypeMonster,
+        CreatureTypePokemon,
         CreatureTypeNpc,
         CreatureTypeSummonOwn,
         CreatureTypeSummonOther,
@@ -341,8 +341,8 @@ namespace Proto
     {
         PlayerStartId = 0x10000000,
         PlayerEndId = 0x40000000,
-        MonsterStartId = 0x40000000,
-        MonsterEndId = 0x80000000,
+        PokemonStartId = 0x40000000,
+        PokemonEndId = 0x80000000,
         NpcStartId = 0x80000000,
         NpcEndId = 0xffffffff
     };

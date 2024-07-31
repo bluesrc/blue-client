@@ -41,7 +41,7 @@ public:
     Otc::MessageMode getMessageMode() const { return m_mode; }
     std::string getFirstMessage() { return m_messages.empty() ? "" : m_messages[0].first; }
 
-    bool isYell() const { return m_mode == Otc::MessageYell || m_mode == Otc::MessageMonsterYell || m_mode == Otc::MessageBarkLoud; }
+    bool isYell() const { return m_mode == Otc::MessageYell || m_mode == Otc::MessagePokemonYell || m_mode == Otc::MessageBarkLoud; }
 
     void setText(const std::string_view text);
     void setFont(const std::string_view fontName);

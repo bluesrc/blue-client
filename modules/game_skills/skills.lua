@@ -442,11 +442,11 @@ function onStaminaChange(localPlayer, stamina)
         setSkillPercent('stamina', percent, tr('You have %s hours and %s minutes left', hours, minutes), 'orange')
     elseif stamina <= 840 and stamina > 0 then
         local text = tr('You have %s hours and %s minutes left', hours, minutes) .. '\n' ..
-                         tr('You gain only 50%% experience and you don\'t may gain loot from monsters')
+                         tr('You gain only 50%% experience and you don\'t may gain loot from pokemons')
         setSkillPercent('stamina', percent, text, 'red')
     elseif stamina == 0 then
         local text = tr('You have %s hours and %s minutes left', hours, minutes) .. '\n' ..
-                         tr('You don\'t may receive experience and loot from monsters')
+                         tr('You don\'t may receive experience and loot from pokemons')
         setSkillPercent('stamina', percent, text, 'black')
     end
 end

@@ -33,7 +33,7 @@ enum CreatureRace : uint8_t
 {
     CreatureRaceNone = 0,
     CreatureRaceNpc = 1,
-    CreatureRaceMonster = 2
+    CreatureRacePokemon = 2
 };
 
 class Spawn : public LuaObject
@@ -104,7 +104,7 @@ public:
     void clearSpawns();
     void terminate();
 
-    void loadMonsters(const std::string& file);
+    void loadPokemons(const std::string& file);
     void loadSingleCreature(const std::string& file);
     void loadNpcs(const std::string& folder);
     void loadCreatureBuffer(const std::string& buffer);

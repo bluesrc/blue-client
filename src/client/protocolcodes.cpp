@@ -44,7 +44,7 @@ namespace Proto
             messageModesMap[Otc::MessageChannelManagement] = 6;
             messageModesMap[Otc::MessageChannel] = 7;
             messageModesMap[Otc::MessageChannelHighlight] = 8;
-            messageModesMap[Otc::MessageSpell] = 9;
+            messageModesMap[Otc::MessageMove] = 9;
             messageModesMap[Otc::MessageNpcFromStartBlock] = 10;
             messageModesMap[Otc::MessageNpcFrom] = 11;
             messageModesMap[Otc::MessageNpcTo] = 12;
@@ -95,7 +95,7 @@ namespace Proto
             messageModesMap[Otc::MessageChannelManagement] = 6;
             messageModesMap[Otc::MessageChannel] = 7;
             messageModesMap[Otc::MessageChannelHighlight] = 8;
-            messageModesMap[Otc::MessageSpell] = 9;
+            messageModesMap[Otc::MessageMove] = 9;
             messageModesMap[Otc::MessageNpcFromStartBlock] = 10;
             messageModesMap[Otc::MessageNpcFrom] = 11;
             messageModesMap[Otc::MessageNpcTo] = 12;
@@ -154,8 +154,8 @@ namespace Proto
             messageModesMap[Otc::MessageGamemasterPrivateFrom] = 11;
             messageModesMap[Otc::MessageGamemasterPrivateTo] = 11;
             messageModesMap[Otc::MessageChannelHighlight] = 12;
-            messageModesMap[Otc::MessageMonsterSay] = 13;
-            messageModesMap[Otc::MessageMonsterYell] = 14;
+            messageModesMap[Otc::MessagePokemonSay] = 13;
+            messageModesMap[Otc::MessagePokemonYell] = 14;
             messageModesMap[Otc::MessageWarning] = 15;
             messageModesMap[Otc::MessageGame] = 16;
             messageModesMap[Otc::MessageLogin] = 17;
@@ -185,8 +185,8 @@ namespace Proto
             messageModesMap[Otc::MessageChannelHighlight] = 15;
             // 16, 17 ??
             messageModesMap[Otc::MessageRed] = 18;
-            messageModesMap[Otc::MessageMonsterSay] = 19;
-            messageModesMap[Otc::MessageMonsterYell] = 20;
+            messageModesMap[Otc::MessagePokemonSay] = 19;
+            messageModesMap[Otc::MessagePokemonYell] = 20;
             messageModesMap[Otc::MessageWarning] = 21;
             messageModesMap[Otc::MessageGame] = 22;
             messageModesMap[Otc::MessageLogin] = 23;
@@ -211,8 +211,8 @@ namespace Proto
             messageModesMap[Otc::MessageGamemasterPrivateTo] = 11;
             messageModesMap[Otc::MessageChannelHighlight] = 12;
             // 13, 14, 15 ??
-            messageModesMap[Otc::MessageMonsterSay] = 16;
-            messageModesMap[Otc::MessageMonsterYell] = 17;
+            messageModesMap[Otc::MessagePokemonSay] = 16;
+            messageModesMap[Otc::MessagePokemonYell] = 17;
             messageModesMap[Otc::MessageWarning] = 18;
             messageModesMap[Otc::MessageGame] = 19;
             messageModesMap[Otc::MessageLogin] = 20;

@@ -294,7 +294,7 @@ namespace Otc
         MessageChannelManagement = 6,
         MessageChannel = 7,
         MessageChannelHighlight = 8,
-        MessageSpell = 9,
+        MessageMove = 9,
         MessageNpcFrom = 10,
         MessageNpcTo = 11,
         MessageGamemasterBroadcast = 12,
@@ -330,8 +330,8 @@ namespace Otc
         MessageBeyondLast = 42,
 
         // deprecated
-        MessageMonsterYell = 43,
-        MessageMonsterSay = 44,
+        MessagePokemonYell = 43,
+        MessagePokemonSay = 44,
         MessageRed = 45,
         MessageBlue = 46,
         MessageRVRChannel = 47,
@@ -364,7 +364,7 @@ namespace Otc
         PREY_STATE_INACTIVE = 1,
         PREY_STATE_ACTIVE = 2,
         PREY_STATE_SELECTION = 3,
-        PREY_STATE_SELECTION_CHANGE_MONSTER = 4,
+        PREY_STATE_SELECTION_CHANGE_POKEMON = 4,
         PREY_STATE_LIST_SELECTION = 5,
         PREY_STATE_WILDCARD_SELECTION = 6,
     };
@@ -410,8 +410,8 @@ namespace Otc
     {
         PREY_ACTION_LISTREROLL = 0,
         PREY_ACTION_BONUSREROLL = 1,
-        PREY_ACTION_MONSTERSELECTION = 2,
-        PREY_ACTION_REQUEST_ALL_MONSTERS = 3,
+        PREY_ACTION_POKEMONSELECTION = 2,
+        PREY_ACTION_REQUEST_ALL_POKEMONS = 3,
         PREY_ACTION_CHANGE_FROM_ALL = 4,
         PREY_ACTION_LOCK_PREY = 5,
     };
@@ -452,7 +452,7 @@ namespace Otc
         GameOfflineTrainingTime = 20,
         GamePurseSlot = 21,
         GameFormatCreatureName = 22,
-        GameSpellList = 23,
+        GameMoveList = 23,
         GameClientPing = 24,
         GameExtendedClientPing = 25,
         GameDoubleHealth = 28,
@@ -518,7 +518,7 @@ namespace Otc
         GameThingClock = 88,
         GameThingPodiumItemType = 89,
         GameSequencedPackets = 90,
-        GameUshortSpell = 91,
+        GameUshortMove = 91,
         GameTournamentPackets = 92,
         GameDynamicForgeVariables = 93,
         GameConcotions = 94,

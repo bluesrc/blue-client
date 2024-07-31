@@ -14,7 +14,7 @@ function Tile:isNpc()
     return false
 end
 
-function Tile:isMonster()
+function Tile:isPokemon()
     return false
 end
 

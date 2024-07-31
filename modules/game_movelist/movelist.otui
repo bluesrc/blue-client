@@ -1,4 +1,4 @@
-SpellListLabel < Label
+MoveListLabel < Label
   font: verdana-11px-monochrome
   background-color: alpha
   text-offset: 42 3
@@ -7,20 +7,20 @@ SpellListLabel < Label
   image-clip: 0 0 32 32
   image-size: 32 32
   image-offset: 2 2
-  image-source: /images/game/spells/defaultspells
+  image-source: /images/game/moves/defaultmoves
 
   $focus:
     background-color: #ffffff22
     color: #ffffff
 
-SpellInfoLabel < Label
+MoveInfoLabel < Label
   width: 70
   font: verdana-11px-monochrome
   text-align: right
   margin-left: 10
   margin-top: 5
 
-SpellInfoValueLabel < Label
+MoveInfoValueLabel < Label
   text-align: left
   width: 190
   margin-left: 10
@@ -29,7 +29,7 @@ SpellInfoValueLabel < Label
 FilterButton < Button
   width: 64
   anchors.left: prev.right
-  anchors.top: spellList.bottom
+  anchors.top: moveList.bottom
   @onClick: toggleFilter(self)
   margin: 5 0 0 6
   color: #630000
@@ -37,14 +37,14 @@ FilterButton < Button
     color: green
 
 MainWindow
-  id: spelllistWindow
-  !text: tr('Spell List')
+  id: movelistWindow
+  !text: tr('Move List')
   size: 550 400
   @onEscape: toggle()
 
   TextList
-    id: spellList
-    vertical-scrollbar: spellsScrollBar
+    id: moveList
+    vertical-scrollbar: movesScrollBar
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.bottom: next.top
@@ -62,136 +62,136 @@ MainWindow
     @onClick: toggle()
 
   VerticalScrollBar
-    id: spellsScrollBar
-    anchors.top: spellList.top
-    anchors.bottom: spellList.bottom
-    anchors.right: spellList.right
+    id: movesScrollBar
+    anchors.top: moveList.top
+    anchors.bottom: moveList.bottom
+    anchors.right: moveList.right
     step: 50
     pixels-scroll: true
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelName
-    anchors.left: spellList.right
-    anchors.top: spellList.top
+    anchors.left: moveList.right
+    anchors.top: moveList.top
     !text: tr('Name') .. ':'
 
   Label
     anchors.left: parent.left
-    anchors.top: spellList.bottom
+    anchors.top: moveList.bottom
     !text: tr('Filters') .. ':'
     margin-top: 8
 
   FilterButton
     id: buttonFilterLevel
     !text: tr('Level')
-    !tooltip: tr('Hide spells for higher exp. levels')
+    !tooltip: tr('Hide moves for higher exp. levels')
 
   FilterButton
     id: buttonFilterVocation
     !text: tr('Vocation')
-    !tooltip: tr('Hide spells for other vocations')
+    !tooltip: tr('Hide moves for other vocations')
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelFormula
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelName.bottom
     !text: tr('Formula') .. ':'
 
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelVocation
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelFormula.bottom
     !text: tr('Vocation') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelGroup
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelVocation.bottom
     !text: tr('Group') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelType
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelGroup.bottom
     !text: tr('Type') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelCooldown
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelType.bottom
     !text: tr('Cooldown') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelLevel
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelCooldown.bottom
     !text: tr('Level') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelMana
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelLevel.bottom
     !text: tr('Mana') .. ' / ' .. tr('Soul') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelPremium
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelMana.bottom
     !text: tr('Premium') .. ':'
 
-  SpellInfoLabel
+  MoveInfoLabel
     id: labelDescription
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     anchors.top: labelPremium.bottom
     !text: tr('Description') .. ':'
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelNameValue
     anchors.left: labelName.right
-    anchors.top: spellList.top
+    anchors.top: moveList.top
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelFormulaValue
     anchors.left: labelFormula.right
     anchors.top: labelNameValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelVocationValue
     anchors.left: labelVocation.right
     anchors.top: labelFormulaValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelGroupValue
     anchors.left: labelGroup.right
     anchors.top: labelVocationValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelTypeValue
     anchors.left: labelType.right
     anchors.top: labelGroupValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelCooldownValue
     anchors.left: labelCooldown.right
     anchors.top: labelTypeValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelLevelValue
     anchors.left: labelLevel.right
     anchors.top: labelCooldownValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelManaValue
     anchors.left: labelMana.right
     anchors.top: labelLevelValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelPremiumValue
     anchors.left: labelPremium.right
     anchors.top: labelManaValue.bottom
 
-  SpellInfoValueLabel
+  MoveInfoValueLabel
     id: labelDescriptionValue
     anchors.left: labelDescription.right
     anchors.top: labelPremiumValue.bottom
@@ -199,7 +199,7 @@ MainWindow
   Label
     id: labelVocationFilter
     anchors.top: labelPremium.bottom
-    anchors.left: spellList.right
+    anchors.left: moveList.right
     width: 70
     font: verdana-11px-monochrome
     !text: tr('Vocation')
