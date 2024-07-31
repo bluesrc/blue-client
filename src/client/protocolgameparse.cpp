@@ -1990,8 +1990,8 @@ void ProtocolGame::parseTalk(const InputMessagePtr& msg)
         case Otc::MessageSay:
         case Otc::MessageWhisper:
         case Otc::MessageYell:
-        case Otc::MessageMonsterSay:
-        case Otc::MessageMonsterYell:
+        case Otc::MessagePokemonSay:
+        case Otc::MessagePokemonYell:
         case Otc::MessageNpcTo:
         case Otc::MessageBarkLow:
         case Otc::MessageBarkLoud:
@@ -2296,7 +2296,7 @@ void ProtocolGame::parseOpenOutfitWindow(const InputMessagePtr& msg) const
 
 void ProtocolGame::parseKillTracker(const InputMessagePtr& msg)
 {
-    msg->getString(); // monster name
+    msg->getString(); // pokemon name
     getOutfit(msg, false);
 
     // corpse items
@@ -2734,8 +2734,8 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
                 creatureType = msg->getU8();
             else if (id >= Proto::PlayerStartId && id < Proto::PlayerEndId)
                 creatureType = Proto::CreatureTypePlayer;
-            else if (id >= Proto::MonsterStartId && id < Proto::MonsterEndId)
-                creatureType = Proto::CreatureTypeMonster;
+            else if (id >= Proto::PokemonStartId && id < Proto::PokemonEndId)
+                creatureType = Proto::CreatureTypePokemon;
             else
                 creatureType = Proto::CreatureTypeNpc;
 
@@ -2764,10 +2764,10 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
                             break;
 
                         case Proto::CreatureTypeHidden:
-                        case Proto::CreatureTypeMonster:
+                        case Proto::CreatureTypePokemon:
                         case Proto::CreatureTypeSummonOwn:
                         case Proto::CreatureTypeSummonOther:
-                            creature = std::make_shared<Monster>();
+                            creature = std::make_shared<Pokemon>();
                             break;
 
                         default:
@@ -3366,7 +3366,7 @@ void ProtocolGame::parseUpdateLootTracker(const InputMessagePtr& msg)
 
 void ProtocolGame::parseBestiaryEntryChanged(const InputMessagePtr& msg)
 {
-    msg->getU16(); // monster ID
+    msg->getU16(); // pokemon ID
 
     // TODO: implement bestiary entry changed usage
 }
@@ -3493,21 +3493,21 @@ void ProtocolGame::parsePreyTimeLeft(const InputMessagePtr& msg)
     g_lua.callGlobalField("g_game", "onPreyTimeLeft", slot, timeLeft);
 }
 
-PreyMonster ProtocolGame::getPreyMonster(const InputMessagePtr& msg) const
+PreyPokemon ProtocolGame::getPreyPokemon(const InputMessagePtr& msg) const
 {
     const auto& name = msg->getString();
     const auto& outfit = getOutfit(msg, false);
     return { name , outfit };
 }
 
-std::vector<PreyMonster> ProtocolGame::getPreyMonsters(const InputMessagePtr& msg)
+std::vector<PreyPokemon> ProtocolGame::getPreyPokemons(const InputMessagePtr& msg)
 {
-    std::vector<PreyMonster> monsters;
-    const uint8_t monstersSize = msg->getU8(); // monster list size
-    for (uint8_t i = 0; i < monstersSize; i++)
-        monsters.emplace_back(getPreyMonster(msg));
+    std::vector<PreyPokemon> pokemons;
+    const uint8_t pokemonsSize = msg->getU8(); // pokemon list size
+    for (uint8_t i = 0; i < pokemonsSize; i++)
+        pokemons.emplace_back(getPreyPokemon(msg));
 
-    return monsters;
+    return pokemons;
 }
 
 void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
@@ -3531,43 +3531,43 @@ void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
         }
         case Otc::PREY_STATE_ACTIVE:
         {
-            PreyMonster monster = getPreyMonster(msg);
+            PreyPokemon pokemon = getPreyPokemon(msg);
             const uint8_t bonusType = msg->getU8(); // bonus type
             const uint16_t bonusValue = msg->getU16(); // bonus value
             const uint8_t bonusGrade = msg->getU8(); // bonus grade
             const uint16_t timeLeft = msg->getU16(); // time left
             const uint32_t nextFreeReroll = msg->getU32(); // next free roll
             const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreyActive", slot, monster.name, monster.outfit, bonusType, bonusValue, bonusGrade, timeLeft, nextFreeReroll, wildcards);
+            return g_lua.callGlobalField("g_game", "onPreyActive", slot, pokemon.name, pokemon.outfit, bonusType, bonusValue, bonusGrade, timeLeft, nextFreeReroll, wildcards);
         }
         case Otc::PREY_STATE_SELECTION:
         {
-            std::vector<PreyMonster> monsters = getPreyMonsters(msg);
+            std::vector<PreyPokemon> pokemons = getPreyPokemons(msg);
             std::vector<std::string> names;
             std::vector<Outfit> outfits;
-            for (const auto& monster : monsters) {
-                names.push_back(monster.name);
-                outfits.push_back(monster.outfit);
+            for (const auto& pokemon : pokemons) {
+                names.push_back(pokemon.name);
+                outfits.push_back(pokemon.outfit);
             }
             const uint32_t nextFreeReroll = msg->getU32(); // next free roll
             const uint8_t wildcards = msg->getU8(); // wildcards
             return g_lua.callGlobalField("g_game", "onPreySelection", slot, names, outfits, nextFreeReroll, wildcards);
         }
-        case Otc::PREY_STATE_SELECTION_CHANGE_MONSTER:
+        case Otc::PREY_STATE_SELECTION_CHANGE_POKEMON:
         {
             const uint8_t bonusType = msg->getU8(); // bonus type
             const uint16_t bonusValue = msg->getU16(); // bonus value
             const uint8_t bonusGrade = msg->getU8(); // bonus grade
-            std::vector<PreyMonster> monsters = getPreyMonsters(msg);
+            std::vector<PreyPokemon> pokemons = getPreyPokemons(msg);
             std::vector<std::string> names;
             std::vector<Outfit> outfits;
-            for (const auto& monster : monsters) {
-                names.push_back(monster.name);
-                outfits.push_back(monster.outfit);
+            for (const auto& pokemon : pokemons) {
+                names.push_back(pokemon.name);
+                outfits.push_back(pokemon.outfit);
             }
             const uint32_t nextFreeReroll = msg->getU32(); // next free roll
             const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreySelectionChangeMonster", slot, names, outfits, bonusType, bonusValue, bonusGrade, nextFreeReroll, wildcards);
+            return g_lua.callGlobalField("g_game", "onPreySelectionChangePokemon", slot, names, outfits, bonusType, bonusValue, bonusGrade, nextFreeReroll, wildcards);
         }
         case Otc::PREY_STATE_LIST_SELECTION:
         {

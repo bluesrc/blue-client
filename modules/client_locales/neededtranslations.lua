@@ -40,7 +40,7 @@ neededTranslations = {'1a) Offensive Name', '1b) Invalid Name Format', '1c) Unsu
                       'Fishing', 'Fist Fighting', 'Follow', 'Force Exit', 'Formula', 'For Your Information',
                       'Free Account', 'Fullscreen', 'Game', 'Game framerate limit: %s', 'Global ignore settings',
                       'Global whitelist settings', 'Graphics', 'Graphics card driver not detected', 'Group', 'Head',
-                      'Healing', 'Health Info', 'Health Information', 'Hide monsters', 'Hide non-skull players',
+                      'Healing', 'Health Info', 'Health Information', 'Hide pokemons', 'Hide non-skull players',
                       'Hide Npcs', 'Hide Offline', 'Hide party members', 'Hide players',
                       'Hide spells for higher exp. levels', 'Hide spells for other vocations', 'Hit Points',
                       'Hold left mouse button to navigate\nScroll mouse middle button to zoom\nRight mouse button to create map marks\nPress Ctrl+Shift+M to view the entire game map',

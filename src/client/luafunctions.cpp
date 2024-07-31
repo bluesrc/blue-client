@@ -206,7 +206,7 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_creatures", "getSpawn", &CreatureManager::getSpawn, &g_creatures);
     g_lua.bindSingletonFunction("g_creatures", "getSpawnForPlacePos", &CreatureManager::getSpawnForPlacePos, &g_creatures);
     g_lua.bindSingletonFunction("g_creatures", "addSpawn", &CreatureManager::addSpawn, &g_creatures);
-    g_lua.bindSingletonFunction("g_creatures", "loadMonsters", &CreatureManager::loadMonsters, &g_creatures);
+    g_lua.bindSingletonFunction("g_creatures", "loadPokemons", &CreatureManager::loadPokemons, &g_creatures);
     g_lua.bindSingletonFunction("g_creatures", "loadNpcs", &CreatureManager::loadNpcs, &g_creatures);
     g_lua.bindSingletonFunction("g_creatures", "loadSingleCreature", &CreatureManager::loadSingleCreature, &g_creatures);
     g_lua.bindSingletonFunction("g_creatures", "loadSpawns", &CreatureManager::loadSpawns, &g_creatures);
@@ -438,7 +438,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<Thing>("getStackPriority", &Thing::getStackPriority);
     g_lua.bindClassMemberFunction<Thing>("getParentContainer", &Thing::getParentContainer);
     g_lua.bindClassMemberFunction<Thing>("isItem", &Thing::isItem);
-    g_lua.bindClassMemberFunction<Thing>("isMonster", &Thing::isMonster);
+    g_lua.bindClassMemberFunction<Thing>("isPokemon", &Thing::isPokemon);
     g_lua.bindClassMemberFunction<Thing>("isNpc", &Thing::isNpc);
     g_lua.bindClassMemberFunction<Thing>("isCreature", &Thing::isCreature);
     g_lua.bindClassMemberFunction<Thing>("isEffect", &Thing::isEffect);
@@ -773,7 +773,7 @@ void Client::registerLuaFunctions()
 
     g_lua.registerClass<Player, Creature>();
     g_lua.registerClass<Npc, Creature>();
-    g_lua.registerClass<Monster, Creature>();
+    g_lua.registerClass<Pokemon, Creature>();
 
     g_lua.registerClass<LocalPlayer, Player>();
     g_lua.bindClassMemberFunction<LocalPlayer>("unlockWalk", &LocalPlayer::unlockWalk);

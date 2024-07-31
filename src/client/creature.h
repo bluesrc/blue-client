@@ -29,7 +29,7 @@
 #include "outfit.h"
 #include "thing.h"
 
-struct PreyMonster
+struct PreyPokemon
 {
 public:
     std::string name;
@@ -320,8 +320,8 @@ public:
 };
 
 // @bindclass
-class Monster : public Creature
+class Pokemon : public Creature
 {
 public:
-    bool isMonster() override { return true; }
+    bool isPokemon() override { return true; }
 };

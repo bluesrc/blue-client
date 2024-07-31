@@ -330,8 +330,8 @@ namespace Otc
         MessageBeyondLast = 42,
 
         // deprecated
-        MessageMonsterYell = 43,
-        MessageMonsterSay = 44,
+        MessagePokemonYell = 43,
+        MessagePokemonSay = 44,
         MessageRed = 45,
         MessageBlue = 46,
         MessageRVRChannel = 47,
@@ -364,7 +364,7 @@ namespace Otc
         PREY_STATE_INACTIVE = 1,
         PREY_STATE_ACTIVE = 2,
         PREY_STATE_SELECTION = 3,
-        PREY_STATE_SELECTION_CHANGE_MONSTER = 4,
+        PREY_STATE_SELECTION_CHANGE_POKEMON = 4,
         PREY_STATE_LIST_SELECTION = 5,
         PREY_STATE_WILDCARD_SELECTION = 6,
     };
@@ -410,8 +410,8 @@ namespace Otc
     {
         PREY_ACTION_LISTREROLL = 0,
         PREY_ACTION_BONUSREROLL = 1,
-        PREY_ACTION_MONSTERSELECTION = 2,
-        PREY_ACTION_REQUEST_ALL_MONSTERS = 3,
+        PREY_ACTION_POKEMONSELECTION = 2,
+        PREY_ACTION_REQUEST_ALL_POKEMONS = 3,
         PREY_ACTION_CHANGE_FROM_ALL = 4,
         PREY_ACTION_LOCK_PREY = 5,
     };

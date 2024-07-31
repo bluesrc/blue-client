@@ -27,8 +27,8 @@ BattlePlayers < BattleIcon
 BattleNPCs < BattleIcon
   image-source: /images/game/battle/battle_npcs
 
-BattleMonsters < BattleIcon
-  image-source: /images/game/battle/battle_monsters
+BattlePokemons < BattleIcon
+  image-source: /images/game/battle/battle_pokemons
 
 BattleSkulls < BattleIcon
   image-source: /images/game/battle/battle_skulls
@@ -72,9 +72,9 @@ MiniWindow
         !tooltip: tr('Hide Npcs')
         @onCheckChange: modules.game_battle.checkCreatures()
 
-      BattleMonsters
-        id: hideMonsters
-        !tooltip: tr('Hide monsters')
+      BattlePokemons
+        id: hidePokemons
+        !tooltip: tr('Hide pokemons')
         @onCheckChange: modules.game_battle.checkCreatures()
 
       BattleSkulls

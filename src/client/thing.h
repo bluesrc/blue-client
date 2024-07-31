@@ -61,7 +61,7 @@ public:
     virtual bool isCreature() { return false; }
 
     virtual bool isNpc() { return false; }
-    virtual bool isMonster() { return false; }
+    virtual bool isPokemon() { return false; }
     virtual bool isPlayer() { return false; }
     virtual bool isLocalPlayer() { return false; }
 

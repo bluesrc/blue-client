@@ -313,8 +313,8 @@ private:
     MarketOffer readMarketOffer(const InputMessagePtr& msg, uint8_t action, uint16_t var);
 
     Imbuement getImbuementInfo(const InputMessagePtr& msg);
-    PreyMonster getPreyMonster(const InputMessagePtr& msg) const;
-    std::vector<PreyMonster> getPreyMonsters(const InputMessagePtr& msg);
+    PreyPokemon getPreyPokemon(const InputMessagePtr& msg) const;
+    std::vector<PreyPokemon> getPreyPokemons(const InputMessagePtr& msg);
 
 public:
     void setMapDescription(const InputMessagePtr& msg, int x, int y, int z, int width, int height);
