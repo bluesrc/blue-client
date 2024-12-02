@@ -745,10 +745,7 @@ uint8_t Map::getFirstAwareFloor() const
 
 uint8_t Map::getLastAwareFloor() const
 {
-    if (m_centralPosition.z <= g_gameConfig.getMapSeaFloor())
-        return g_gameConfig.getMapSeaFloor();
-
-    return std::min<uint8_t >(m_centralPosition.z + g_gameConfig.getMapAwareUndergroundFloorRange(), g_gameConfig.getMapMaxZ());
+    return g_gameConfig.getMapMaxZ();
 }
 
 std::tuple<std::vector<Otc::Direction>, Otc::PathFindResult> Map::findPath(const Position& startPos, const Position& goalPos, int maxComplexity, int flags)

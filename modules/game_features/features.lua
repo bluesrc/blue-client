@@ -5,6 +5,7 @@ controller:registerEvents(g_game, {
         -- g_game.enableFeature(GameSmoothWalkElevation)
         -- g_game.enableFeature(GameNegativeOffset)
         g_game.enableFeature(GameFormatCreatureName)
+        g_game.enableFeature(GameSpritesAlphaChannel)
 
         if version >= 750 then
             g_game.enableFeature(GameSoul);

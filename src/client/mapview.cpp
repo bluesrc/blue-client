@@ -483,7 +483,7 @@ void MapView::onGlobalLightChange(const Light&)
 
 void MapView::updateLight()
 {
-    Light ambientLight = getCameraPosition().z > g_gameConfig.getMapSeaFloor() ? Light() : g_map.getLight();
+    Light ambientLight = g_map.getLight(); /*getCameraPosition().z > g_gameConfig.getMapSeaFloor() ? Light() : g_map.getLight();*/
     ambientLight.intensity = std::max<uint8_t >(m_minimumAmbientLight * 255, ambientLight.intensity);
     m_lightView->setGlobalLight(ambientLight);
     m_lightView->setEnabled(isDrawingLights());
@@ -751,10 +751,7 @@ uint8_t MapView::calcLastVisibleFloor() const
     // this could happens if the player is not known yet
     if (m_posInfo.camera.isValid()) {
         // view only underground floors when below sea level
-        if (m_posInfo.camera.z > g_gameConfig.getMapSeaFloor())
-            z = m_posInfo.camera.z + g_gameConfig.getMapAwareUndergroundFloorRange();
-        else
-            z = g_gameConfig.getMapSeaFloor();
+        z = g_gameConfig.getMapMaxZ();
     }
 
     if (m_lockedFirstVisibleFloor != -1)
