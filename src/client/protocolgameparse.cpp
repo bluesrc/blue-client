@@ -2555,11 +2555,11 @@ void ProtocolGame::setMapDescription(const InputMessagePtr& msg, int x, int y, i
     int zstep;
 
     if (z > g_gameConfig.getMapSeaFloor()) {
-        startz = z - g_gameConfig.getMapAwareUndergroundFloorRange();
-        endz = std::min<int>(z + g_gameConfig.getMapAwareUndergroundFloorRange(), g_gameConfig.getMapMaxZ());
+        startz = 0;
+        endz = g_gameConfig.getMapMaxZ();
         zstep = 1;
     } else {
-        startz = g_gameConfig.getMapSeaFloor();
+        startz = g_gameConfig.getMapMaxZ();
         endz = 0;
         zstep = -1;
     }

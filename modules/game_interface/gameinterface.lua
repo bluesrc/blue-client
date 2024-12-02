@@ -61,6 +61,7 @@ function init()
     gameRightPanel = gameRootPanel:getChildById('gameRightPanel')
     gameLeftPanel = gameRootPanel:getChildById('gameLeftPanel')
     gameBottomPanel = gameRootPanel:getChildById('gameBottomPanel')
+    gameSelectedPanel = gameRightPanel
 
     panelsList = { {
         panel = gameRightPanel,
@@ -81,17 +82,6 @@ function init()
 
     if g_game.isOnline() then
         show()
-    end
-end
-
-function onSelectPanel(self, checked)
-    if checked then
-        for k, v in pairs(panelsList) do
-            if v.checkbox == self then
-                gameSelectedPanel = v.panel
-                break
-            end
-        end
     end
 end
 
@@ -204,12 +194,6 @@ function terminate()
     disconnect(gameLeftPanel, {
         onVisibilityChange = onExtraPanelVisibilityChange
     })
-
-    for k, v in pairs(panelsList) do
-        disconnect(v.checkbox, {
-            onCheckChange = onSelectPanel
-        })
-    end
 
     logoutButton:destroy()
     gameRootPanel:destroy()
