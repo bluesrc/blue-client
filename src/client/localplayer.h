@@ -115,6 +115,9 @@ public:
 
     void onPositionChange(const Position& newPos, const Position& oldPos) override;
 
+    //pokemon
+    void pokemonInfo(uint16_t slot, PokemonInfo info, bool active);
+
 protected:
     void walk(const Position& oldPos, const Position& newPos) override;
     void updateWalk(const bool /*isPreWalking*/ = false) override { Creature::updateWalk(m_preWalking); }

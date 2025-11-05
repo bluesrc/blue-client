@@ -31,10 +31,18 @@ InventorySlotLeg = 7
 InventorySlotFeet = 8
 InventorySlotFinger = 9
 InventorySlotAmmo = 10
-InventorySlotPurse = 11
+InventorySlotPokeball1 = 11
+InventorySlotPokeball2 = 12
+InventorySlotPokeball3 = 13
+InventorySlotPokeball4 = 14
+InventorySlotPokeball5 = 15
+InventorySlotPokeball6 = 16
+InventorySlotPurse = 17
 
 InventorySlotFirst = 1
 InventorySlotLast = 10
+InventoryPokeballSlotFirst = 11
+InventoryPokeballSlotLast = 16
 
 function Player:isPartyLeader()
     local shield = self:getShield()

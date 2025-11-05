@@ -38,5 +38,6 @@ Module
     - game_attachedeffects
     - game_stash
     - game_creatureinformation
+    - game_pokebar
   @onLoad: init()
   @onUnload: terminate()

@@ -1,0 +1,32 @@
+PokebarItem < Item
+  anchors.horizontalCenter: parent.horizontalCenter
+  margin-top: 10
+
+  ProgressBar
+    id: healthBar
+    anchors.top: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: 36
+    height: 5
+
+PokebarActive < Item
+  anchors.horizontalCenter: parent.horizontalCenter
+  margin-top: 10
+
+  ProgressBar
+    id: activeHealthBar
+    anchors.left: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    width: 80
+    height: 15
+
+Panel
+  id: pokebarWindow
+  anchors.left: parent.left
+  anchors.verticalCenter: parent.verticalCenter
+  width: 72
+  visible: true
+  draggable: false
+  phantom: false
+  focusable: true
+  &save: true

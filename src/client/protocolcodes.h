@@ -79,6 +79,8 @@ namespace Proto
         GameServerCreatureTyping = 56,
         GameServerFloorDescription = 75,
 
+        GameServerPokemonInfo = 57,
+
         // original tibia ONLY
         GameServerImbuementDurations = 93,
         GameServerPassiveCooldown = 94,

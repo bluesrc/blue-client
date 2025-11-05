@@ -1,0 +1,9 @@
+Module
+  name: game_pokebar
+  description: View local player pokemons
+  author: gsguilioti
+  website: https://github.com/bluesrc/blue-client
+  sandboxed: true
+  scripts: [ pokebar ]
+  @onLoad: init()
+  @onUnload: terminate()
