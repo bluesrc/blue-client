@@ -495,3 +495,8 @@ bool LocalPlayer::hasSight(const Position& pos)
 {
     return m_position.isInRange(pos, g_map.getAwareRange().left - 1, g_map.getAwareRange().top - 1);
 }
+
+void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
+{
+    callLuaField("onPokemonInfo", slot, info.p_id, info.healthPercent, info.fainted, active);
+}

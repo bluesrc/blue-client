@@ -135,6 +135,9 @@ public:
     // blue-client only
     void sendChangeMapAwareRange(int xrange, int yrange);
 
+    //pokemon
+    void parsePokemonInfo(const InputMessagePtr& msg);
+
 protected:
     void onConnect() override;
     void onRecv(const InputMessagePtr& inputMessage) override;

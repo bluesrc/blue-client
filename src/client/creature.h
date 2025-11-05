@@ -325,3 +325,11 @@ class Pokemon : public Creature
 public:
     bool isPokemon() override { return true; }
 };
+
+//todo: bind this struct to access from lua
+struct PokemonInfo
+{
+    uint32_t p_id;
+    uint8_t healthPercent;
+    bool fainted;
+};

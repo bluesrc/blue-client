@@ -563,6 +563,11 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                     parseCreatureTyping(msg);
                     break;
 
+                //pokemon
+                case Proto::GameServerPokemonInfo:
+                    parsePokemonInfo(msg);
+                    break;
+
                 default:
                     throw Exception("unhandled opcode %d", opcode);
                     break;
@@ -2739,14 +2744,14 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
             else
                 creatureType = Proto::CreatureTypeNpc;
 
+            const auto& name = g_game.formatCreatureName(msg->getString());
+
             uint32_t masterId = 0;
-            if (g_game.getClientVersion() >= 1281 && creatureType == Proto::CreatureTypeSummonOwn) {
+            if (creatureType == Proto::CreatureTypeSummonOwn) {
                 masterId = msg->getU32();
                 if (m_localPlayer->getId() != masterId)
                     creatureType = Proto::CreatureTypeSummonOther;
             }
-
-            const auto& name = g_game.formatCreatureName(msg->getString());
 
             if (!creature) {
                 if ((id == m_localPlayer->getId()) ||
@@ -4033,4 +4038,16 @@ void ProtocolGame::parseCreatureTyping(const InputMessagePtr& msg)
         creature->setTyping(typing);
     else
         g_logger.traceError("could not get creature");
+}
+
+void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
+{
+    const uint16_t slot = msg->getU16();
+    auto info = PokemonInfo();
+    info.p_id = msg->getU32();
+    info.healthPercent = msg->getU8();
+    info.fainted = static_cast<bool>(msg->getU8());
+    auto active = static_cast<bool>(msg->getU8());
+
+    m_localPlayer->pokemonInfo(slot, info, active);
 }

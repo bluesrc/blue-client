@@ -129,6 +129,10 @@ function onInventoryChange(player, slot, item, oldItem)
         return
     end
 
+    if slot >= InventoryPokeballSlotFirst and slot <= InventoryPokeballSlotLast then
+        return
+    end
+
     if slot == InventorySlotPurse then
         if g_game.getFeature(GamePurseSlot) then
             purseButton:setEnabled(item and true or false)
