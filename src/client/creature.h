@@ -28,6 +28,7 @@
 #include "mapview.h"
 #include "outfit.h"
 #include "thing.h"
+#include "const.h"
 
 struct PreyPokemon
 {
@@ -46,6 +47,8 @@ public:
 
     Creature();
     ~Creature();
+
+    virtual Pokemon* getPokemon() { return nullptr; }
 
     static bool hasSpeedFormula();
 
@@ -323,7 +326,32 @@ public:
 class Pokemon : public Creature
 {
 public:
+    Pokemon* getPokemon() override { return static_cast<Pokemon*>(this); }
     bool isPokemon() override { return true; }
+
+    void setGender(Otc::PokemonGenders_t gender);
+    void setGenderTexture(const std::string& filename);
+    TexturePtr getGenderTexture() { return m_genderTexture; }
+
+    void setShiny(bool shiny);
+    void setShinyTexture(const std::string& filename);
+    TexturePtr getShinyTexture() { return m_shinyTexture; }
+
+    uint8_t getLevel() { return m_level; }
+    void setLevel(uint8_t level) { m_level = level; }
+
+    Otc::PokemonGenders_t getGender() { return m_gender; }
+    void setPokemonGender(Otc::PokemonGenders_t gender) { m_gender = gender; }
+
+    bool isShiny() { return m_shiny; }
+    void setPokemonShiny(bool shiny) { m_shiny = shiny; }
+
+private:
+    uint8_t m_level;
+    Otc::PokemonGenders_t m_gender;
+    bool m_shiny;
+    TexturePtr m_genderTexture;
+    TexturePtr m_shinyTexture;
 };
 
 //todo: bind this struct to access from lua
@@ -331,5 +359,6 @@ struct PokemonInfo
 {
     uint32_t p_id;
     uint8_t healthPercent;
+    uint16_t number;
     bool fainted;
 };

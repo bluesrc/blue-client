@@ -84,6 +84,22 @@ function getEmblemImagePath(emblemId)
     return path
 end
 
+function getGenderIconPath(genderId)
+    local path
+    if genderId == 1 then
+        path = '/images/gender/gender_male'
+    elseif genderId == 2 then
+        path = '/images/gender/gender_female'
+    else
+        path = '/images/gender/gender_undefined'
+    end
+    return path
+end
+
+function getShinyIconPath()
+    return '/images/game/shiny'
+end
+
 function getTypeImagePath(creatureType)
     local path
     if creatureType == CreatureTypeSummonOwn then
@@ -126,6 +142,20 @@ function Creature:onEmblemChange(emblemId)
     local imagePath = getEmblemImagePath(emblemId)
     if imagePath then
         self:setEmblemTexture(imagePath)
+    end
+end
+
+function Pokemon:onSetGender(genderId)
+    local imagePath = getGenderIconPath(genderId)
+    if imagePath then
+        self:setGenderTexture(imagePath)
+    end
+end
+
+function Pokemon:onSetShiny()
+    local imagePath = getShinyIconPath()
+    if imagePath then
+        self:setShinyTexture(imagePath)
     end
 end
 

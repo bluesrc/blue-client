@@ -731,4 +731,33 @@ namespace Otc
         SUPPLY_STASH_ACTION_STOW_STACK = 2,
         SUPPLY_STASH_ACTION_WITHDRAW = 3
     };
+
+    enum PokemonGenders_t : uint8_t {
+        GENDER_NONE,
+        GENDER_MALE,
+        GENDER_FEMALE,
+        GENDER_UNDEFINED,
+    };
+
+    enum PokemonTypes_t : uint8_t {
+        TYPE_NONE,
+        TYPE_BUG,
+        TYPE_DARK,
+        TYPE_DRAGON,
+        TYPE_ELECTRIC,
+        TYPE_FAIRY,
+        TYPE_FIGHTING,
+        TYPE_FIRE,
+        TYPE_FLYING,
+        TYPE_GHOST,
+        TYPE_GRASS,
+        TYPE_GROUND,
+        TYPE_ICE,
+        TYPE_NORMAL,
+        TYPE_POISON,
+        TYPE_PSYCHIC,
+        TYPE_ROCK,
+        TYPE_STEEL,
+        TYPE_WATER,
+    };
 }

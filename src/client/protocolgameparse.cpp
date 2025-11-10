@@ -2746,6 +2746,10 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
 
             const auto& name = g_game.formatCreatureName(msg->getString());
 
+            uint8_t p_level = msg->getU8();
+            uint8_t p_gender = msg->getU8();
+            bool p_shiny = msg->getU8();
+
             uint32_t masterId = 0;
             if (creatureType == Proto::CreatureTypeSummonOwn) {
                 masterId = msg->getU32();
@@ -2772,7 +2776,13 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
                         case Proto::CreatureTypePokemon:
                         case Proto::CreatureTypeSummonOwn:
                         case Proto::CreatureTypeSummonOther:
+                        {
                             creature = std::make_shared<Pokemon>();
+                            auto pokemon = std::dynamic_pointer_cast<Pokemon>(creature);
+                            pokemon->setLevel(p_level);
+                            pokemon->setPokemonGender(static_cast<Otc::PokemonGenders_t>(p_gender));
+                            pokemon->setPokemonShiny(p_shiny);
+                        }
                             break;
 
                         default:
@@ -2896,6 +2906,13 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
                     clonedEffect->setPermanent(false);
                     creature->attachEffect(clonedEffect);
                 }
+            }
+
+            auto pokemon = std::dynamic_pointer_cast<Pokemon>(creature);
+            if(pokemon)
+            {
+                pokemon->setGender(pokemon->getGender());
+                pokemon->setShiny(pokemon->isShiny());
             }
 
             if (emblem > 0)
@@ -4045,6 +4062,7 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     const uint16_t slot = msg->getU16();
     auto info = PokemonInfo();
     info.p_id = msg->getU32();
+    info.number = msg->getU16();
     info.healthPercent = msg->getU8();
     info.fainted = static_cast<bool>(msg->getU8());
     auto active = static_cast<bool>(msg->getU8());
