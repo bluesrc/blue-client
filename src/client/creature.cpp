@@ -30,6 +30,8 @@
 #include "tile.h"
 #include "statictext.h"
 
+#include "const.h"
+
 #include <framework/core/clock.h>
 #include <framework/core/eventdispatcher.h>
 #include <framework/core/graphicalapplication.h>
@@ -178,32 +180,71 @@ void Creature::drawInformation(const MapPosInfo& mapRect, const Point& dest, int
         p.scale(g_app.getCreatureInformationScale());
     }
 
-    auto backgroundRect = Rect(p.x - (13.5), p.y - cropSizeBackGround, 27, 4);
+    //std::shared_ptr<Creature> creature_shared_ptr = g_map.getCreatureById(m_id);
+    //std::shared_ptr<Pokemon> pokemon = std::dynamic_pointer_cast<Pokemon>(g_map.getCreatureById(m_id));
+    auto pokemon = getPokemon();
+
+    auto backgroundRect = Rect(p.x - (13.5), p.y - cropSizeBackGround, 27, pokemon ? 8 : 4);
     auto textRect = Rect(p.x - nameSize.width() / 2.0, p.y - cropSizeText, nameSize);
 
+    Rect adjustedBackgroundRect = backgroundRect;
+
     if (!isScaled) {
-        backgroundRect.bind(parentRect);
+        adjustedBackgroundRect.bind(parentRect);
         textRect.bind(parentRect);
     }
 
-    // distance them
+    const int iconWidth = 12;
+    float totalInitialOffset = 0.0;
+    bool hasShinyIcon = false;
+    const int spacing = 2;
+
+    if (pokemon && pokemon->isShiny()) {
+        totalInitialOffset += iconWidth / 2.0;
+        hasShinyIcon = true;
+    }
+
+    if (totalInitialOffset > 0) {
+        textRect.translate(totalInitialOffset, 0);
+        adjustedBackgroundRect.translate(totalInitialOffset, 0);
+    }
+
     uint8_t offset = 12 * mapRect.scaleFactor;
     if (isLocalPlayer()) {
         offset *= 2 * mapRect.scaleFactor;
     }
 
     if (textRect.top() == parentRect.top())
-        backgroundRect.moveTop(textRect.top() + offset);
-    if (backgroundRect.bottom() == parentRect.bottom())
-        textRect.moveTop(backgroundRect.top() - offset);
+        adjustedBackgroundRect.moveTop(textRect.top() + offset);
+    if (adjustedBackgroundRect.bottom() == parentRect.bottom())
+        textRect.moveTop(adjustedBackgroundRect.top() - offset);
 
-    // health rect is based on background rect, so no worries
-    Rect healthRect = backgroundRect.expanded(-1);
-    healthRect.setWidth((m_healthPercent / 100.0) * 25);
+    Rect healthRect = adjustedBackgroundRect.expanded(-1);
+    healthRect.setWidth((std::min<double>(m_healthPercent, 100.0) / 100.0) * 25);
+
 
     if (drawFlags & Otc::DrawBars) {
-        g_drawPool.addFilledRect(backgroundRect, Color::black);
+        g_drawPool.addFilledRect(adjustedBackgroundRect, Color::black);
         g_drawPool.addFilledRect(healthRect, fillColor);
+
+        if (pokemon) {
+            std::string level = "Lv" + std::to_string(pokemon->getLevel());
+            CachedText levelText;
+            levelText.setFont(g_gameConfig.getCreatureNameFont());
+            levelText.setAlign(Fw::AlignBottomLeft);
+            levelText.setText(level);
+
+            const Color levelTextColor(200, 200, 200, 255);
+
+            const Size textSize = levelText.getTextSize();
+            const int textSpacing = 3;
+
+            float xPos = adjustedBackgroundRect.right() + textSpacing;
+            float yPos = adjustedBackgroundRect.y() + (adjustedBackgroundRect.height() - textSize.height()) / 2.0;
+
+            Rect textAreaRect(xPos, yPos, textSize.width(), textSize.height());
+            levelText.draw(textAreaRect, levelTextColor);
+        }
 
         if (drawFlags & Otc::DrawManaBar && isLocalPlayer()) {
             if (const auto& player = g_game.getLocalPlayer()) {
@@ -221,7 +262,20 @@ void Creature::drawInformation(const MapPosInfo& mapRect, const Point& dest, int
     }
 
     if (drawFlags & Otc::DrawNames) {
+        if (hasShinyIcon) {
+            float shinyIconX = textRect.x() - iconWidth;
+            float shinyIconY = textRect.y();
+            g_drawPool.addTexturedPos(pokemon->getShinyTexture(), shinyIconX, shinyIconY);
+        }
+
         m_name.draw(textRect, fillColor);
+
+        if (pokemon && pokemon->getGenderTexture()) {
+            float genderIconX = textRect.x() + m_name.getTextSize().width() + spacing;
+            float genderIconY = textRect.y();
+
+            g_drawPool.addTexturedPos(pokemon->getGenderTexture(), genderIconX, genderIconY);
+        }
 
 #ifndef BOT_PROTECTION
         if (m_text) {
@@ -822,11 +876,15 @@ void Creature::setIcon(uint8_t v) { if (m_icon != v) callLuaField("onIconChange"
 void Creature::setSkull(uint8_t v) { if (m_skull != v) callLuaField("onSkullChange", m_skull = v); }
 void Creature::setShield(uint8_t v) { if (m_shield != v) callLuaField("onShieldChange", m_shield = v); }
 void Creature::setEmblem(uint8_t v) { if (m_emblem != v) callLuaField("onEmblemChange", m_emblem = v); }
+void Pokemon::setGender(Otc::PokemonGenders_t v) { if (v > Otc::PokemonGenders_t::GENDER_NONE && v <= Otc::PokemonGenders_t::GENDER_UNDEFINED) callLuaField("onSetGender", v); }
+void Pokemon::setShiny(bool v) { callLuaField("onSetShiny"); }
 
 void Creature::setTypeTexture(const std::string& filename) { m_typeTexture = g_textures.getTexture(filename); }
 void Creature::setIconTexture(const std::string& filename) { m_iconTexture = g_textures.getTexture(filename); }
 void Creature::setSkullTexture(const std::string& filename) { m_skullTexture = g_textures.getTexture(filename); }
 void Creature::setEmblemTexture(const std::string& filename) { m_emblemTexture = g_textures.getTexture(filename); }
+void Pokemon::setGenderTexture(const std::string& filename) { m_genderTexture = g_textures.getTexture(filename); }
+void Pokemon::setShinyTexture(const std::string& filename) { m_shinyTexture = g_textures.getTexture(filename); }
 
 void Creature::setShieldTexture(const std::string& filename, bool blink)
 {

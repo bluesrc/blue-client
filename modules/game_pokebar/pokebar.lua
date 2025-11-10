@@ -90,7 +90,8 @@ function onInventoryChange(player, slot, item, oldItem)
                 creatureId = 0,
                 fainted = false,
                 active = false,
-                healthPercent = 100
+                healthPercent = 100,
+                number = 0,
             }
     end
 
@@ -125,7 +126,6 @@ function setup()
         return
     end
 
-    local itemHeight = 36
     local marginTop = 10
     local currentActiveWidget = nil
 
@@ -152,7 +152,15 @@ function setup()
                 itemWidget:addAnchor(AnchorTop, 'prev', AnchorBottom)
             end
             
-            itemWidget:setItem(item)
+            local pokemon = itemWidget
+            if isCurrentItemActive then
+                pokemon = itemWidget:getChildById('activePokemon')
+            end 
+            
+            if not info.number then return end
+            local number = string.format("%04d", info.number)
+
+            pokemon:setImage('/images/pokemon/icon/' .. number .. '.png')
             itemWidget:setPhantom(false)
             itemWidget:setFocusable(false)
 
@@ -160,12 +168,7 @@ function setup()
             local healthBar = itemWidget:getChildById(healthBarId) 
 
             if isCurrentItemActive then
-                itemWidget:setHeight(ENLARGED_SIZE)
-                itemWidget:setWidth(ENLARGED_SIZE)
                 currentActiveWidget = itemWidget
-            else
-                itemWidget:setHeight(NORMAL_SIZE)
-                itemWidget:setWidth(NORMAL_SIZE)
             end
 
             if healthBar then
@@ -191,10 +194,9 @@ function setup()
                 healthBar:setBackgroundColor(color)
             end
             if info.fainted then
-                itemWidget:setBorderColor('red') 
-                itemWidget:setBorderWidth(2)
+                itemWidget:setOpacity(0.5)
             else
-                itemWidget:setBorderWidth(0)
+                itemWidget:setOpacity(1)
             end
             
             itemWidget.onMousePress = function(self, mousePos, button)
@@ -227,11 +229,12 @@ function setup()
     pokebarWindow:setHeight(totalHeight)
 end
 
-function updatePokemonInfo(player, slot, p_id, healthPercent, fainted, active)
+function updatePokemonInfo(player, slot, p_id, number, healthPercent, fainted, active)
     if pokeballsInfo[slot] then
         local info = pokeballsInfo[slot]
 
         info.creatureId = p_id
+        info.number = number
         info.fainted = fainted
         info.healthPercent = healthPercent
         

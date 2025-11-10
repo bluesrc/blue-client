@@ -498,5 +498,5 @@ bool LocalPlayer::hasSight(const Position& pos)
 
 void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
 {
-    callLuaField("onPokemonInfo", slot, info.p_id, info.healthPercent, info.fainted, active);
+    callLuaField("onPokemonInfo", slot, info.p_id, info.number, info.healthPercent, info.fainted, active);
 }

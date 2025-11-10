@@ -773,7 +773,10 @@ void Client::registerLuaFunctions()
 
     g_lua.registerClass<Player, Creature>();
     g_lua.registerClass<Npc, Creature>();
+    
     g_lua.registerClass<Pokemon, Creature>();
+    g_lua.bindClassMemberFunction<Pokemon>("setGenderTexture", &Pokemon::setGenderTexture);
+    g_lua.bindClassMemberFunction<Pokemon>("setShinyTexture", &Pokemon::setShinyTexture);
 
     g_lua.registerClass<LocalPlayer, Player>();
     g_lua.bindClassMemberFunction<LocalPlayer>("unlockWalk", &LocalPlayer::unlockWalk);
