@@ -106,13 +106,11 @@ function refresh()
 end
 
 function toggle()
-    if inventoryButton:isOn() then
-        inventoryWindow:close()
-        inventoryButton:setOn(false)
-    else
-        inventoryWindow:open()
-        inventoryButton:setOn(true)
-    end
+    local player = g_game.getLocalPlayer()
+    local inventory = player:getInventoryItem(InventorySlotBack)
+    g_game.use(inventory)
+    inventoryButton:setOn(not inventoryButton:isOn())
+
 end
 
 function onMiniWindowOpen()
