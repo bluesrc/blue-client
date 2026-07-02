@@ -1,9 +1,32 @@
-pokebarWindow = nil
-pokeballs = {}
-pokeballsInfo = {}
-local NORMAL_SIZE = 36
-local ENLARGED_SIZE = 72
+local pokebarWindow
+local pokeballsInfo = {}
+local setupEvent
 local activeCreatureId = 0
+
+local NORMAL_SIZE = 36
+local ACTIVE_SIZE = 72
+local ITEM_SPACING = 10
+
+local function createPendingInfo()
+    return {
+        creatureId = 0,
+        fainted = false,
+        active = false,
+        healthPercent = 100,
+        number = 0
+    }
+end
+
+local function scheduleSetup()
+    if setupEvent then
+        removeEvent(setupEvent)
+    end
+
+    setupEvent = scheduleEvent(function()
+        setupEvent = nil
+        setup()
+    end, 1)
+end
 
 function init()
     connect(LocalPlayer, {
@@ -21,9 +44,12 @@ function init()
     pokebarWindow = g_ui.loadUI('pokebar', modules.game_interface.getMapPanel())
     pokebarWindow:setOn(true)
     pokebarWindow:setVisible(true)
-
-    pokebarWindow.onMousePress = function(self, mousePos, button)
+    pokebarWindow.onMousePress = function()
         return true
+    end
+
+    if g_game.isOnline() then
+        online()
     end
 end
 
@@ -40,224 +66,194 @@ function terminate()
         onHealthPercentChange = changeHealth
     })
 
+    if setupEvent then
+        removeEvent(setupEvent)
+        setupEvent = nil
+    end
+
     pokebarWindow:destroy()
     pokebarWindow = nil
+    pokeballsInfo = {}
 end
 
 function online()
-    setup()
+    local player = g_game.getLocalPlayer()
+    if player then
+        for slot = InventoryPokeballSlotFirst, InventoryPokeballSlotLast do
+            if player:getInventoryItem(slot) then
+                pokeballsInfo[slot] = pokeballsInfo[slot] or createPendingInfo()
+            else
+                pokeballsInfo[slot] = nil
+            end
+        end
+    end
+
+    scheduleSetup()
 end
 
 function offline()
-    pokeballs = {}
-end
+    if setupEvent then
+        removeEvent(setupEvent)
+        setupEvent = nil
+    end
 
-local function removeValue(tbl, value)
-    for i, v in ipairs(tbl) do
-        if v == value then
-            table.remove(tbl, i)
-            return
-        end
+    pokeballsInfo = {}
+    activeCreatureId = 0
+    if pokebarWindow then
+        pokebarWindow:destroyChildren()
+        pokebarWindow:setHeight(1)
     end
 end
 
-function onInventoryChange(player, slot, item, oldItem)
+function onInventoryChange(_, slot, item, oldItem)
     if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
         return
     end
 
     if not item then
-        removeValue(pokeballs, slot)
-        pokeballsInfo[slot] = nil
-    end
-        
-    local slotExists = false
-    for _, s in ipairs(pokeballs) do 
-        if s == slot then
-            slotExists = true
-                break
+        local oldInfo = pokeballsInfo[slot]
+        if oldInfo and oldInfo.active then
+            activeCreatureId = 0
         end
+        pokeballsInfo[slot] = nil
+    elseif not oldItem or item ~= oldItem then
+        -- Wait for the matching PokemonInfo packet before rendering this slot.
+        pokeballsInfo[slot] = createPendingInfo()
+    elseif not pokeballsInfo[slot] then
+        pokeballsInfo[slot] = createPendingInfo()
     end
 
-    if not slotExists then
-        table.insert(pokeballs, slot)
-        table.sort(pokeballs)
-    end
-    
-    if not pokeballsInfo[slot] then
-        pokeballsInfo[slot] =
-            {
-                creatureId = 0,
-                fainted = false,
-                active = false,
-                healthPercent = 100,
-                number = 0,
-            }
-    end
-
-    setup()
+    scheduleSetup()
 end
 
-function changeHealth(creature, healthPercent, oldHealthPercent)
-    local c_id = creature:getId()
+function changeHealth(creature, healthPercent)
+    if creature:getId() ~= activeCreatureId then
+        return
+    end
 
-    if c_id == activeCreatureId then
-        local foundSlot = false
-        for _, slot in ipairs(pokeballs) do
-            local info = pokeballsInfo[slot]
-            if info and info.active then
-                info.healthPercent = healthPercent
-                foundSlot = true
-                break
-            end
-        end
-
-        if foundSlot then
-            g_dispatcher.scheduleEvent(setup, 1) 
+    for slot = InventoryPokeballSlotFirst, InventoryPokeballSlotLast do
+        local info = pokeballsInfo[slot]
+        if info and info.active then
+            info.healthPercent = healthPercent
+            scheduleSetup()
+            return
         end
     end
 end
 
 function setup()
+    if not pokebarWindow then
+        return
+    end
+
     pokebarWindow:destroyChildren()
 
     local player = g_game.getLocalPlayer()
     if not player then
+        pokebarWindow:setHeight(1)
         return
     end
 
-    local marginTop = 10
-    local currentActiveWidget = nil
+    local renderedCount = 0
+    local totalHeight = 0
 
-    for i, v in ipairs(pokeballs) do 
-        local item = player:getInventoryItem(v)
-        
-        if item and pokeballsInfo[v] then 
-            local info = pokeballsInfo[v]
-            local currentSlotId = 'slot' .. v 
+    for slot = InventoryPokeballSlotFirst, InventoryPokeballSlotLast do
+        local item = player:getInventoryItem(slot)
+        local info = pokeballsInfo[slot]
 
-            local isCurrentItemActive = info.active
+        -- number zero is pending data; rendering it would show the egg placeholder.
+        if item and info and info.number and info.number > 0 then
+            local currentItem = item
+            local currentSlot = slot
+            local isActive = info.active
+            local widgetType = isActive and 'PokebarActive' or 'PokebarItem'
+            local itemWidget = g_ui.createWidget(widgetType, pokebarWindow)
+            itemWidget:setId('slot' .. slot)
 
-            local widgetType = 'PokebarItem'
-            if isCurrentItemActive then
-                widgetType = 'PokebarActive'
-            end
+            renderedCount = renderedCount + 1
+            itemWidget:addAnchor(AnchorTop, renderedCount == 1 and 'parent' or 'prev',
+                                 renderedCount == 1 and AnchorTop or AnchorBottom)
+            itemWidget:setMarginTop(renderedCount == 1 and 0 or ITEM_SPACING)
 
-            local itemWidget = g_ui.createWidget(widgetType, pokebarWindow) 
-            itemWidget:setId(currentSlotId)
-            
-            if i == 1 then
-                itemWidget:addAnchor(AnchorTop, 'parent', AnchorTop)
-            else
-                itemWidget:addAnchor(AnchorTop, 'prev', AnchorBottom)
-            end
-            
-            local pokemon = itemWidget
-            if isCurrentItemActive then
-                pokemon = itemWidget:getChildById('activePokemon')
-            end 
-            
-            if not info.number then return end
-            local number = string.format("%04d", info.number)
+            local pokemonImage = isActive and itemWidget:getChildById('activePokemon') or itemWidget
+            pokemonImage:setImage('/images/pokemon/icon/' .. string.format('%04d', info.number) .. '.png')
 
-            pokemon:setImage('/images/pokemon/icon/' .. number .. '.png')
-            itemWidget:setPhantom(false)
-            itemWidget:setFocusable(false)
-
-            local healthBarId = isCurrentItemActive and 'activeHealthBar' or 'healthBar'
-            local healthBar = itemWidget:getChildById(healthBarId) 
-
-            if isCurrentItemActive then
-                currentActiveWidget = itemWidget
-            end
-
+            local healthBar = itemWidget:getChildById(isActive and 'activeHealthBar' or 'healthBar')
             if healthBar then
-                healthBar:setPercent(info.healthPercent) 
-                
-                if info.fainted then
-                    healthBar:setPercent(0) 
-                end
-                
-                if info.healthPercent > 92 then
+                local healthPercent = info.fainted and 0 or info.healthPercent
+                healthBar:setPercent(healthPercent)
+
+                local color
+                if healthPercent > 92 then
                     color = '#00BC00'
-                elseif info.healthPercent > 60 then
+                elseif healthPercent > 60 then
                     color = '#50A150'
-                elseif info.healthPercent > 30 then
+                elseif healthPercent > 30 then
                     color = '#A1A100'
-                elseif info.healthPercent > 8 then
+                elseif healthPercent > 8 then
                     color = '#BF0A0A'
-                elseif info.healthPercent > 3 then
+                elseif healthPercent > 3 then
                     color = '#910F0F'
                 else
                     color = '#850C0F'
                 end
                 healthBar:setBackgroundColor(color)
             end
-            if info.fainted then
-                itemWidget:setOpacity(0.5)
-            else
-                itemWidget:setOpacity(1)
-            end
-            
-            itemWidget.onMousePress = function(self, mousePos, button)
+
+            itemWidget:setOpacity(info.fainted and 0.5 or 1)
+            itemWidget:setPhantom(false)
+            itemWidget:setFocusable(false)
+
+            itemWidget.onMousePress = function(_, _, button)
                 if button == MouseLeftButton then
-                    g_game.use(item, v) 
+                    g_game.use(currentItem, currentSlot)
                     return true
                 end
+                return false
             end
 
-            itemWidget.onMouseRelease = function(self, mousePos, button)
-                if button == MouseRightButton then
-                    return true 
-                end
+            itemWidget.onMouseRelease = function(_, _, button)
+                return button == MouseRightButton
             end
+
+            if renderedCount > 1 then
+                totalHeight = totalHeight + ITEM_SPACING
+            end
+            totalHeight = totalHeight + (isActive and ACTIVE_SIZE or NORMAL_SIZE)
         end
     end
-    
-    local activeHeightDifference = 0
-    if currentActiveWidget then
-        activeHeightDifference = ENLARGED_SIZE - NORMAL_SIZE
-    end
 
-    local totalHeight = #pokeballs * NORMAL_SIZE
-    if #pokeballs > 0 then
-        totalHeight = totalHeight + ((#pokeballs - 1) * marginTop)
-    end
-    
-    totalHeight = totalHeight + activeHeightDifference + 10
-
-    pokebarWindow:setHeight(totalHeight)
+    pokebarWindow:setHeight(math.max(totalHeight, 1))
 end
 
-function updatePokemonInfo(player, slot, p_id, number, healthPercent, fainted, active)
-    if pokeballsInfo[slot] then
-        local info = pokeballsInfo[slot]
-
-        info.creatureId = p_id
-        info.number = number
-        info.fainted = fainted
-        info.healthPercent = healthPercent
-        
-        if fainted then
-            info.healthPercent = 0
-            info.active = false
-        end
-        
-        if active then
-            info.active = true
-            activeCreatureId = p_id
-            for _, s in ipairs(pokeballs) do
-                if s ~= slot and pokeballsInfo[s] and pokeballsInfo[s].active then
-                    pokeballsInfo[s].active = false
-                end
-            end
-        else
-            info.active = false
-            if activeCreatureId == p_id then
-                activeCreatureId = 0
-            end
-        end
+function updatePokemonInfo(_, slot, p_id, number, healthPercent, fainted, active)
+    if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
+        return
     end
-    
-    setup()
+
+    local player = g_game.getLocalPlayer()
+    if not player or not player:getInventoryItem(slot) then
+        return
+    end
+
+    local info = pokeballsInfo[slot] or createPendingInfo()
+    pokeballsInfo[slot] = info
+    info.creatureId = p_id
+    info.number = number
+    info.fainted = fainted
+    info.healthPercent = fainted and 0 or healthPercent
+    info.active = active and not fainted
+
+    if info.active then
+        activeCreatureId = p_id
+        for otherSlot = InventoryPokeballSlotFirst, InventoryPokeballSlotLast do
+            if otherSlot ~= slot and pokeballsInfo[otherSlot] then
+                pokeballsInfo[otherSlot].active = false
+            end
+        end
+    elseif activeCreatureId == p_id then
+        activeCreatureId = 0
+    end
+
+    scheduleSetup()
 end

@@ -1,46 +1,39 @@
 PokebarActivePokemon < UIImageView
   id: activePokemon
-  width: 72
-  height: 72
+  size: 72 72
 
 PokebarItem < UIImageView
   id: pokemon
+  size: 36 36
   anchors.horizontalCenter: parent.horizontalCenter
-  margin-top: 10
-  width: 36
-  height: 36
 
   ProgressBar
     id: healthBar
     anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
-    width: 36
-    height: 5
-    margin-bottom: 0
+    size: 36 5
 
 PokebarActive < Panel
-  width: 72
-  height: 72
+  size: 72 72
   anchors.horizontalCenter: parent.horizontalCenter
-  anchors.right: parent.right
 
   PokebarActivePokemon
     id: activePokemon
-    width: 72
-    height: 72
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
 
   ProgressBar
     id: activeHealthBar
-    anchors.top: prev.bottom
+    anchors.bottom: parent.bottom
     anchors.horizontalCenter: parent.horizontalCenter
-    width: 60
-    height: 15
+    size: 60 15
 
 Panel
   id: pokebarWindow
   anchors.left: parent.left
   anchors.verticalCenter: parent.verticalCenter
   width: 75
+  height: 1
   visible: true
   draggable: false
   phantom: false
