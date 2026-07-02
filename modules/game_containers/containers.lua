@@ -91,6 +91,10 @@ function refreshContainerPages(container)
 end
 
 function onContainerOpen(container, previousContainer)
+    if modules.game_box and modules.game_box.handlesContainer(container) then
+        return
+    end
+
     local containerWindow
     if previousContainer then
         containerWindow = previousContainer.window
@@ -172,10 +176,18 @@ function onContainerOpen(container, previousContainer)
 end
 
 function onContainerClose(container)
+    if modules.game_box and modules.game_box.handlesContainer(container) then
+        return
+    end
+
     destroy(container)
 end
 
 function onContainerChangeSize(container, size)
+    if modules.game_box and modules.game_box.handlesContainer(container) then
+        return
+    end
+
     if not container.window then
         return
     end
@@ -183,6 +195,10 @@ function onContainerChangeSize(container, size)
 end
 
 function onContainerUpdateItem(container, slot, item, oldItem)
+    if modules.game_box and modules.game_box.handlesContainer(container) then
+        return
+    end
+
     if not container.window then
         return
     end

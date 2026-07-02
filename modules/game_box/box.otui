@@ -1,0 +1,174 @@
+BoxPartySlot < Item
+  size: 42 42
+  border-width: 1
+  border-color: #5d6d7e
+
+BoxItemSlot < Item
+  size: 42 42
+
+BoxSelectorButton < TabButton
+  size: 42 28
+
+MainWindow
+  id: boxWindow
+  !text: tr('Player Box')
+  size: 800 515
+  @onEscape: modules.game_box.closeBox()
+
+  FlatPanel
+    id: partyPanel
+    width: 112
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: closeButton.top
+    margin-top: 5
+    margin-bottom: 10
+
+    Panel
+      id: partySlotsPanel
+      size: 42 287
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+
+      BoxPartySlot
+        id: slot11
+        &position: {x=65535, y=11, z=0}
+        anchors.top: parent.top
+        anchors.left: parent.left
+
+      BoxPartySlot
+        id: slot12
+        &position: {x=65535, y=12, z=0}
+        anchors.top: prev.bottom
+        anchors.left: parent.left
+        margin-top: 7
+
+      BoxPartySlot
+        id: slot13
+        &position: {x=65535, y=13, z=0}
+        anchors.top: prev.bottom
+        anchors.left: parent.left
+        margin-top: 7
+
+      BoxPartySlot
+        id: slot14
+        &position: {x=65535, y=14, z=0}
+        anchors.top: prev.bottom
+        anchors.left: parent.left
+        margin-top: 7
+
+      BoxPartySlot
+        id: slot15
+        &position: {x=65535, y=15, z=0}
+        anchors.top: prev.bottom
+        anchors.left: parent.left
+        margin-top: 7
+
+      BoxPartySlot
+        id: slot16
+        &position: {x=65535, y=16, z=0}
+        anchors.top: prev.bottom
+        anchors.left: parent.left
+        margin-top: 7
+
+    Label
+      !text: tr('Pokebag')
+      anchors.bottom: partySlotsPanel.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-bottom: 8
+      text-auto-resize: true
+
+  TabButton
+    id: itemTab
+    !tooltip: tr('Five boxes reserved for items')
+    !text: tr('Items')
+    checked: true
+    on: true
+    anchors.left: partyPanel.right
+    anchors.right: parent.horizontalCenter
+    anchors.top: parent.top
+    margin-left: 10
+    margin-right: 3
+    margin-top: 5
+
+  TabButton
+    id: pokemonTab
+    !tooltip: tr('Twelve boxes reserved for Pokemon')
+    !text: tr('Pokemon')
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-left: 3
+    margin-top: 5
+
+  Label
+    id: categoryLabel
+    anchors.left: partyPanel.right
+    anchors.top: itemTab.bottom
+    margin-left: 10
+    margin-top: 14
+    text-auto-resize: true
+
+  Panel
+    id: selectorPanel
+    height: 30
+    anchors.left: categoryLabel.right
+    anchors.right: parent.right
+    anchors.verticalCenter: categoryLabel.verticalCenter
+    margin-left: 12
+
+  FlatPanel
+    id: storagePanel
+    anchors.left: partyPanel.right
+    anchors.right: parent.right
+    anchors.top: selectorPanel.bottom
+    anchors.bottom: pagePanel.top
+    margin-left: 10
+    margin-top: 10
+    margin-bottom: 8
+
+    UIImageView
+      id: protectionZoneIcon
+      size: 16 16
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 6
+      margin-right: 8
+      image-source: /images/game/states/protection_zone
+      !tooltip: tr('Editing enabled in protection zone')
+      visible: false
+
+    Panel
+      id: contentsPanel
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      size: 336 168
+      layout:
+        type: grid
+        cell-size: 42 42
+        num-columns: 8
+        flow: true
+
+  Panel
+    id: pagePanel
+    height: 24
+    anchors.left: partyPanel.right
+    anchors.right: parent.right
+    anchors.bottom: closeButton.top
+    margin-left: 10
+    margin-bottom: 10
+    visible: false
+
+    Label
+      id: pageLabel
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      text-auto-resize: true
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    width: 64
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_box.closeBox()

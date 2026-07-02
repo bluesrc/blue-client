@@ -1,0 +1,9 @@
+Module
+  name: game_box
+  description: Pokemon depot interface
+  author: gsguilioti
+  website: https://github.com/bluesrc/blue-client
+  sandboxed: true
+  scripts: [ box ]
+  @onLoad: init()
+  @onUnload: terminate()
