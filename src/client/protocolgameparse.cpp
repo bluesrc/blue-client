@@ -4063,6 +4063,7 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     auto info = PokemonInfo();
     info.p_id = msg->getU32();
     info.number = msg->getU16();
+    info.level = msg->getU8();
     info.healthPercent = msg->getU8();
     info.fainted = static_cast<bool>(msg->getU8());
     auto active = static_cast<bool>(msg->getU8());

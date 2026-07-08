@@ -498,5 +498,10 @@ bool LocalPlayer::hasSight(const Position& pos)
 
 void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
 {
-    callLuaField("onPokemonInfo", slot, info.p_id, info.number, info.healthPercent, info.fainted, active);
+    if (const auto& creature = g_map.getCreatureById(info.p_id)) {
+        if (Pokemon* pokemon = creature->getPokemon())
+            pokemon->setLevel(info.level);
+    }
+
+    callLuaField("onPokemonInfo", slot, info.p_id, info.number, info.level, info.healthPercent, info.fainted, active);
 }

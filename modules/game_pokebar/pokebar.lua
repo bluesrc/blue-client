@@ -13,7 +13,8 @@ local function createPendingInfo()
         fainted = false,
         active = false,
         healthPercent = 100,
-        number = 0
+        number = 0,
+        level = 1
     }
 end
 
@@ -226,7 +227,7 @@ function setup()
     pokebarWindow:setHeight(math.max(totalHeight, 1))
 end
 
-function updatePokemonInfo(_, slot, p_id, number, healthPercent, fainted, active)
+function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted, active)
     if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
         return
     end
@@ -240,6 +241,7 @@ function updatePokemonInfo(_, slot, p_id, number, healthPercent, fainted, active
     pokeballsInfo[slot] = info
     info.creatureId = p_id
     info.number = number
+    info.level = level
     info.fainted = fainted
     info.healthPercent = fainted and 0 or healthPercent
     info.active = active and not fainted

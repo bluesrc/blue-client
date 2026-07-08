@@ -360,5 +360,6 @@ struct PokemonInfo
     uint32_t p_id;
     uint8_t healthPercent;
     uint16_t number;
+    uint8_t level;
     bool fainted;
 };
