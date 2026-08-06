@@ -3,6 +3,8 @@ local BOX_OPCODE = 73
 local BOX_CONTAINER_ID = 15
 local ITEM_SLOT_COUNT = 50
 local SOURCE_SLOT_COUNT = 50
+local SOURCE_COLUMN_COUNT = 4
+local SOURCE_CELL_HEIGHT = 28
 local ITEM_BOX_COUNT = 5
 
 tradeWindow = nil
@@ -209,6 +211,54 @@ local function updateSourceButton(button)
     end
 end
 
+local function getSourcePageInfo()
+    if not sourceContainer or sourceMode ~= 'box' then
+        return nil
+    end
+
+    local capacity = sourceContainer:getCapacity()
+    if not capacity or capacity <= 0 then
+        return nil
+    end
+
+    local size = math.max(0, sourceContainer:getSize())
+    local firstIndex = math.max(0, sourceContainer:getFirstIndex())
+    local pages = math.max(1, math.ceil(size / capacity))
+    local currentPage = math.min(pages, 1 + math.floor(firstIndex / capacity))
+
+    return {
+        capacity = capacity,
+        size = size,
+        firstIndex = firstIndex,
+        pages = pages,
+        currentPage = currentPage
+    }
+end
+
+local function updateSourceLayout(slotCount)
+    if not tradeWindow then
+        return
+    end
+
+    slotCount = math.max(0, math.min(SOURCE_SLOT_COUNT, slotCount or 0))
+    local rows = slotCount > 0 and math.ceil(slotCount / SOURCE_COLUMN_COUNT) or 0
+    local gridHeight = rows * SOURCE_CELL_HEIGHT
+    local showPages = sourceContainer ~= nil and sourceMode == 'box'
+    local sourceFrame = tradeWindow:recursiveGetChildById('sourceFrame')
+    local itemsFrame = tradeWindow:recursiveGetChildById('sourceItemsFrame')
+    local itemsPanel = tradeWindow:recursiveGetChildById('sourceItems')
+    local previousButton = tradeWindow:recursiveGetChildById('sourcePreviousPage')
+    local nextButton = tradeWindow:recursiveGetChildById('sourceNextPage')
+    local pageLabel = tradeWindow:recursiveGetChildById('sourcePage')
+
+    itemsFrame:setHeight(gridHeight)
+    itemsPanel:setHeight(gridHeight)
+    previousButton:setVisible(showPages)
+    nextButton:setVisible(showPages)
+    pageLabel:setVisible(showPages)
+    sourceFrame:setHeight(math.max(140, 8 + gridHeight + (showPages and 27 or 0)))
+end
+
 local function refreshSourcePages()
     if not tradeWindow then
         return
@@ -218,19 +268,17 @@ local function refreshSourcePages()
     local nextButton = tradeWindow:recursiveGetChildById('sourceNextPage')
     local pageLabel = tradeWindow:recursiveGetChildById('sourcePage')
 
-    if not sourceContainer or not sourceContainer:hasPages() then
+    local pageInfo = getSourcePageInfo()
+    if not pageInfo then
         previousButton:setEnabled(false)
         nextButton:setEnabled(false)
         pageLabel:setText('')
         return
     end
 
-    local capacity = sourceContainer:getCapacity()
-    local currentPage = 1 + math.floor(sourceContainer:getFirstIndex() / capacity)
-    local pages = 1 + math.floor(math.max(0, sourceContainer:getSize() - 1) / capacity)
-    pageLabel:setText(string.format(tr('Page %i of %i'), currentPage, pages))
-    previousButton:setEnabled(currentPage > 1)
-    nextButton:setEnabled(currentPage < pages)
+    pageLabel:setText(string.format(tr('Page %i of %i'), pageInfo.currentPage, pageInfo.pages))
+    previousButton:setEnabled(pageInfo.currentPage > 1)
+    nextButton:setEnabled(pageInfo.currentPage < pageInfo.pages)
 end
 
 local function refreshSourceItems()
@@ -239,27 +287,28 @@ local function refreshSourceItems()
     end
 
 	local panel = tradeWindow:recursiveGetChildById('sourceItems')
-    local nameLabel = tradeWindow:recursiveGetChildById('sourceName')
-    local upButton = tradeWindow:recursiveGetChildById('sourceUpButton')
 
 	if not sourceContainer then
-		nameLabel:setText(sourceMode == 'bag' and tr('Backpack is not open') or tr('Box is not open'))
-        upButton:setEnabled(false)
         for slotIndex = 1, SOURCE_SLOT_COUNT do
-            clearItemSlot(panel:getChildById('sourceItem' .. slotIndex), false)
+            local slot = panel:getChildById('sourceItem' .. slotIndex)
+            clearItemSlot(slot, false)
+            slot:setVisible(false)
         end
+        updateSourceLayout(0)
         refreshSourcePages()
         return
     end
 
-    nameLabel:setText(sourceContainer:getName())
-    upButton:setEnabled(sourceContainer:hasParent())
+    local visibleSlotCount = math.min(SOURCE_SLOT_COUNT, sourceContainer:getCapacity())
+    updateSourceLayout(visibleSlotCount)
 
     for slotIndex = 1, SOURCE_SLOT_COUNT do
         local slot = panel:getChildById('sourceItem' .. slotIndex)
         local containerIndex = slotIndex - 1
-        local item = containerIndex < sourceContainer:getCapacity() and sourceContainer:getItem(containerIndex) or nil
+        local visible = slotIndex <= visibleSlotCount
+        local item = visible and sourceContainer:getItem(containerIndex) or nil
         clearItemSlot(slot, false)
+        slot:setVisible(visible)
         if item then
             slot:setItem(item)
             slot.position = sourceContainer:getSlotPosition(containerIndex)
@@ -312,7 +361,7 @@ function openBackpackSource(button)
     end
 
     local bagButton = button or (tradeWindow and tradeWindow:recursiveGetChildById('bagSourceButton'))
-	if sourceContainer and sourceMode == 'bag' then
+    if sourceContainer and sourceMode == 'bag' and not sourceContainer:hasParent() then
 		updateSourceButton(bagButton)
 		refreshSourceItems()
 		return
@@ -350,25 +399,17 @@ function openBoxSource(depotId, button)
     sendExtendedOpcode(BOX_OPCODE, tostring(depotId))
 end
 
-function openSourceParent()
-    if sourceContainer and sourceContainer:hasParent() then
-        g_game.openParent(sourceContainer)
-    end
-end
-
 function sourcePreviousPage()
-    if sourceContainer and sourceContainer:hasPages() then
-        local firstIndex = sourceContainer:getFirstIndex()
-        local capacity = sourceContainer:getCapacity()
-        if firstIndex >= capacity then
-            g_game.seekInContainer(sourceContainer:getId(), firstIndex - capacity)
-        end
+    local pageInfo = getSourcePageInfo()
+    if pageInfo and pageInfo.currentPage > 1 then
+        g_game.seekInContainer(sourceContainer:getId(), math.max(0, pageInfo.firstIndex - pageInfo.capacity))
     end
 end
 
 function sourceNextPage()
-    if sourceContainer and sourceContainer:hasPages() then
-        g_game.seekInContainer(sourceContainer:getId(), sourceContainer:getFirstIndex() + sourceContainer:getCapacity())
+    local pageInfo = getSourcePageInfo()
+    if pageInfo and pageInfo.currentPage < pageInfo.pages then
+        g_game.seekInContainer(sourceContainer:getId(), pageInfo.firstIndex + pageInfo.capacity)
     end
 end
 
