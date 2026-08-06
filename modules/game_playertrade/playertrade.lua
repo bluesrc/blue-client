@@ -1,5 +1,6 @@
 local TRADE_OPCODE = 74
 local BOX_OPCODE = 73
+local BACKPACK_CONTAINER_ID = 14
 local BOX_CONTAINER_ID = 15
 local ITEM_SLOT_COUNT = 50
 local SOURCE_SLOT_COUNT = 50
@@ -21,7 +22,6 @@ local ownMoney = '0'
 local counterMoney = '0'
 local ownBalance = '0'
 local updatingMoney = false
-local moneyEvent
 local tradeCountWindow
 
 local sourceContainer
@@ -276,7 +276,7 @@ local function refreshSourcePages()
         return
     end
 
-    pageLabel:setText(string.format(tr('Page %i of %i'), pageInfo.currentPage, pageInfo.pages))
+    pageLabel:setText(string.format('Page %i of %i', pageInfo.currentPage, pageInfo.pages))
     previousButton:setEnabled(pageInfo.currentPage > 1)
     nextButton:setEnabled(pageInfo.currentPage < pageInfo.pages)
 end
@@ -333,7 +333,8 @@ local function adoptSourceContainer(container, previousContainer)
 
 	local isCurrentNavigation = previousContainer and sourceContainer and previousContainer == sourceContainer
 	local isExpectedContainer = expectedSourceContainerId ~= nil and container:getId() == expectedSourceContainerId
-	if not isCurrentNavigation and not isExpectedContainer then
+	local isInitialBackpack = sourceMode == 'bag' and container:getId() == BACKPACK_CONTAINER_ID
+	if not isCurrentNavigation and not isExpectedContainer and not isInitialBackpack then
 		return false
 	end
 
@@ -353,6 +354,21 @@ function handlesSourceContainer(container, previousContainer)
         modules.game_containers.destroy(container)
     end
     return handled
+end
+
+local function findOpenBackpackContainer(backpack)
+    if not backpack then
+        return nil
+    end
+
+    for _, container in pairs(g_game.getContainers()) do
+        local containerItem = container and container:getContainerItem() or nil
+        if containerItem and not container:hasParent() and containerItem:getId() == backpack:getId() then
+            return container
+        end
+    end
+
+    return nil
 end
 
 function openBackpackSource(button)
@@ -377,7 +393,21 @@ function openBackpackSource(button)
 	local player = g_game.getLocalPlayer()
 	local backpack = player and player:getInventoryItem(InventorySlotBack) or nil
 	if backpack then
-		expectedSourceContainerId = g_game.open(backpack)
+		local openBackpack = findOpenBackpackContainer(backpack)
+		if openBackpack then
+			sourceContainer = openBackpack
+			expectedSourceContainerId = openBackpack:getId()
+			if openBackpack.window and modules.game_containers then
+				modules.game_containers.destroy(openBackpack)
+			end
+			refreshSourceItems()
+		else
+			local containerId = g_game.open(backpack)
+			expectedSourceContainerId = containerId >= 0 and containerId or nil
+			if not expectedSourceContainerId then
+				refreshSourceItems()
+			end
+		end
 	else
 		refreshSourceItems()
 	end
@@ -443,11 +473,17 @@ local function createTrade()
     tradeWindow:show()
     tradeWindow:raise()
     tradeWindow:focus()
-    scheduleEvent(function()
-		if tradeWindow then
-			openBackpackSource(tradeWindow:recursiveGetChildById('bagSourceButton'))
-		end
-	end, 1)
+    sourceMode = 'bag'
+    sourceContainer = nil
+    expectedSourceContainerId = BACKPACK_CONTAINER_ID
+    updateSourceButton(tradeWindow:recursiveGetChildById('bagSourceButton'))
+
+    local initialBackpack = g_game.getContainer(BACKPACK_CONTAINER_ID)
+    if initialBackpack then
+        handlesSourceContainer(initialBackpack, nil)
+    else
+        refreshSourceItems()
+    end
 end
 
 local function refreshState()
@@ -509,21 +545,11 @@ function onMoneyChange(text)
         updatingMoney = false
     end
 
-    if moneyEvent then
-        removeEvent(moneyEvent)
-    end
-    moneyEvent = scheduleEvent(function()
-        moneyEvent = nil
-        sendTradeAction('M;' .. digits)
-    end, 250)
+    sendTradeAction('M;' .. digits)
 end
 
 function confirmOffer()
 	if tradeWindow and not ownConfirmed then
-		if moneyEvent then
-			removeEvent(moneyEvent)
-			moneyEvent = nil
-		end
 		local input = tradeWindow:recursiveGetChildById('moneyInput')
 		local amount = input and input:getText():gsub('[^0-9]', '') or '0'
 		if amount == '' then amount = '0' end
@@ -675,28 +701,14 @@ end
 
 function onInventoryChange(_, slot, _, _)
     if tradeWindow and slot == InventorySlotBack and sourceMode == 'bag' then
-		if sourceContainer then
-			g_game.close(sourceContainer)
-			sourceContainer = nil
-			expectedSourceContainerId = nil
-		end
-        scheduleEvent(function()
-            if tradeWindow and sourceMode == 'bag' then
-                openBackpackSource(tradeWindow:recursiveGetChildById('bagSourceButton'))
-            end
-        end, 1)
+		sourceContainer = nil
+		expectedSourceContainerId = BACKPACK_CONTAINER_ID
+        refreshSourceItems()
     end
 end
 
 function onGameCloseTrade()
-    if moneyEvent then
-        removeEvent(moneyEvent)
-        moneyEvent = nil
-    end
     closeTradeCountWindow()
-    if sourceContainer and g_game.isOnline() then
-        g_game.close(sourceContainer)
-    end
     sourceContainer = nil
     expectedSourceContainerId = nil
     selectedSourceButton = nil
