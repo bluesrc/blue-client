@@ -1,107 +1,350 @@
-TradeWindow < MiniWindow
-  !text: tr('Trade')
-  height: 150
+TradeItemSlot < Item
+  size: 36 36
+  border-width: 1
+  border-color: #4a5563
+  margin: 1
 
-  UIItem
-    id: tradeItem
-    virtual: true
-    size: 16 16
-    anchors.top: parent.top
+TradeSourceSlot < Item
+  size: 36 36
+  border-width: 1
+  border-color: #4a5563
+  margin: 1
+  !tooltip: tr('Double-click an item to offer it. Double-click a container to open it.')
+
+TradeWindow < MainWindow
+  id: tradeWindow
+  !text: tr('Player Trade')
+  size: 1000 690
+  @onEscape: modules.game_playertrade.rejectOffer()
+
+  FlatPanel
+    id: ownSide
     anchors.left: parent.left
-    margin-top: 4
-    margin-left: 4
+    anchors.right: parent.horizontalCenter
+    anchors.top: parent.top
+    anchors.bottom: sourceFrame.top
+    margin-right: 5
+    margin-bottom: 10
+    border-width: 1
+    border-color: #4a5563
+    padding: 10
 
-  MiniWindowContents
-    padding: 4
-
-    ScrollableFlatPanel
-      id: ownTradeContainer
+    Label
+      id: ownName
+      !text: tr('You')
       anchors.top: parent.top
-      anchors.bottom: acceptButton.top
       anchors.left: parent.left
-      anchors.right: ownTradeScrollBar.left
-      margin-top: 16
-      margin-bottom: 4
-      padding: 2
-      layout:
-        type: grid
-        cell-size: 34 34
-        flow: true
-        cell-spacing: 1
-      vertical-scrollbar: ownTradeScrollBar
+      color: #ffffff
+      font: verdana-11px-rounded
+      text-auto-resize: true
 
-    VerticalScrollBar
-      id: ownTradeScrollBar
+    Label
+      id: ownStatus
+      !text: tr('Editing offer')
       anchors.top: parent.top
-      anchors.bottom: acceptButton.top
-      anchors.right: parent.horizontalCenter
-      margin-top: 16
-      margin-bottom: 4
-      margin-right: 2
-      step: 14
-      pixels-scroll: true
-      $!on:
-        width: 0
-
-    ScrollableFlatPanel
-      id: counterTradeContainer
-      anchors.top: parent.top
-      anchors.bottom: acceptButton.top
-      anchors.left: parent.horizontalCenter
-      anchors.right: counterTradeScrollBar.left
-      margin-top: 16
-      margin-bottom: 4
-      margin-left: 2
-      padding: 2
-      layout:
-        type: grid
-        cell-size: 34 34
-        flow: true
-        cell-spacing: 1
-      vertical-scrollbar: counterTradeScrollBar
-
-    VerticalScrollBar
-      id: counterTradeScrollBar
-      anchors.top: parent.top
-      anchors.bottom: acceptButton.top
       anchors.right: parent.right
-      margin-top: 16
-      margin-bottom: 4
-      margin-right: 1
-      step: 14
-      pixels-scroll: true
-      $!on:
-        width: 0
+      color: #b7c2ce
+      text-auto-resize: true
 
     Label
-      id: ownTradeLabel
-      anchors.bottom: ownTradeContainer.top
-      anchors.left: ownTradeContainer.left
-      anchors.right: parent.horizontalCenter
-      margin-bottom: 2
+      !text: tr('Items offered (50 slots)')
+      anchors.top: ownName.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 12
+      text-auto-resize: true
+
+    FlatPanel
+      id: ownItemsFrame
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: ownName.bottom
+      anchors.bottom: ownMoneyPanel.top
+      margin-top: 36
+      margin-bottom: 10
+
+      Panel
+        id: ownItems
+        size: 380 190
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        layout:
+          type: grid
+          cell-size: 38 38
+          num-columns: 10
+          flow: true
+
+    FlatPanel
+      id: ownMoneyPanel
+      height: 72
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+
+      Label
+        !text: tr('Amount to offer')
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 8
+        margin-top: 7
+        text-auto-resize: true
+
+      TextEdit
+        id: moneyInput
+        width: 230
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 8
+        margin-top: 25
+        height: 22
+        text: 0
+        @onTextChange: modules.game_playertrade.onMoneyChange(self:getText())
+
+      Label
+        id: ownBalance
+        !text: tr('Your balance: 0')
+        anchors.left: moneyInput.right
+        anchors.verticalCenter: moneyInput.verticalCenter
+        margin-left: 12
+        color: #9fabb7
+        text-auto-resize: true
+
+  FlatPanel
+    id: counterSide
+    anchors.left: parent.horizontalCenter
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: sourceFrame.top
+    margin-left: 5
+    margin-bottom: 10
+    border-width: 1
+    border-color: #4a5563
+    padding: 10
 
     Label
-      id: counterTradeLabel
-      anchors.bottom: counterTradeContainer.top
-      anchors.left: parent.horizontalCenter
-      anchors.right: counterTradeScrollBar.right
-      margin-bottom: 2
+      id: counterName
+      !text: tr('Other player')
+      anchors.top: parent.top
+      anchors.left: parent.left
+      color: #ffffff
+      font: verdana-11px-rounded
+      text-auto-resize: true
+
+    Label
+      id: counterStatus
+      !text: tr('Editing offer')
+      anchors.top: parent.top
+      anchors.right: parent.right
+      color: #b7c2ce
+      text-auto-resize: true
+
+    Label
+      !text: tr('Items offered (50 slots)')
+      anchors.top: counterName.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 12
+      text-auto-resize: true
+
+    FlatPanel
+      id: counterItemsFrame
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: counterName.bottom
+      anchors.bottom: counterMoneyPanel.top
+      margin-top: 36
+      margin-bottom: 10
+
+      Panel
+        id: counterItems
+        size: 380 190
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        layout:
+          type: grid
+          cell-size: 38 38
+          num-columns: 10
+          flow: true
+
+    FlatPanel
+      id: counterMoneyPanel
+      height: 72
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+
+      Label
+        !text: tr('Virtual money offered')
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 8
+        margin-top: 12
+        text-auto-resize: true
+
+      Label
+        id: counterMoney
+        !text: tr('Amount offered: 0')
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 8
+        margin-top: 36
+        color: #d7e0e9
+        text-auto-resize: true
+
+  FlatPanel
+    id: sourceFrame
+    height: 205
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: confirmButton.top
+    margin-bottom: 12
+    padding: 8
+
+    TabButton
+      id: bagSourceButton
+      !text: tr('Backpack')
+      width: 90
+      checked: true
+      on: true
+      anchors.left: parent.left
+      anchors.top: parent.top
+      @onClick: modules.game_playertrade.openBackpackSource(self)
+
+    TabButton
+      id: boxSourceButton1
+      !text: tr('Box 1')
+      width: 70
+      anchors.left: prev.right
+      anchors.top: parent.top
+      margin-left: 5
+      @onClick: modules.game_playertrade.openBoxSource(0, self)
+
+    TabButton
+      id: boxSourceButton2
+      !text: tr('Box 2')
+      width: 70
+      anchors.left: prev.right
+      anchors.top: parent.top
+      margin-left: 5
+      @onClick: modules.game_playertrade.openBoxSource(1, self)
+
+    TabButton
+      id: boxSourceButton3
+      !text: tr('Box 3')
+      width: 70
+      anchors.left: prev.right
+      anchors.top: parent.top
+      margin-left: 5
+      @onClick: modules.game_playertrade.openBoxSource(2, self)
+
+    TabButton
+      id: boxSourceButton4
+      !text: tr('Box 4')
+      width: 70
+      anchors.left: prev.right
+      anchors.top: parent.top
+      margin-left: 5
+      @onClick: modules.game_playertrade.openBoxSource(3, self)
+
+    TabButton
+      id: boxSourceButton5
+      !text: tr('Box 5')
+      width: 70
+      anchors.left: prev.right
+      anchors.top: parent.top
+      margin-left: 5
+      @onClick: modules.game_playertrade.openBoxSource(4, self)
 
     Button
-      !text: tr('Accept')
-      id: acceptButton
-      anchors.bottom: parent.bottom
-      anchors.left: parent.left
-      anchors.right: parent.horizontalCenter
-      margin-right: 2
+      id: sourceUpButton
+      !text: tr('Up')
+      width: 60
+      anchors.right: parent.right
+      anchors.top: parent.top
       enabled: false
-      @onClick: g_game.acceptTrade(); self:disable()
+      @onClick: modules.game_playertrade.openSourceParent()
+
+    Label
+      id: sourceName
+      !text: tr('Backpack is not open')
+      anchors.left: parent.left
+      anchors.top: bagSourceButton.bottom
+      margin-top: 7
+      color: #d7e0e9
+      text-auto-resize: true
+
+    Label
+      !text: tr('Drag an item to your offer, or double-click it below.')
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: sourceName.verticalCenter
+      color: #9fabb7
+      text-auto-resize: true
+
+    FlatPanel
+      id: sourceItemsFrame
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: sourceName.bottom
+      anchors.bottom: sourcePreviousPage.top
+      margin-top: 5
+      margin-bottom: 4
+
+      Panel
+        id: sourceItems
+        size: 760 114
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        layout:
+          type: grid
+          cell-size: 38 38
+          num-columns: 20
+          flow: true
 
     Button
-      !text: tr('Reject')
-      id: rejectButton
+      id: sourcePreviousPage
+      !text: tr('Previous')
+      width: 70
+      anchors.left: parent.left
       anchors.bottom: parent.bottom
+      enabled: false
+      @onClick: modules.game_playertrade.sourcePreviousPage()
+
+    Label
+      id: sourcePage
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: sourcePreviousPage.verticalCenter
+      text-auto-resize: true
+
+    Button
+      id: sourceNextPage
+      !text: tr('Next')
+      width: 70
       anchors.right: parent.right
-      anchors.left: parent.horizontalCenter
-      margin-left: 2
-      @onClick: g_game.rejectTrade()
+      anchors.bottom: parent.bottom
+      enabled: false
+      @onClick: modules.game_playertrade.sourceNextPage()
+
+  Button
+    id: confirmButton
+    !text: tr('Confirm items')
+    width: 150
+    anchors.bottom: parent.bottom
+    anchors.right: parent.horizontalCenter
+    margin-right: 84
+    @onClick: modules.game_playertrade.confirmOffer()
+
+  Button
+    id: acceptButton
+    !text: tr('Accept trade')
+    width: 150
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    visible: false
+    @onClick: modules.game_playertrade.acceptOffer()
+
+  Button
+    id: rejectButton
+    !text: tr('Cancel trade')
+    width: 150
+    anchors.bottom: parent.bottom
+    anchors.left: parent.horizontalCenter
+    margin-left: 84
+    @onClick: modules.game_playertrade.rejectOffer()
