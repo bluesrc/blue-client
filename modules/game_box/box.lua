@@ -230,9 +230,16 @@ function handlesContainer(container)
     return container and container:getId() == BOX_CONTAINER_ID
 end
 
-function onContainerOpen(container, _)
+function onContainerOpen(container, previousContainer)
     if not handlesContainer(container) then
         return false
+    end
+
+    if modules.game_playertrade and modules.game_playertrade.handlesSourceContainer(container, previousContainer) then
+        currentContainer = nil
+        clearContents()
+        boxWindow:hide()
+        return true
     end
 
     showFromDepot()

@@ -91,6 +91,10 @@ function refreshContainerPages(container)
 end
 
 function onContainerOpen(container, previousContainer)
+    if modules.game_playertrade and modules.game_playertrade.handlesSourceContainer(container, previousContainer) then
+        return
+    end
+
     if modules.game_box and modules.game_box.handlesContainer(container) then
         return
     end

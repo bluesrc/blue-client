@@ -646,13 +646,6 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
         end
     end
 
-    if lookThing and not lookThing:isCreature() and not lookThing:isNotMoveable() and lookThing:isPickupable() then
-        menu:addSeparator()
-        menu:addOption(tr('Trade with ...'), function()
-            startTradeWith(lookThing)
-        end)
-    end
-
     if lookThing then
         local parentContainer = lookThing:getParentContainer()
         if parentContainer and parentContainer:hasParent() then
@@ -737,6 +730,9 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
             if creatureThing:isPlayer() then
                 menu:addSeparator()
                 local creatureName = creatureThing:getName()
+                menu:addOption(tr('Trade with %s', creatureName), function()
+                    modules.game_playertrade.requestTrade(creatureThing)
+                end)
                 menu:addOption(tr('Message to %s', creatureName), function()
                     g_game.openPrivateChannel(creatureName)
                 end)
