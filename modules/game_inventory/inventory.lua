@@ -1,3 +1,5 @@
+local BACKPACK_OPCODE = 75
+
 InventorySlotStyles = {
     [InventorySlotHead] = 'HeadSlot',
     [InventorySlotNeck] = 'NeckSlot',
@@ -106,11 +108,11 @@ function refresh()
 end
 
 function toggle()
-    local player = g_game.getLocalPlayer()
-    local inventory = player:getInventoryItem(InventorySlotBack)
-    g_game.use(inventory)
-    inventoryButton:setOn(not inventoryButton:isOn())
-
+	local protocolGame = g_game.getProtocolGame()
+	if protocolGame then
+		protocolGame:sendExtendedOpcode(BACKPACK_OPCODE, 'T')
+	end
+	inventoryButton:setOn(not inventoryButton:isOn())
 end
 
 function onMiniWindowOpen()

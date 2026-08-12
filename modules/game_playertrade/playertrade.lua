@@ -1,5 +1,6 @@
 local TRADE_OPCODE = 74
 local BOX_OPCODE = 73
+local BACKPACK_OPCODE = 75
 local BACKPACK_CONTAINER_ID = 14
 local BOX_CONTAINER_ID = 15
 local ITEM_SLOT_COUNT = 50
@@ -356,21 +357,6 @@ function handlesSourceContainer(container, previousContainer)
     return handled
 end
 
-local function findOpenBackpackContainer(backpack)
-    if not backpack then
-        return nil
-    end
-
-    for _, container in pairs(g_game.getContainers()) do
-        local containerItem = container and container:getContainerItem() or nil
-        if containerItem and not container:hasParent() and containerItem:getId() == backpack:getId() then
-            return container
-        end
-    end
-
-    return nil
-end
-
 function openBackpackSource(button)
     if not g_game.isOnline() then
         return
@@ -390,27 +376,9 @@ function openBackpackSource(button)
 	expectedSourceContainerId = nil
 	updateSourceButton(bagButton)
 
-	local player = g_game.getLocalPlayer()
-	local backpack = player and player:getInventoryItem(InventorySlotBack) or nil
-	if backpack then
-		local openBackpack = findOpenBackpackContainer(backpack)
-		if openBackpack then
-			sourceContainer = openBackpack
-			expectedSourceContainerId = openBackpack:getId()
-			if openBackpack.window and modules.game_containers then
-				modules.game_containers.destroy(openBackpack)
-			end
-			refreshSourceItems()
-		else
-			local containerId = g_game.open(backpack)
-			expectedSourceContainerId = containerId >= 0 and containerId or nil
-			if not expectedSourceContainerId then
-				refreshSourceItems()
-			end
-		end
-	else
-		refreshSourceItems()
-	end
+	expectedSourceContainerId = BACKPACK_CONTAINER_ID
+	refreshSourceItems()
+	sendExtendedOpcode(BACKPACK_OPCODE, 'O')
 end
 
 function openBoxSource(depotId, button)
@@ -658,8 +626,7 @@ function init()
         onCloseTrade = onGameCloseTrade,
         onGameEnd = onGameCloseTrade
     })
-    connect(LocalPlayer, {onInventoryChange = onInventoryChange})
-    connect(Container, {
+	connect(Container, {
         onOpen = onContainerOpen,
         onClose = onContainerClose,
         onSizeChange = onContainerChange,
@@ -675,8 +642,7 @@ function terminate()
         onCloseTrade = onGameCloseTrade,
         onGameEnd = onGameCloseTrade
     })
-    disconnect(LocalPlayer, {onInventoryChange = onInventoryChange})
-    disconnect(Container, {
+	disconnect(Container, {
         onOpen = onContainerOpen,
         onClose = onContainerClose,
         onSizeChange = onContainerChange,
@@ -697,14 +663,6 @@ function onGameCounterTrade(name, items)
     counterItems = items
     createTrade()
     refreshState()
-end
-
-function onInventoryChange(_, slot, _, _)
-    if tradeWindow and slot == InventorySlotBack and sourceMode == 'bag' then
-		sourceContainer = nil
-		expectedSourceContainerId = BACKPACK_CONTAINER_ID
-        refreshSourceItems()
-    end
 end
 
 function onGameCloseTrade()
