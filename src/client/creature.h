@@ -357,9 +357,33 @@ private:
 //todo: bind this struct to access from lua
 struct PokemonInfo
 {
-    uint32_t p_id;
-    uint8_t healthPercent;
-    uint16_t number;
-    uint8_t level;
-    bool fainted;
+    struct Stats {
+        uint16_t hp{ 0 };
+        uint16_t attack{ 0 };
+        uint16_t defense{ 0 };
+        uint16_t specialAttack{ 0 };
+        uint16_t specialDefense{ 0 };
+        uint16_t speed{ 0 };
+    };
+
+    uint32_t p_id{ 0 };
+    uint8_t healthPercent{ 0 };
+    uint16_t number{ 0 };
+    uint8_t level{ 0 };
+    bool fainted{ false };
+    std::string name;
+    uint64_t experience{ 0 };
+    uint64_t currentLevelExperience{ 0 };
+    uint64_t nextLevelExperience{ 0 };
+    uint32_t health{ 0 };
+    uint32_t maxHealth{ 0 };
+    uint8_t nature{ 0 };
+    uint8_t friendship{ 0 };
+    uint8_t primaryType{ 0 };
+    uint8_t secondaryType{ 0 };
+    uint8_t gender{ 0 };
+    bool shiny{ false };
+    Stats stats;
+    Stats ivs;
+    Stats evs;
 };

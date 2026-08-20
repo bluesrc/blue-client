@@ -1,0 +1,8 @@
+Module
+  name: game_pokebag
+  description: Displays the player's Pokemon and their detailed information
+  author: Blue Team
+  sandboxed: true
+  scripts: [ pokebag ]
+  @onLoad: init()
+  @onUnload: terminate()

@@ -4068,5 +4068,30 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     info.fainted = static_cast<bool>(msg->getU8());
     auto active = static_cast<bool>(msg->getU8());
 
+    info.name = msg->getString();
+    info.experience = msg->getU64();
+    info.currentLevelExperience = msg->getU64();
+    info.nextLevelExperience = msg->getU64();
+    info.health = msg->getU32();
+    info.maxHealth = msg->getU32();
+    info.nature = msg->getU8();
+    info.friendship = msg->getU8();
+    info.primaryType = msg->getU8();
+    info.secondaryType = msg->getU8();
+    info.gender = msg->getU8();
+    info.shiny = static_cast<bool>(msg->getU8());
+
+    const auto readStats = [&msg](PokemonInfo::Stats& stats) {
+        stats.hp = msg->getU16();
+        stats.attack = msg->getU16();
+        stats.defense = msg->getU16();
+        stats.specialAttack = msg->getU16();
+        stats.specialDefense = msg->getU16();
+        stats.speed = msg->getU16();
+    };
+    readStats(info.stats);
+    readStats(info.ivs);
+    readStats(info.evs);
+
     m_localPlayer->pokemonInfo(slot, info, active);
 }
