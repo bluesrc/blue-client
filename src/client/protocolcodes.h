@@ -80,6 +80,7 @@ namespace Proto
         GameServerFloorDescription = 75,
 
         GameServerPokemonInfo = 57,
+        GameServerTrainerInfo = 58,
 
         // original tibia ONLY
         GameServerImbuementDurations = 93,

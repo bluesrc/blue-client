@@ -1,0 +1,131 @@
+TrainerCardFieldLabel < Label
+  width: 94
+  height: 22
+  text-align: left
+  color: #9f9f9f
+
+TrainerCardFieldValue < Label
+  height: 22
+  text-align: left
+  color: #eeeeee
+
+MainWindow
+  id: trainerCardWindow
+  !text: tr('Trainer Card')
+  size: 520 340
+  @onEscape: modules.game_trainercard.hide()
+
+  FlatPanel
+    id: cardPanel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: closeButton.top
+    margin-top: 4
+    margin-bottom: 10
+
+    Label
+      id: cardTitle
+      !text: tr('Pokemon Trainer')
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-top: 12
+      height: 22
+      text-align: center
+      font: verdana-11px-rounded
+      color: #f3d66c
+
+    FlatPanel
+      id: portraitFrame
+      size: 170 210
+      anchors.left: parent.left
+      anchors.top: cardTitle.bottom
+      margin-left: 12
+      margin-top: 8
+
+      UICreature
+        id: trainerOutfit
+        size: 154 184
+        anchors.centerIn: parent
+        // UICreature renders the visible sprite in the lower-right portion of
+        // its transparent framebuffer. Offset that framebuffer so the outfit
+        // itself, rather than the full transparent area, is centered.
+        margin-right: 53
+        margin-bottom: 62
+        creature-size: 150
+        phantom: true
+
+    Panel
+      id: infoPanel
+      anchors.left: portraitFrame.right
+      anchors.right: parent.right
+      anchors.top: portraitFrame.top
+      anchors.bottom: portraitFrame.bottom
+      margin-left: 18
+      margin-right: 12
+      layout:
+        type: grid
+        cell-size: 136 22
+        num-columns: 2
+        flow: true
+
+      TrainerCardFieldLabel
+        !text: tr('Name') .. ':'
+      TrainerCardFieldValue
+        id: nameValue
+        color: #f3d66c
+      TrainerCardFieldLabel
+        !text: tr('Hometown') .. ':'
+      TrainerCardFieldValue
+        id: hometownValue
+      TrainerCardFieldLabel
+        !text: tr('Gender') .. ':'
+      Panel
+        id: genderValue
+
+        UIImageView
+          id: genderIcon
+          size: 11 11
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          phantom: true
+      TrainerCardFieldLabel
+        !text: tr('Money') .. ':'
+      TrainerCardFieldValue
+        id: moneyValue
+      TrainerCardFieldLabel
+        !text: tr('Level') .. ':'
+      TrainerCardFieldValue
+        id: levelValue
+      TrainerCardFieldLabel
+        !text: tr('Guild') .. ':'
+      TrainerCardFieldValue
+        id: guildValue
+
+    Label
+      id: experienceProgressLabel
+      !text: tr('Experience')
+      anchors.left: portraitFrame.left
+      anchors.right: infoPanel.right
+      anchors.top: portraitFrame.bottom
+      margin-top: 12
+      height: 16
+      color: #a8a8a8
+
+    ProgressBar
+      id: experienceBar
+      anchors.left: experienceProgressLabel.left
+      anchors.right: experienceProgressLabel.right
+      anchors.top: experienceProgressLabel.bottom
+      margin-top: 3
+      height: 17
+      background-color: #6e56c9
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    width: 64
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_trainercard.hide()

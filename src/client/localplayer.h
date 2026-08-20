@@ -59,6 +59,7 @@ public:
     void setMoves(const std::vector<uint16_t>& moves);
     void setBlessings(uint16_t blessings);
     void setResourceBalance(Otc::ResourceTypes_t type, uint64_t value);
+    void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild);
 
     uint32_t getFreeCapacity() { return m_freeCapacity; }
     uint32_t getTotalCapacity() { return m_totalCapacity; }
@@ -85,6 +86,10 @@ public:
     uint32_t getHealth() { return m_health; }
     uint32_t getMaxHealth() { return m_maxHealth; }
     uint64_t getExperience() { return m_experience; }
+    std::string getHometown() { return m_hometown; }
+    uint8_t getTrainerGender() { return m_trainerGender; }
+    uint64_t getTrainerMoney() { return m_trainerMoney; }
+    std::string getGuildName() { return m_guildName; }
 
     const std::vector<uint16_t>& getMoves() { return m_moves; }
     ItemPtr getInventoryItem(Otc::InventorySlot inventory) { return m_inventoryItems[inventory]; }
@@ -184,4 +189,8 @@ private:
     uint16_t m_stamina{ 0 };
     uint16_t m_regenerationTime{ 0 };
     uint16_t m_offlineTrainingTime{ 0 };
+    std::string m_hometown;
+    uint8_t m_trainerGender{ 0 };
+    uint64_t m_trainerMoney{ 0 };
+    std::string m_guildName;
 };

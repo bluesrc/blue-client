@@ -491,6 +491,18 @@ void LocalPlayer::setResourceBalance(Otc::ResourceTypes_t type, uint64_t value)
     g_lua.callGlobalField("g_game", "onResourcesBalanceChange", value, oldBalance, type);
 }
 
+void LocalPlayer::setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild)
+{
+    if (m_hometown == hometown && m_trainerGender == gender && m_trainerMoney == money && m_guildName == guild)
+        return;
+
+    m_hometown = hometown;
+    m_trainerGender = gender;
+    m_trainerMoney = money;
+    m_guildName = guild;
+    callLuaField("onTrainerInfoChange", hometown, gender, money, guild);
+}
+
 bool LocalPlayer::hasSight(const Position& pos)
 {
     return m_position.isInRange(pos, g_map.getAwareRange().left - 1, g_map.getAwareRange().top - 1);
