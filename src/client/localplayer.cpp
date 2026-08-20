@@ -503,5 +503,14 @@ void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
             pokemon->setLevel(info.level);
     }
 
-    callLuaField("onPokemonInfo", slot, info.p_id, info.number, info.level, info.healthPercent, info.fainted, active);
+    callLuaField("onPokemonInfo", slot, info.p_id, info.number, info.level, info.healthPercent, info.fainted, active,
+                 info.name, info.experience, info.currentLevelExperience, info.nextLevelExperience,
+                 info.health, info.maxHealth, info.nature, info.friendship,
+                 info.primaryType, info.secondaryType, info.gender, info.shiny,
+                 info.stats.hp, info.stats.attack, info.stats.defense, info.stats.specialAttack,
+                 info.stats.specialDefense, info.stats.speed,
+                 info.ivs.hp, info.ivs.attack, info.ivs.defense, info.ivs.specialAttack,
+                 info.ivs.specialDefense, info.ivs.speed,
+                 info.evs.hp, info.evs.attack, info.evs.defense, info.evs.specialAttack,
+                 info.evs.specialDefense, info.evs.speed);
 }

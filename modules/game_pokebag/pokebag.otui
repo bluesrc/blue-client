@@ -1,0 +1,282 @@
+PokebagEntry < Panel
+  height: 58
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  border-width: 1
+  border-color: #00000000
+  background-color: #00000000
+  focusable: true
+  phantom: false
+
+  $hover:
+    background-color: #ffffff10
+
+  $on:
+    border-width: 1
+    border-color: #e6bd45
+    background-color: #e6bd4518
+
+  UIImageView
+    id: pokemonIcon
+    size: 46 46
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    phantom: true
+
+  Label
+    id: pokemonName
+    anchors.left: pokemonIcon.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-left: 7
+    margin-top: 6
+    margin-right: 4
+    height: 15
+    color: #f2f2f2
+    phantom: true
+
+  Label
+    id: pokemonLevel
+    anchors.left: pokemonName.left
+    anchors.top: pokemonName.bottom
+    margin-top: 2
+    height: 13
+    color: #b8b8b8
+    phantom: true
+
+  ProgressBar
+    id: pokemonHealth
+    anchors.left: pokemonName.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-right: 6
+    margin-bottom: 6
+    height: 6
+    phantom: true
+
+PokebagInfoText < Label
+  height: 18
+  text-align: left
+  color: #dddddd
+
+PokebagStatHeader < Label
+  height: 22
+  text-align: left
+  text-offset: 8 3
+  color: #e6bd45
+  background-color: #ffffff0b
+
+PokebagStatCell < Label
+  height: 23
+  text-align: left
+  text-offset: 8 3
+  color: #dddddd
+
+MainWindow
+  id: pokebagWindow
+  !text: tr('Pokebag')
+  size: 760 510
+  @onEscape: modules.game_pokebag.hide()
+
+  FlatPanel
+    id: pokemonListFrame
+    width: 188
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: closeButton.top
+    margin-top: 4
+    margin-bottom: 10
+
+    Panel
+      id: pokemonList
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      margin: 7 7 7 7
+      layout:
+        type: verticalBox
+        spacing: 6
+        fit-children: false
+
+  Panel
+    id: emptyPanel
+    anchors.left: pokemonListFrame.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: closeButton.top
+    margin-left: 12
+    margin-bottom: 10
+
+    Label
+      !text: tr('Select a Pokemon to view its information.')
+      anchors.centerIn: parent
+      text-align: center
+      color: #a8a8a8
+      text-auto-resize: true
+
+  Panel
+    id: detailsPanel
+    anchors.left: pokemonListFrame.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: closeButton.top
+    margin-left: 12
+    margin-bottom: 10
+    visible: false
+
+    FlatPanel
+      id: topInfoPanel
+      height: 230
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-top: 4
+
+      FlatPanel
+        id: portraitFrame
+        size: 148 148
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 8
+
+        UIImageView
+          id: portrait
+          size: 136 136
+          anchors.centerIn: parent
+          image-smooth: false
+
+      UIImageView
+        id: shinyIcon
+        size: 9 10
+        anchors.right: parent.right
+        anchors.top: parent.top
+        margin-right: 10
+        margin-top: 13
+        image-source: /images/game/shiny
+        visible: false
+
+      UIImageView
+        id: genderIcon
+        size: 11 11
+        anchors.right: shinyIcon.left
+        anchors.verticalCenter: shinyIcon.verticalCenter
+        margin-right: 7
+
+      Label
+        id: nameValue
+        anchors.left: portraitFrame.right
+        anchors.right: genderIcon.left
+        anchors.top: parent.top
+        margin-left: 14
+        margin-right: 8
+        margin-top: 10
+        height: 20
+        text-align: left
+        font: verdana-11px-rounded
+        color: #f3d66c
+
+      Label
+        id: numberValue
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: nameValue.bottom
+        height: 18
+        text-align: left
+        color: #aaaaaa
+
+      PokebagInfoText
+        id: levelInfo
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: numberValue.bottom
+        margin-top: 5
+
+      PokebagInfoText
+        id: natureInfo
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: levelInfo.bottom
+
+      PokebagInfoText
+        id: typesInfo
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: natureInfo.bottom
+
+      Label
+        id: healthLabel
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: typesInfo.bottom
+        height: 16
+        text-align: left
+        color: #a8a8a8
+
+      ProgressBar
+        id: healthBar
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: healthLabel.bottom
+        margin-right: 10
+        height: 16
+
+      Label
+        id: experienceLabel
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: healthBar.bottom
+        margin-top: 5
+        height: 16
+        text-align: left
+        color: #a8a8a8
+
+      ProgressBar
+        id: experienceBar
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: experienceLabel.bottom
+        margin-right: 10
+        height: 16
+        background-color: #6e56c9
+
+      Label
+        id: friendshipLabel
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: experienceBar.bottom
+        margin-top: 5
+        height: 16
+        text-align: left
+        color: #a8a8a8
+
+      ProgressBar
+        id: friendshipBar
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: friendshipLabel.bottom
+        margin-right: 10
+        height: 16
+        background-color: #d66a91
+
+    Panel
+      id: statsGrid
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: topInfoPanel.bottom
+      anchors.bottom: parent.bottom
+      margin-top: 10
+      layout:
+        type: grid
+        cell-size: 130 23
+        num-columns: 4
+        flow: true
+
+  Button
+    id: closeButton
+    !text: tr('Close')
+    width: 64
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: modules.game_pokebag.hide()
