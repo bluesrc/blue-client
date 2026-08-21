@@ -567,6 +567,9 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 case Proto::GameServerPokemonInfo:
                     parsePokemonInfo(msg);
                     break;
+                case Proto::GameServerTrainerInfo:
+                    parseTrainerInfo(msg);
+                    break;
 
                 default:
                     throw Exception("unhandled opcode %d", opcode);
@@ -4094,4 +4097,15 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     readStats(info.evs);
 
     m_localPlayer->pokemonInfo(slot, info, active);
+}
+
+void ProtocolGame::parseTrainerInfo(const InputMessagePtr& msg) const
+{
+    const std::string hometown = msg->getString();
+    const uint8_t gender = msg->getU8();
+    const uint64_t money = msg->getU64();
+    const std::string guild = msg->getString();
+    const uint32_t pokedexCount = msg->getU32();
+    const uint64_t totalCaught = msg->getU64();
+    m_localPlayer->setTrainerInfo(hometown, gender, money, guild, pokedexCount, totalCaught);
 }

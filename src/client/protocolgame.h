@@ -137,6 +137,7 @@ public:
 
     //pokemon
     void parsePokemonInfo(const InputMessagePtr& msg);
+    void parseTrainerInfo(const InputMessagePtr& msg) const;
 
 protected:
     void onConnect() override;

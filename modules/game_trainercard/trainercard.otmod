@@ -1,0 +1,8 @@
+Module
+  name: game_trainercard
+  description: Displays the player's Trainer Card
+  author: Blue Team
+  sandboxed: true
+  scripts: [ trainercard ]
+  @onLoad: init()
+  @onUnload: terminate()
