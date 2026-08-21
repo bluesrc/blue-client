@@ -125,6 +125,7 @@ public:
 
     //pokemon
     void pokemonInfo(uint16_t slot, PokemonInfo info, bool active);
+    void pokemonMoveCooldown(uint32_t pokemonId, uint8_t slot, uint32_t duration);
 
 protected:
     void walk(const Position& oldPos, const Position& newPos) override;

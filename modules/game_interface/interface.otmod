@@ -39,6 +39,7 @@ Module
     - game_stash
     - game_creatureinformation
     - game_pokebar
+    - game_pokemonmoves
     - game_pokebag
     - game_trainercard
     - game_box

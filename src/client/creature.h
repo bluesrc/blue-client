@@ -366,6 +366,26 @@ struct PokemonInfo
         uint16_t speed{ 0 };
     };
 
+    struct Move {
+        std::string name;
+        uint32_t cooldown{ 0 };
+    };
+
+    struct LearnedMove {
+        uint16_t id{ 0 };
+        std::string name;
+        uint8_t type{ 0 };
+        uint8_t category{ 0 };
+        uint16_t power{ 0 };
+        uint16_t pp{ 0 };
+        uint8_t accuracy{ 0 };
+        uint8_t range{ 0 };
+        uint32_t cooldown{ 0 };
+        uint8_t activeSlot{ 0 };
+        uint8_t learnLevel{ 1 };
+        uint8_t target{ 1 };
+    };
+
     uint32_t p_id{ 0 };
     uint8_t healthPercent{ 0 };
     uint16_t number{ 0 };
@@ -386,4 +406,6 @@ struct PokemonInfo
     Stats stats;
     Stats ivs;
     Stats evs;
+    std::array<Move, 4> moves;
+    std::vector<LearnedMove> learnedMoves;
 };

@@ -570,6 +570,9 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 case Proto::GameServerTrainerInfo:
                     parseTrainerInfo(msg);
                     break;
+                case Proto::GameServerPokemonMoveCooldown:
+                    parsePokemonMoveCooldown(msg);
+                    break;
 
                 default:
                     throw Exception("unhandled opcode %d", opcode);
@@ -4096,7 +4099,39 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     readStats(info.ivs);
     readStats(info.evs);
 
+    for (PokemonInfo::Move& move : info.moves) {
+        move.name = msg->getString();
+        move.cooldown = msg->getU32();
+    }
+
+    const uint16_t learnedMoveCount = msg->getU16();
+    info.learnedMoves.reserve(learnedMoveCount);
+    for (uint16_t index = 0; index < learnedMoveCount; ++index) {
+        PokemonInfo::LearnedMove move;
+        move.id = msg->getU16();
+        move.name = msg->getString();
+        move.type = msg->getU8();
+        move.category = msg->getU8();
+        move.power = msg->getU16();
+        move.pp = msg->getU16();
+        move.accuracy = msg->getU8();
+        move.range = msg->getU8();
+        move.cooldown = msg->getU32();
+        move.activeSlot = msg->getU8();
+        move.learnLevel = msg->getU8();
+        move.target = msg->getU8();
+        info.learnedMoves.push_back(std::move(move));
+    }
+
     m_localPlayer->pokemonInfo(slot, info, active);
+}
+
+void ProtocolGame::parsePokemonMoveCooldown(const InputMessagePtr& msg)
+{
+    const uint32_t pokemonId = msg->getU32();
+    const uint8_t slot = msg->getU8();
+    const uint32_t duration = msg->getU32();
+    m_localPlayer->pokemonMoveCooldown(pokemonId, slot, duration);
 }
 
 void ProtocolGame::parseTrainerInfo(const InputMessagePtr& msg) const
