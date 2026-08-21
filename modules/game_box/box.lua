@@ -23,6 +23,14 @@ local selectedButton
 local currentContainer
 local suppressBoxRequest = false
 
+local function toggleFromHotkey()
+    if modules.game_console and modules.game_console.isChatEnabled() then
+        return
+    end
+
+    toggle()
+end
+
 function init()
     boxWindow = g_ui.displayUI('box')
     boxWindow:setVisible(false)
@@ -59,13 +67,13 @@ function init()
         onUpdateItem = onContainerUpdateItem
     })
 
-    g_keyboard.bindKeyDown('Ctrl+U', toggle)
+    g_keyboard.bindKeyDown('B', toggleFromHotkey)
     buildBoxSelectors()
     refreshParty()
 end
 
 function terminate()
-    g_keyboard.unbindKeyDown('Ctrl+U')
+    g_keyboard.unbindKeyDown('B')
 
     disconnect(g_game, {
         onGameStart = refreshParty,

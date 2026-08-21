@@ -1,6 +1,14 @@
 local trainerCardWindow
 local trainerCardButton
 
+local function toggleFromHotkey()
+    if modules.game_console and modules.game_console.isChatEnabled() then
+        return
+    end
+
+    toggle()
+end
+
 local genderInfo = {
     [0] = { name = 'Female', image = '/images/gender/gender_female' },
     [1] = { name = 'Male', image = '/images/gender/gender_male' }
@@ -64,7 +72,7 @@ function init()
         onGameEnd = offline
     })
 
-    g_keyboard.bindKeyDown('T', toggle)
+    g_keyboard.bindKeyDown('T', toggleFromHotkey)
     trainerCardWindow = g_ui.displayUI('trainercard')
     trainerCardWindow:hide()
 

@@ -262,6 +262,14 @@ local function refreshList()
     renderDetails()
 end
 
+local function toggleFromHotkey()
+    if modules.game_console and modules.game_console.isChatEnabled() then
+        return
+    end
+
+    toggle()
+end
+
 function init()
     connect(LocalPlayer, {
         onInventoryChange = onInventoryChange,
@@ -275,7 +283,7 @@ function init()
         onHealthPercentChange = onPokemonHealthChange
     })
 
-    g_keyboard.bindKeyDown('P', toggle)
+    g_keyboard.bindKeyDown('P', toggleFromHotkey)
 
     pokebagWindow = g_ui.displayUI('pokebag')
     pokebagWindow:hide()

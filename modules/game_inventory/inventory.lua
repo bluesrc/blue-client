@@ -18,6 +18,14 @@ inventoryPanel = nil
 inventoryButton = nil
 purseButton = nil
 
+local function toggleFromHotkey()
+    if modules.game_console and modules.game_console.isChatEnabled() then
+        return
+    end
+
+    toggle()
+end
+
 function init()
     connect(LocalPlayer, {
         onInventoryChange = onInventoryChange,
@@ -28,9 +36,9 @@ function init()
         onGameEnd = offline
     })
 
-    g_keyboard.bindKeyDown('Ctrl+I', toggle)
+    g_keyboard.bindKeyDown('I', toggleFromHotkey)
 
-    inventoryButton = modules.client_topmenu.addRightGameToggleButton('inventoryButton', tr('Inventory') .. ' (Ctrl+I)',
+    inventoryButton = modules.client_topmenu.addRightGameToggleButton('inventoryButton', tr('Inventory') .. ' (I)',
                                                                       '/images/topbuttons/inventory', toggle)
     inventoryButton:setOn(true)
 
@@ -64,7 +72,7 @@ function terminate()
         onGameEnd = offline
     })
 
-    g_keyboard.unbindKeyDown('Ctrl+I')
+    g_keyboard.unbindKeyDown('I')
 
     inventoryWindow:destroy()
     inventoryButton:destroy()
