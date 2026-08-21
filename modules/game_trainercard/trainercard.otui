@@ -102,6 +102,14 @@ MainWindow
         !text: tr('Guild') .. ':'
       TrainerCardFieldValue
         id: guildValue
+      TrainerCardFieldLabel
+        !text: tr('Pokedex') .. ':'
+      TrainerCardFieldValue
+        id: pokedexValue
+      TrainerCardFieldLabel
+        !text: tr('Captured') .. ':'
+      TrainerCardFieldValue
+        id: capturedValue
 
     Label
       id: experienceProgressLabel

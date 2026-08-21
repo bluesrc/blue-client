@@ -4105,5 +4105,7 @@ void ProtocolGame::parseTrainerInfo(const InputMessagePtr& msg) const
     const uint8_t gender = msg->getU8();
     const uint64_t money = msg->getU64();
     const std::string guild = msg->getString();
-    m_localPlayer->setTrainerInfo(hometown, gender, money, guild);
+    const uint32_t pokedexCount = msg->getU32();
+    const uint64_t totalCaught = msg->getU64();
+    m_localPlayer->setTrainerInfo(hometown, gender, money, guild, pokedexCount, totalCaught);
 }

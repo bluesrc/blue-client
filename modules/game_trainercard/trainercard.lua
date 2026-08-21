@@ -32,6 +32,8 @@ local function refresh()
     setValue('moneyValue', comma_value(player:getTrainerMoney()))
     setValue('levelValue', comma_value(player:getLevel()))
     setValue('guildValue', player:getGuildName() ~= '' and player:getGuildName() or tr('No guild'))
+    setValue('pokedexValue', comma_value(player:getPokedexCount()))
+    setValue('capturedValue', comma_value(player:getTotalCaught()))
 
     local gender = genderInfo[player:getTrainerGender()]
     local genderIcon = trainerCardWindow:recursiveGetChildById('genderIcon')

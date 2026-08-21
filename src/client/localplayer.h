@@ -59,7 +59,8 @@ public:
     void setMoves(const std::vector<uint16_t>& moves);
     void setBlessings(uint16_t blessings);
     void setResourceBalance(Otc::ResourceTypes_t type, uint64_t value);
-    void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild);
+    void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild,
+                        uint32_t pokedexCount, uint64_t totalCaught);
 
     uint32_t getFreeCapacity() { return m_freeCapacity; }
     uint32_t getTotalCapacity() { return m_totalCapacity; }
@@ -90,6 +91,8 @@ public:
     uint8_t getTrainerGender() { return m_trainerGender; }
     uint64_t getTrainerMoney() { return m_trainerMoney; }
     std::string getGuildName() { return m_guildName; }
+    uint32_t getPokedexCount() { return m_pokedexCount; }
+    uint64_t getTotalCaught() { return m_totalCaught; }
 
     const std::vector<uint16_t>& getMoves() { return m_moves; }
     ItemPtr getInventoryItem(Otc::InventorySlot inventory) { return m_inventoryItems[inventory]; }
@@ -193,4 +196,6 @@ private:
     uint8_t m_trainerGender{ 0 };
     uint64_t m_trainerMoney{ 0 };
     std::string m_guildName;
+    uint32_t m_pokedexCount{ 0 };
+    uint64_t m_totalCaught{ 0 };
 };
