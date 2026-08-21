@@ -535,6 +535,15 @@ void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
         info.moves[1].name, info.moves[1].cooldown,
         info.moves[2].name, info.moves[2].cooldown,
         info.moves[3].name, info.moves[3].cooldown);
+
+    using LuaPokemonMove = std::tuple<uint16_t, std::string, uint8_t, uint8_t, uint16_t, uint16_t, uint8_t, uint8_t, uint32_t, uint8_t, uint8_t, uint8_t>;
+    std::vector<LuaPokemonMove> learnedMoves;
+    learnedMoves.reserve(info.learnedMoves.size());
+    for (const PokemonInfo::LearnedMove& move : info.learnedMoves) {
+        learnedMoves.emplace_back(move.id, move.name, move.type, move.category, move.power, move.pp,
+                                  move.accuracy, move.range, move.cooldown, move.activeSlot, move.learnLevel, move.target);
+    }
+    callLuaField("onPokemonMoveList", slot, learnedMoves);
 }
 
 void LocalPlayer::pokemonMoveCooldown(uint32_t pokemonId, uint8_t slot, uint32_t duration)

@@ -4104,6 +4104,25 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
         move.cooldown = msg->getU32();
     }
 
+    const uint16_t learnedMoveCount = msg->getU16();
+    info.learnedMoves.reserve(learnedMoveCount);
+    for (uint16_t index = 0; index < learnedMoveCount; ++index) {
+        PokemonInfo::LearnedMove move;
+        move.id = msg->getU16();
+        move.name = msg->getString();
+        move.type = msg->getU8();
+        move.category = msg->getU8();
+        move.power = msg->getU16();
+        move.pp = msg->getU16();
+        move.accuracy = msg->getU8();
+        move.range = msg->getU8();
+        move.cooldown = msg->getU32();
+        move.activeSlot = msg->getU8();
+        move.learnLevel = msg->getU8();
+        move.target = msg->getU8();
+        info.learnedMoves.push_back(std::move(move));
+    }
+
     m_localPlayer->pokemonInfo(slot, info, active);
 }
 

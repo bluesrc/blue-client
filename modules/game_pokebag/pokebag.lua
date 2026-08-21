@@ -4,8 +4,17 @@ local pokemonList
 local detailsPanel
 local emptyPanel
 local statsGrid
+local topInfoPanel
+local movesPanel
+local infoTab
+local movesTab
+local activeMovesList
+local learnedMovesList
 local pokemonInfo = {}
 local selectedSlot
+local selectedMoveId
+local currentDetailsTab = 'info'
+local POKEMON_MOVE_SLOTS_OPCODE = 76
 
 local natureNames = {
     [0] = 'None', 'Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Docile', 'Relaxed', 'Impish',
@@ -30,6 +39,42 @@ local genderImages = {
     [1] = '/images/gender/gender_male',
     [2] = '/images/gender/gender_female',
     [3] = '/images/gender/gender_undefined'
+}
+
+local moveCategoryNames = {
+    [0] = 'Physical',
+    [1] = 'Special',
+    [2] = 'Status'
+}
+
+local moveTargetNames = {
+    [0] = 'Target',
+    [1] = 'Self',
+    [2] = 'Area'
+}
+
+-- The type atlas follows the order used by the image, which differs from
+-- PokemonType in the protocol. Each row in both atlases is 64x28 pixels.
+local moveTypeSpriteRows = {
+    [0] = 9,   -- None
+    [1] = 6,   -- Bug
+    [2] = 17,  -- Dark
+    [3] = 16,  -- Dragon
+    [4] = 13,  -- Electric
+    [5] = 18,  -- Fairy
+    [6] = 1,   -- Fighting
+    [7] = 10,  -- Fire
+    [8] = 2,   -- Flying
+    [9] = 7,   -- Ghost
+    [10] = 12, -- Grass
+    [11] = 4,  -- Ground
+    [12] = 15, -- Ice
+    [13] = 0,  -- Normal
+    [14] = 3,  -- Poison
+    [15] = 14, -- Psychic
+    [16] = 5,  -- Rock
+    [17] = 8,  -- Steel
+    [18] = 11  -- Water
 }
 
 local natureModifiers = {
@@ -131,11 +176,338 @@ local function renderStats(info)
         elseif modifier < 0 then
             statColor = '#d95757'
         end
+
+		local statValue = info.stats[stat.key]
+		local baseValue = info.baseStats and info.baseStats[stat.key] or statValue
+		local battleDelta = info.active and (statValue - baseValue) or 0
+		local displayedValue = statValue
+		if battleDelta ~= 0 then
+			displayedValue = string.format('%d (%+d)', statValue, battleDelta)
+			statColor = battleDelta > 0 and '#50b96b' or '#d95757'
+		end
+
         addStatCell('PokebagStatCell', tr(stat.label), statColor)
-        addStatCell('PokebagStatCell', info.stats[stat.key], statColor)
+        addStatCell('PokebagStatCell', displayedValue, statColor)
         addStatCell('PokebagStatCell', info.ivs[stat.key])
         addStatCell('PokebagStatCell', info.evs[stat.key])
     end
+end
+
+local function setTypeIcon(icon, pokemonType)
+    local typeRow = moveTypeSpriteRows[pokemonType] or moveTypeSpriteRows[0]
+    icon:setImageClip(torect(string.format('0 %d 64 28', typeRow * 28)))
+    icon:setTooltip(tr(typeNames[pokemonType] or 'None'))
+end
+
+local function setMoveIcons(entry, move)
+    local typeIcon = entry:getChildById('moveTypeIcon')
+    local categoryIcon = entry:getChildById('moveCategoryIcon')
+    local category = math.max(0, math.min(2, move.category or 2))
+
+    setTypeIcon(typeIcon, move.type)
+    typeIcon:setVisible(true)
+
+    categoryIcon:setImageClip(torect(string.format('0 %d 64 28', category * 28)))
+    categoryIcon:setTooltip(tr(moveCategoryNames[category] or 'Status'))
+    categoryIcon:setVisible(true)
+end
+
+local function hideMoveIcons(entry)
+    entry:getChildById('moveTypeIcon'):setVisible(false)
+    entry:getChildById('moveCategoryIcon'):setVisible(false)
+end
+
+local function setMoveEntry(entry, move, slot)
+    local slotLabel = entry:getChildById('moveSlot')
+    if slotLabel then
+        slotLabel:setText(slot .. '.')
+    end
+    entry:getChildById('moveName'):setText(move.name)
+    entry:getChildById('moveMeta'):setText(string.format('%s: %.1fs', tr('Cooldown'), move.cooldown / 1000))
+    setMoveIcons(entry, move)
+    entry:setTooltip(tr('Drag to reorder. Drag to Learned Moves to remove it.'))
+end
+
+local function findMoveById(info, moveId)
+    for _, move in ipairs(info and info.moves or {}) do
+        if move.id == moveId then
+            return move
+        end
+    end
+    return nil
+end
+
+local function getActiveMoveIds(info)
+    local movesBySlot = {}
+    for _, move in ipairs(info and info.moves or {}) do
+        if move.activeSlot >= 1 and move.activeSlot <= 4 then
+            movesBySlot[move.activeSlot] = move.id
+        end
+    end
+
+    local moveIds = {}
+    for slot = 1, 4 do
+        if movesBySlot[slot] then
+            table.insert(moveIds, movesBySlot[slot])
+        end
+    end
+    return moveIds
+end
+
+local function sendActiveMoveIds(moveIds)
+    if not selectedSlot or not pokemonInfo[selectedSlot] then
+        return
+    end
+
+    local protocolGame = g_game.getProtocolGame()
+    if not protocolGame then
+        return
+    end
+
+    protocolGame:sendExtendedOpcode(POKEMON_MOVE_SLOTS_OPCODE, string.format(
+        '%d;%d;%d;%d;%d', selectedSlot, moveIds[1] or 0, moveIds[2] or 0,
+        moveIds[3] or 0, moveIds[4] or 0))
+end
+
+local function canChangeActiveMoves(showMessage)
+    local info = selectedSlot and pokemonInfo[selectedSlot]
+    local message
+    if not info then
+        return false
+    elseif info.active then
+        message = tr('Return this Pokemon before changing its active moves.')
+    else
+        local player = g_game.getLocalPlayer()
+        if player and player:hasState(PlayerStates.Swords) then
+            message = tr('You cannot change Pokemon moves while in combat.')
+        end
+    end
+
+    if message then
+        if showMessage and modules.game_textmessage then
+            modules.game_textmessage.displayFailureMessage(message)
+        end
+        return false
+    end
+    return true
+end
+
+local function findActiveMoveIndex(moveIds, moveId)
+    for index, activeMoveId in ipairs(moveIds) do
+        if activeMoveId == moveId then
+            return index
+        end
+    end
+    return nil
+end
+
+local function dropMoveOnActiveSlots(draggedWidget, targetSlot)
+    if not canChangeActiveMoves(true) then
+        return false
+    end
+
+    local info = selectedSlot and pokemonInfo[selectedSlot]
+    local move = info and draggedWidget and findMoveById(info, draggedWidget.moveId)
+    if not move then
+        return false
+    end
+
+    local moveIds = getActiveMoveIds(info)
+    local sourceIndex = findActiveMoveIndex(moveIds, move.id)
+    if sourceIndex then
+        table.remove(moveIds, sourceIndex)
+        targetSlot = math.max(1, math.min(targetSlot or (#moveIds + 1), #moveIds + 1))
+        table.insert(moveIds, targetSlot, move.id)
+    else
+        if #moveIds >= 4 and not targetSlot then
+            return true
+        end
+
+        targetSlot = math.max(1, math.min(targetSlot or (#moveIds + 1), math.min(4, #moveIds + 1)))
+        if targetSlot <= #moveIds then
+            moveIds[targetSlot] = move.id
+        else
+            table.insert(moveIds, move.id)
+        end
+    end
+    sendActiveMoveIds(moveIds)
+    return true
+end
+
+local function dropMoveOnLearnedList(draggedWidget)
+    if not canChangeActiveMoves(true) then
+        return false
+    end
+
+    local info = selectedSlot and pokemonInfo[selectedSlot]
+    if not info or not draggedWidget or not draggedWidget.moveId then
+        return false
+    end
+
+    local moveIds = getActiveMoveIds(info)
+    local sourceIndex = findActiveMoveIndex(moveIds, draggedWidget.moveId)
+    if not sourceIndex then
+        return false
+    end
+
+    table.remove(moveIds, sourceIndex)
+    sendActiveMoveIds(moveIds)
+    return true
+end
+
+local function configureMoveDragging(entry, source)
+    entry.moveSource = source
+    entry:setDraggable(true)
+    entry.onDragEnter = function(widget)
+        if not canChangeActiveMoves(true) then
+            return false
+        end
+        widget.dragOriginalOpacity = widget:getOpacity()
+        widget:setOpacity(0.65)
+        g_mouse.pushCursor('target')
+        return true
+    end
+    entry.onDragLeave = function(widget)
+        if not widget:isDestroyed() then
+            widget:setOpacity(widget.dragOriginalOpacity or 1)
+        end
+        widget.dragOriginalOpacity = nil
+        g_mouse.popCursor('target')
+        return true
+    end
+end
+
+local function refreshMoveSelection()
+    if activeMovesList then
+        for _, entry in ipairs(activeMovesList:getChildren()) do
+            entry:setOn(entry.moveId == selectedMoveId)
+        end
+    end
+    if learnedMovesList then
+        for _, entry in ipairs(learnedMovesList:getChildren()) do
+            entry:setOn(entry.moveId == selectedMoveId)
+        end
+    end
+end
+
+local function showMoveDetails(move)
+    local nameLabel = movesPanel:recursiveGetChildById('moveDetailsName')
+    local detailsLabel = movesPanel:recursiveGetChildById('moveDetailsText')
+    if not move then
+        selectedMoveId = nil
+        nameLabel:setText(tr('Select an active move'))
+        detailsLabel:setText('')
+        refreshMoveSelection()
+        return
+    end
+
+    selectedMoveId = move.id
+    nameLabel:setText(move.name)
+    detailsLabel:setText(string.format(
+        '%s: %s\n%s: %d\nPP: %d\n%s: %d%%\n%s: %.1fs',
+        tr('Target'), tr(moveTargetNames[move.target] or 'Self'),
+        tr('Power'), move.power,
+        move.pp,
+        tr('Accuracy'), move.accuracy,
+        tr('Cooldown'), move.cooldown / 1000))
+    refreshMoveSelection()
+end
+
+local function renderMoves(info)
+    activeMovesList:destroyChildren()
+    learnedMovesList:destroyChildren()
+
+    local movesBySlot = {}
+    local selectedMove
+    for _, move in ipairs(info.moves or {}) do
+        if move.id == selectedMoveId then
+            selectedMove = move
+        end
+    end
+    for slot, moveId in ipairs(getActiveMoveIds(info)) do
+        movesBySlot[slot] = findMoveById(info, moveId)
+    end
+
+    for slot = 1, 4 do
+        local move = movesBySlot[slot]
+        local entry = g_ui.createWidget('PokebagMoveEntry', activeMovesList)
+        entry:setId('activeMove' .. slot)
+        if move then
+            local currentMove = move
+            entry.moveId = move.id
+            setMoveEntry(entry, move, slot)
+            configureMoveDragging(entry, 'active')
+            local targetSlot = slot
+            entry.onDrop = function(_, draggedWidget)
+                return dropMoveOnActiveSlots(draggedWidget, targetSlot)
+            end
+            entry.onMousePress = function(_, _, button)
+                if button == MouseLeftButton then
+                    showMoveDetails(currentMove)
+                    return true
+                end
+                return false
+            end
+            selectedMove = selectedMove or move
+        else
+            entry:getChildById('moveSlot'):setText(slot .. '.')
+            entry:getChildById('moveName'):setText('')
+            entry:getChildById('moveMeta'):setText('')
+            hideMoveIcons(entry)
+            entry:setOpacity(0.5)
+            entry:setDraggable(false)
+            entry:setTooltip(tr('Drag a learned move here to activate it.'))
+            local targetSlot = slot
+            entry.onDrop = function(_, draggedWidget)
+                return dropMoveOnActiveSlots(draggedWidget, targetSlot)
+            end
+        end
+    end
+
+    for _, move in ipairs(info.moves or {}) do
+        local currentMove = move
+        local entry = g_ui.createWidget('PokebagLearnedMoveEntry', learnedMovesList)
+        entry:setId('learnedMove' .. move.id)
+        entry.moveId = move.id
+        local nameLabel = entry:getChildById('moveName')
+        local metaLabel = entry:getChildById('moveMeta')
+        nameLabel:setText(move.name)
+        if move.activeSlot > 0 then
+            nameLabel:setColor('#f3d66c')
+            metaLabel:setText(tr('Active'))
+            metaLabel:setColor('#62c979')
+        else
+            metaLabel:setText('')
+        end
+        setMoveIcons(entry, move)
+        configureMoveDragging(entry, 'learned')
+        entry:setTooltip(move.activeSlot > 0 and
+            tr('Drag to Active Moves to reorder it, or inside Learned Moves to remove it.') or
+            tr('Drag to Active Moves to activate it.'))
+        entry.onDrop = function(_, draggedWidget)
+            return dropMoveOnLearnedList(draggedWidget)
+        end
+        entry.onMousePress = function(_, _, button)
+            if button == MouseLeftButton then
+                showMoveDetails(currentMove)
+                return true
+            end
+            return false
+        end
+        selectedMove = selectedMove or move
+    end
+
+    showMoveDetails(selectedMove)
+end
+
+function selectDetailsTab(tabName)
+    currentDetailsTab = tabName == 'moves' and 'moves' or 'info'
+    local showInfo = currentDetailsTab == 'info'
+    infoTab:setOn(showInfo)
+    movesTab:setOn(not showInfo)
+    topInfoPanel:setVisible(showInfo)
+    statsGrid:setVisible(showInfo)
+    movesPanel:setVisible(not showInfo)
 end
 
 local function renderDetails()
@@ -156,11 +528,16 @@ local function renderDetails()
     setValue('levelInfo', tr('Level') .. ': ' .. info.level)
     setValue('natureInfo', tr('Nature') .. ': ' .. tr(natureNames[info.nature] or 'None'))
 
-    local types = tr(typeNames[info.primaryType] or 'None')
+    local primaryTypeIcon = detailsPanel:recursiveGetChildById('primaryTypeIcon')
+    local secondaryTypeIcon = detailsPanel:recursiveGetChildById('secondaryTypeIcon')
+    setTypeIcon(primaryTypeIcon, info.primaryType)
+    primaryTypeIcon:setVisible(true)
     if info.secondaryType and info.secondaryType ~= 0 then
-        types = types .. ' / ' .. tr(typeNames[info.secondaryType] or 'None')
+        setTypeIcon(secondaryTypeIcon, info.secondaryType)
+        secondaryTypeIcon:setVisible(true)
+    else
+        secondaryTypeIcon:setVisible(false)
     end
-    setValue('typesInfo', tr('Types') .. ': ' .. types)
 
     local healthBar = detailsPanel:recursiveGetChildById('healthBar')
     setValue('healthLabel', tr('Health'))
@@ -201,6 +578,8 @@ local function renderDetails()
     friendshipBar:setValue(info.friendship, 0, 255)
     friendshipBar:setText(info.friendship .. ' / 255')
     renderStats(info)
+    renderMoves(info)
+    selectDetailsTab(currentDetailsTab)
 end
 
 local function refreshSelection()
@@ -215,6 +594,9 @@ end
 local function selectPokemon(slot)
     if not pokemonInfo[slot] then
         return
+    end
+    if selectedSlot ~= slot then
+        selectedMoveId = nil
     end
     selectedSlot = slot
     refreshSelection()
@@ -273,7 +655,8 @@ end
 function init()
     connect(LocalPlayer, {
         onInventoryChange = onInventoryChange,
-        onPokemonInfo = updatePokemonInfo
+        onPokemonInfo = updatePokemonInfo,
+        onPokemonMoveList = onPokemonMoveList
     })
     connect(g_game, {
         onGameStart = online,
@@ -291,6 +674,26 @@ function init()
     detailsPanel = pokebagWindow:getChildById('detailsPanel')
     emptyPanel = pokebagWindow:getChildById('emptyPanel')
     statsGrid = detailsPanel:getChildById('statsGrid')
+    topInfoPanel = detailsPanel:getChildById('topInfoPanel')
+    movesPanel = detailsPanel:getChildById('movesPanel')
+    infoTab = detailsPanel:getChildById('infoTab')
+    movesTab = detailsPanel:getChildById('movesTab')
+    activeMovesList = movesPanel:recursiveGetChildById('activeMovesList')
+    learnedMovesList = movesPanel:recursiveGetChildById('learnedMovesList')
+
+    activeMovesList.onDrop = function(_, draggedWidget)
+        return dropMoveOnActiveSlots(draggedWidget)
+    end
+    learnedMovesList.onDrop = function(_, draggedWidget)
+        return dropMoveOnLearnedList(draggedWidget)
+    end
+    movesPanel:recursiveGetChildById('activeMovesFrame').onDrop = function(_, draggedWidget)
+        return dropMoveOnActiveSlots(draggedWidget)
+    end
+    movesPanel:recursiveGetChildById('learnedMovesFrame').onDrop = function(_, draggedWidget)
+        return dropMoveOnLearnedList(draggedWidget)
+    end
+    selectDetailsTab('info')
 
     pokebagButton = modules.client_topmenu.addRightGameToggleButton(
         'pokebagButton', tr('Pokebag') .. ' (P)', '/images/topbuttons/pokeball', toggle)
@@ -310,7 +713,8 @@ function terminate()
 
     disconnect(LocalPlayer, {
         onInventoryChange = onInventoryChange,
-        onPokemonInfo = updatePokemonInfo
+        onPokemonInfo = updatePokemonInfo,
+        onPokemonMoveList = onPokemonMoveList
     })
     disconnect(g_game, {
         onGameStart = online,
@@ -333,8 +737,15 @@ function terminate()
     detailsPanel = nil
     emptyPanel = nil
     statsGrid = nil
+    topInfoPanel = nil
+    movesPanel = nil
+    infoTab = nil
+    movesTab = nil
+    activeMovesList = nil
+    learnedMovesList = nil
     pokemonInfo = {}
     selectedSlot = nil
+    selectedMoveId = nil
 end
 
 function online()
@@ -344,6 +755,7 @@ end
 function offline()
     pokemonInfo = {}
     selectedSlot = nil
+    selectedMoveId = nil
     if pokebagWindow then
         pokebagWindow:hide()
         refreshList()
@@ -417,6 +829,10 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         return
     end
 
+    local previousInfo = pokemonInfo[slot]
+    local previousMoves = previousInfo and previousInfo.moves or {}
+    local receivedStats = makeStats(statHp, statAttack, statDefense, statSpecialAttack, statSpecialDefense, statSpeed)
+    local baseStats = active and previousInfo and previousInfo.baseStats or receivedStats
     pokemonInfo[slot] = {
         creatureId = p_id or 0,
         number = number or 0,
@@ -436,9 +852,41 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         secondaryType = secondaryType or 0,
         gender = gender or 3,
         shiny = shiny or false,
-        stats = makeStats(statHp, statAttack, statDefense, statSpecialAttack, statSpecialDefense, statSpeed),
+        stats = receivedStats,
+        baseStats = baseStats,
         ivs = makeStats(ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed),
-        evs = makeStats(evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed)
+        evs = makeStats(evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed),
+        moves = previousMoves
     }
     refreshList()
+end
+
+function onPokemonMoveList(_, slot, receivedMoves)
+    local info = pokemonInfo[slot]
+    if not info then
+        return
+    end
+
+    local moves = {}
+    for _, data in ipairs(receivedMoves or {}) do
+        table.insert(moves, {
+            id = data[1] or 0,
+            name = data[2] or tr('Unknown'),
+            type = data[3] or 0,
+            category = data[4] or 2,
+            power = data[5] or 0,
+            pp = data[6] or 0,
+            accuracy = data[7] or 0,
+            range = data[8] or 0,
+            cooldown = data[9] or 0,
+            activeSlot = data[10] or 0,
+            learnLevel = data[11] or 1,
+            target = data[12] or 1
+        })
+    end
+    info.moves = moves
+
+    if selectedSlot == slot then
+        renderDetails()
+    end
 end

@@ -73,6 +73,139 @@ PokebagStatCell < Label
   text-offset: 8 3
   color: #dddddd
 
+PokebagMoveEntry < Panel
+  height: 37
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  border-width: 1
+  border-color: #00000000
+  background-color: #00000000
+  focusable: true
+  draggable: true
+  phantom: false
+
+  $hover:
+    background-color: #ffffff10
+
+  $on:
+    border-color: #e6bd45
+    background-color: #e6bd4518
+
+  Label
+    id: moveSlot
+    width: 28
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    text-align: center
+    color: #e6bd45
+    phantom: true
+
+  Label
+    id: moveName
+    anchors.left: moveSlot.right
+    anchors.right: moveTypeIcon.left
+    anchors.top: parent.top
+    margin-left: 5
+    margin-top: 4
+    margin-right: 4
+    height: 14
+    color: #eeeeee
+    phantom: true
+
+  Label
+    id: moveMeta
+    anchors.left: moveName.left
+    anchors.right: moveTypeIcon.left
+    anchors.top: moveName.bottom
+    margin-right: 4
+    height: 13
+    color: #999999
+    font: verdana-11px-monochrome
+    phantom: true
+
+  UIImageView
+    id: moveCategoryIcon
+    size: 48 21
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 5
+    image-source: /images/game/moves/category
+    image-smooth: false
+    phantom: true
+
+  UIImageView
+    id: moveTypeIcon
+    size: 48 21
+    anchors.right: moveCategoryIcon.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 3
+    image-source: /images/game/types/types
+    image-smooth: false
+    phantom: true
+
+PokebagLearnedMoveEntry < Panel
+  height: 38
+  image-source: /images/ui/panel_flat
+  image-border: 1
+  border-width: 1
+  border-color: #00000000
+  background-color: #00000000
+  focusable: true
+  draggable: true
+  phantom: false
+
+  $hover:
+    background-color: #ffffff10
+
+  $on:
+    border-color: #e6bd45
+    background-color: #e6bd4518
+
+  Label
+    id: moveName
+    anchors.left: parent.left
+    anchors.right: moveTypeIcon.left
+    anchors.top: parent.top
+    margin-left: 7
+    margin-right: 4
+    margin-top: 4
+    height: 14
+    color: #eeeeee
+    phantom: true
+
+  Label
+    id: moveMeta
+    anchors.left: parent.left
+    anchors.right: moveTypeIcon.left
+    anchors.top: moveName.bottom
+    margin-left: 7
+    margin-right: 4
+    height: 13
+    color: #999999
+    font: verdana-11px-monochrome
+    phantom: true
+
+  UIImageView
+    id: moveCategoryIcon
+    size: 48 21
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 5
+    image-source: /images/game/moves/category
+    image-smooth: false
+    phantom: true
+
+  UIImageView
+    id: moveTypeIcon
+    size: 48 21
+    anchors.right: moveCategoryIcon.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 3
+    image-source: /images/game/types/types
+    image-smooth: false
+    phantom: true
+
 MainWindow
   id: pokebagWindow
   !text: tr('Pokebag')
@@ -126,13 +259,32 @@ MainWindow
     margin-bottom: 10
     visible: false
 
+    TabButton
+      id: infoTab
+      !text: tr('Info')
+      width: 92
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-top: 4
+      on: true
+      @onClick: modules.game_pokebag.selectDetailsTab('info')
+
+    TabButton
+      id: movesTab
+      !text: tr('Moves')
+      width: 92
+      anchors.left: infoTab.right
+      anchors.top: infoTab.top
+      margin-left: 5
+      @onClick: modules.game_pokebag.selectDetailsTab('moves')
+
     FlatPanel
       id: topInfoPanel
       height: 230
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.top: parent.top
-      margin-top: 4
+      anchors.top: infoTab.bottom
+      margin-top: 8
 
       FlatPanel
         id: portraitFrame
@@ -186,12 +338,39 @@ MainWindow
         text-align: left
         color: #aaaaaa
 
-      PokebagInfoText
-        id: levelInfo
+      Panel
+        id: typesInfo
+        height: 28
         anchors.left: nameValue.left
         anchors.right: parent.right
         anchors.top: numberValue.bottom
         margin-top: 5
+
+        UIImageView
+          id: primaryTypeIcon
+          size: 64 28
+          anchors.left: parent.left
+          anchors.top: parent.top
+          image-source: /images/game/types/types
+          image-smooth: false
+          phantom: true
+
+        UIImageView
+          id: secondaryTypeIcon
+          size: 64 28
+          anchors.left: primaryTypeIcon.right
+          anchors.top: parent.top
+          margin-left: 5
+          image-source: /images/game/types/types
+          image-smooth: false
+          phantom: true
+          visible: false
+
+      PokebagInfoText
+        id: levelInfo
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: typesInfo.bottom
 
       PokebagInfoText
         id: natureInfo
@@ -199,17 +378,11 @@ MainWindow
         anchors.right: parent.right
         anchors.top: levelInfo.bottom
 
-      PokebagInfoText
-        id: typesInfo
-        anchors.left: nameValue.left
-        anchors.right: parent.right
-        anchors.top: natureInfo.bottom
-
       Label
         id: healthLabel
         anchors.left: nameValue.left
         anchors.right: parent.right
-        anchors.top: typesInfo.bottom
+        anchors.top: natureInfo.bottom
         height: 16
         text-align: left
         color: #a8a8a8
@@ -272,6 +445,113 @@ MainWindow
         cell-size: 130 23
         num-columns: 4
         flow: true
+
+    Panel
+      id: movesPanel
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: infoTab.bottom
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      visible: false
+
+      FlatPanel
+        id: activeMovesFrame
+        anchors.left: parent.left
+        anchors.right: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        margin-right: 5
+        padding: 7
+
+        Label
+          !text: tr('Active Moves')
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: parent.top
+          height: 20
+          color: #e6bd45
+          text-align: center
+
+        Panel
+          id: activeMovesList
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: prev.bottom
+          height: 157
+          margin-top: 5
+          layout:
+            type: verticalBox
+            spacing: 3
+
+        HorizontalSeparator
+          id: moveDetailsSeparator
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: activeMovesList.bottom
+          margin-top: 7
+
+        Label
+          id: moveDetailsName
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: moveDetailsSeparator.bottom
+          margin-top: 7
+          height: 20
+          text-align: center
+          color: #f3d66c
+          font: verdana-11px-rounded
+          !text: tr('Select an active move')
+
+        Label
+          id: moveDetailsText
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: moveDetailsName.bottom
+          anchors.bottom: parent.bottom
+          margin-top: 5
+          color: #cccccc
+          text-align: topLeft
+          text-wrap: true
+
+      FlatPanel
+        id: learnedMovesFrame
+        anchors.left: parent.horizontalCenter
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        margin-left: 5
+        padding: 7
+
+        Label
+          !text: tr('Learned Moves')
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: parent.top
+          height: 20
+          color: #e6bd45
+          text-align: center
+
+        VerticalScrollBar
+          id: learnedMovesScroll
+          anchors.top: prev.bottom
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin-top: 5
+          step: 38
+          pixels-scroll: true
+
+        ScrollablePanel
+          id: learnedMovesList
+          anchors.left: parent.left
+          anchors.right: learnedMovesScroll.left
+          anchors.top: learnedMovesScroll.top
+          anchors.bottom: parent.bottom
+          margin-right: 4
+          vertical-scrollbar: learnedMovesScroll
+          layout:
+            type: verticalBox
+            spacing: 3
 
   Button
     id: closeButton
