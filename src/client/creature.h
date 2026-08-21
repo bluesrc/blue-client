@@ -366,6 +366,11 @@ struct PokemonInfo
         uint16_t speed{ 0 };
     };
 
+    struct Move {
+        std::string name;
+        uint32_t cooldown{ 0 };
+    };
+
     uint32_t p_id{ 0 };
     uint8_t healthPercent{ 0 };
     uint16_t number{ 0 };
@@ -386,4 +391,5 @@ struct PokemonInfo
     Stats stats;
     Stats ivs;
     Stats evs;
+    std::array<Move, 4> moves;
 };

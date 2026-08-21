@@ -1,0 +1,8 @@
+Module
+  name: game_pokemonmoves
+  description: Displays the active Pokemon Moves and their cooldowns
+  author: Blue Team
+  sandboxed: true
+  scripts: [ pokemonmoves ]
+  @onLoad: init()
+  @onUnload: terminate()
