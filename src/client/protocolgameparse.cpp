@@ -4123,6 +4123,10 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
         info.learnedMoves.push_back(std::move(move));
     }
 
+    info.abilityId = msg->getU16();
+    info.abilityName = msg->getString();
+    info.abilityDescription = msg->getString();
+
     m_localPlayer->pokemonInfo(slot, info, active);
 }
 

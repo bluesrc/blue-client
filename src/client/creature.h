@@ -403,6 +403,9 @@ struct PokemonInfo
     uint8_t secondaryType{ 0 };
     uint8_t gender{ 0 };
     bool shiny{ false };
+    uint16_t abilityId{ 0 };
+    std::string abilityName;
+    std::string abilityDescription;
     Stats stats;
     Stats ivs;
     Stats evs;
