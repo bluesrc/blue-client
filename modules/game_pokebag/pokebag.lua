@@ -527,6 +527,9 @@ local function renderDetails()
     setValue('numberValue', '#' .. string.format('%04d', info.number))
     setValue('levelInfo', tr('Level') .. ': ' .. info.level)
     setValue('natureInfo', tr('Nature') .. ': ' .. tr(natureNames[info.nature] or 'None'))
+    local abilityInfo = detailsPanel:recursiveGetChildById('abilityInfo')
+    abilityInfo:setText(tr('Ability') .. ': ' .. (info.abilityName ~= '' and info.abilityName or tr('None')))
+    abilityInfo:setTooltip(info.abilityDescription ~= '' and info.abilityDescription or nil)
 
     local primaryTypeIcon = detailsPanel:recursiveGetChildById('primaryTypeIcon')
     local secondaryTypeIcon = detailsPanel:recursiveGetChildById('secondaryTypeIcon')
@@ -817,7 +820,8 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
                            primaryType, secondaryType, gender, shiny,
                            statHp, statAttack, statDefense, statSpecialAttack, statSpecialDefense, statSpeed,
                            ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed,
-                           evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed)
+                           evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed,
+                           abilityId, abilityName, abilityDescription)
     if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
         return
     end
@@ -852,6 +856,9 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         secondaryType = secondaryType or 0,
         gender = gender or 3,
         shiny = shiny or false,
+        abilityId = abilityId or 0,
+        abilityName = abilityName or '',
+        abilityDescription = abilityDescription or '',
         stats = receivedStats,
         baseStats = baseStats,
         ivs = makeStats(ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed),

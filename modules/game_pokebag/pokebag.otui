@@ -280,7 +280,7 @@ MainWindow
 
     FlatPanel
       id: topInfoPanel
-      height: 230
+      height: 250
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: infoTab.bottom
@@ -378,11 +378,17 @@ MainWindow
         anchors.right: parent.right
         anchors.top: levelInfo.bottom
 
+      PokebagInfoText
+        id: abilityInfo
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: natureInfo.bottom
+
       Label
         id: healthLabel
         anchors.left: nameValue.left
         anchors.right: parent.right
-        anchors.top: natureInfo.bottom
+        anchors.top: abilityInfo.bottom
         height: 16
         text-align: left
         color: #a8a8a8

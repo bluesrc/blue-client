@@ -528,7 +528,8 @@ void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
                  info.ivs.hp, info.ivs.attack, info.ivs.defense, info.ivs.specialAttack,
                  info.ivs.specialDefense, info.ivs.speed,
                  info.evs.hp, info.evs.attack, info.evs.defense, info.evs.specialAttack,
-                 info.evs.specialDefense, info.evs.speed);
+                 info.evs.specialDefense, info.evs.speed,
+                 info.abilityId, info.abilityName, info.abilityDescription);
 
     callLuaField("onPokemonMoves", slot, info.p_id, active,
         info.moves[0].name, info.moves[0].cooldown,
