@@ -15,6 +15,7 @@ local selectedSlot
 local selectedMoveId
 local currentDetailsTab = 'info'
 local POKEMON_MOVE_SLOTS_OPCODE = 76
+local POKEMON_HELD_ITEM_OPCODE = 77
 
 local natureNames = {
     [0] = 'None', 'Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Docile', 'Relaxed', 'Impish',
@@ -267,6 +268,38 @@ local function sendActiveMoveIds(moveIds)
     protocolGame:sendExtendedOpcode(POKEMON_MOVE_SLOTS_OPCODE, string.format(
         '%d;%d;%d;%d;%d', selectedSlot, moveIds[1] or 0, moveIds[2] or 0,
         moveIds[3] or 0, moveIds[4] or 0))
+end
+
+local function sendHeldItemRequest(action, item)
+    if not selectedSlot or not pokemonInfo[selectedSlot] then
+        return false
+    end
+
+    local protocolGame = g_game.getProtocolGame()
+    if not protocolGame then
+        return false
+    end
+
+    if action == 'R' then
+        protocolGame:sendExtendedOpcode(POKEMON_HELD_ITEM_OPCODE,
+            string.format('R;%d', selectedSlot))
+        return true
+    end
+
+    if not item or not item:isItem() then
+        return false
+    end
+
+    local position = item:getPosition()
+    protocolGame:sendExtendedOpcode(POKEMON_HELD_ITEM_OPCODE, string.format(
+        'E;%d;%d;%d;%d;%d;%d', selectedSlot, position.x, position.y, position.z,
+        item:getStackPos(), item:getId()))
+    return true
+end
+
+local function dropHeldItem(_, draggedWidget)
+    local item = draggedWidget and draggedWidget.currentDragThing
+    return sendHeldItemRequest('E', item)
 end
 
 local function canChangeActiveMoves(showMessage)
@@ -531,6 +564,20 @@ local function renderDetails()
     abilityInfo:setText(tr('Ability') .. ': ' .. (info.abilityName ~= '' and info.abilityName or tr('None')))
     abilityInfo:setTooltip(info.abilityDescription ~= '' and info.abilityDescription or nil)
 
+    local heldItemSlot = detailsPanel:recursiveGetChildById('heldItemSlot')
+    local heldItemName = detailsPanel:recursiveGetChildById('heldItemName')
+    local removeHeldItemButton = detailsPanel:recursiveGetChildById('removeHeldItemButton')
+    if info.heldItemClientId ~= 0 then
+        heldItemSlot:setItemId(info.heldItemClientId)
+    else
+        heldItemSlot:clearItem()
+    end
+    heldItemSlot:setOpacity(info.heldItemId ~= 0 and not info.heldItemActive and 0.55 or 1)
+    heldItemSlot:setTooltip(info.heldItemDescription ~= '' and info.heldItemDescription or nil)
+    heldItemName:setText(info.heldItemName ~= '' and info.heldItemName or tr('None'))
+    heldItemName:setTooltip(info.heldItemDescription ~= '' and info.heldItemDescription or nil)
+    removeHeldItemButton:setVisible(info.heldItemId ~= 0)
+
     local primaryTypeIcon = detailsPanel:recursiveGetChildById('primaryTypeIcon')
     local secondaryTypeIcon = detailsPanel:recursiveGetChildById('secondaryTypeIcon')
     setTypeIcon(primaryTypeIcon, info.primaryType)
@@ -683,6 +730,8 @@ function init()
     movesTab = detailsPanel:getChildById('movesTab')
     activeMovesList = movesPanel:recursiveGetChildById('activeMovesList')
     learnedMovesList = movesPanel:recursiveGetChildById('learnedMovesList')
+    local heldItemSlot = detailsPanel:recursiveGetChildById('heldItemSlot')
+    heldItemSlot.onDrop = dropHeldItem
 
     activeMovesList.onDrop = function(_, draggedWidget)
         return dropMoveOnActiveSlots(draggedWidget)
@@ -821,7 +870,8 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
                            statHp, statAttack, statDefense, statSpecialAttack, statSpecialDefense, statSpeed,
                            ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed,
                            evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed,
-                           abilityId, abilityName, abilityDescription)
+                           abilityId, abilityName, abilityDescription,
+                           heldItemId, heldItemClientId, heldItemName, heldItemDescription, heldItemActive)
     if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
         return
     end
@@ -859,6 +909,11 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         abilityId = abilityId or 0,
         abilityName = abilityName or '',
         abilityDescription = abilityDescription or '',
+        heldItemId = heldItemId or 0,
+        heldItemClientId = heldItemClientId or 0,
+        heldItemName = heldItemName or '',
+        heldItemDescription = heldItemDescription or '',
+        heldItemActive = heldItemActive or false,
         stats = receivedStats,
         baseStats = baseStats,
         ivs = makeStats(ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed),
@@ -866,6 +921,10 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         moves = previousMoves
     }
     refreshList()
+end
+
+function removeHeldItem()
+    sendHeldItemRequest('R')
 end
 
 function onPokemonMoveList(_, slot, receivedMoves)

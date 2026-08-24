@@ -209,7 +209,7 @@ PokebagLearnedMoveEntry < Panel
 MainWindow
   id: pokebagWindow
   !text: tr('Pokebag')
-  size: 760 510
+  size: 760 550
   @onEscape: modules.game_pokebag.hide()
 
   FlatPanel
@@ -280,7 +280,7 @@ MainWindow
 
     FlatPanel
       id: topInfoPanel
-      height: 250
+      height: 285
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: infoTab.bottom
@@ -384,11 +384,54 @@ MainWindow
         anchors.right: parent.right
         anchors.top: natureInfo.bottom
 
+      Panel
+        id: heldItemInfo
+        height: 38
+        anchors.left: nameValue.left
+        anchors.right: parent.right
+        anchors.top: abilityInfo.bottom
+        margin-right: 10
+
+        Label
+          !text: tr('Held item')
+          width: 70
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          color: #dddddd
+
+        Item
+          id: heldItemSlot
+          size: 34 34
+          anchors.left: prev.right
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 4
+          draggable: false
+
+        Label
+          id: heldItemName
+          anchors.left: heldItemSlot.right
+          anchors.right: removeHeldItemButton.left
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 7
+          margin-right: 5
+          height: 18
+          color: #b8b8b8
+
+        Button
+          id: removeHeldItemButton
+          !text: tr('X')
+          !tooltip: tr('Remove held item')
+          size: 24 24
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          visible: false
+          @onClick: modules.game_pokebag.removeHeldItem()
+
       Label
         id: healthLabel
         anchors.left: nameValue.left
         anchors.right: parent.right
-        anchors.top: abilityInfo.bottom
+        anchors.top: heldItemInfo.bottom
         height: 16
         text-align: left
         color: #a8a8a8
