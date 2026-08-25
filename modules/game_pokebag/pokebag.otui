@@ -290,8 +290,9 @@ MainWindow
         id: portraitFrame
         size: 148 148
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
         margin-left: 8
+        margin-top: 6
 
         UIImageView
           id: portrait
@@ -299,58 +300,53 @@ MainWindow
           anchors.centerIn: parent
           image-smooth: false
 
-      UIImageView
-        id: shinyIcon
-        size: 9 10
-        anchors.right: parent.right
-        anchors.top: parent.top
-        margin-right: 10
-        margin-top: 13
-        image-source: /images/game/shiny
-        visible: false
-
-      UIImageView
-        id: genderIcon
-        size: 11 11
-        anchors.right: shinyIcon.left
-        anchors.verticalCenter: shinyIcon.verticalCenter
-        margin-right: 7
+        UIImageView
+          id: shinyIcon
+          size: 9 10
+          anchors.right: parent.right
+          anchors.top: parent.top
+          margin-right: 8
+          margin-top: 8
+          image-source: /images/game/shiny
+          visible: false
 
       Label
         id: nameValue
-        anchors.left: portraitFrame.right
-        anchors.right: genderIcon.left
-        anchors.top: parent.top
-        margin-left: 14
-        margin-right: 8
-        margin-top: 10
+        width: 148
+        anchors.left: parent.left
+        anchors.top: portraitFrame.bottom
+        margin-left: 8
+        margin-top: 4
         height: 20
-        text-align: left
+        text-align: center
         font: verdana-11px-rounded
         color: #f3d66c
 
       Label
         id: numberValue
-        anchors.left: nameValue.left
-        anchors.right: parent.right
+        width: 148
+        anchors.left: parent.left
         anchors.top: nameValue.bottom
+        margin-left: 8
         height: 18
-        text-align: left
+        text-align: center
         color: #aaaaaa
 
       Panel
         id: typesInfo
+        width: 148
         height: 28
-        anchors.left: nameValue.left
-        anchors.right: parent.right
+        anchors.left: parent.left
         anchors.top: numberValue.bottom
-        margin-top: 5
+        margin-left: 8
+        margin-top: 3
 
         UIImageView
           id: primaryTypeIcon
           size: 64 28
           anchors.left: parent.left
           anchors.top: parent.top
+          margin-left: 7
           image-source: /images/game/types/types
           image-smooth: false
           phantom: true
@@ -368,77 +364,89 @@ MainWindow
 
       PokebagInfoText
         id: levelInfo
-        anchors.left: nameValue.left
-        anchors.right: parent.right
-        anchors.top: typesInfo.bottom
+        anchors.left: portraitFrame.right
+        anchors.right: heldItemInfo.left
+        anchors.top: parent.top
+        margin-left: 14
+        margin-right: 10
+        margin-top: 10
 
       PokebagInfoText
         id: natureInfo
-        anchors.left: nameValue.left
-        anchors.right: parent.right
+        anchors.left: levelInfo.left
+        anchors.right: heldItemInfo.left
         anchors.top: levelInfo.bottom
+        margin-right: 10
 
       PokebagInfoText
         id: abilityInfo
-        anchors.left: nameValue.left
-        anchors.right: parent.right
+        anchors.left: levelInfo.left
+        anchors.right: heldItemInfo.left
         anchors.top: natureInfo.bottom
+        margin-right: 10
 
       Panel
         id: heldItemInfo
-        height: 38
-        anchors.left: nameValue.left
+        size: 72 54
+        anchors.right: parent.right
+        anchors.top: parent.top
+        margin-right: 10
+        margin-top: 6
+
+        Label
+          id: heldItemTitle
+          !text: tr('Held item')
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: parent.top
+          height: 14
+          text-align: center
+          color: #a8a8a8
+
+        Item
+          id: heldItemSlot
+          size: 50 50
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.top: heldItemTitle.bottom
+          draggable: true
+          margin-top: 5
+
+      Panel
+        id: genderInfo
+        height: 18
+        anchors.left: levelInfo.left
         anchors.right: parent.right
         anchors.top: abilityInfo.bottom
         margin-right: 10
 
         Label
-          !text: tr('Held item')
-          width: 70
+          id: genderLabel
+          !text: tr('Gender') .. ':'
+          width: 52
           anchors.left: parent.left
           anchors.verticalCenter: parent.verticalCenter
           color: #dddddd
 
-        Item
-          id: heldItemSlot
-          size: 34 34
-          anchors.left: prev.right
+        UIImageView
+          id: genderIcon
+          size: 11 11
+          anchors.left: genderLabel.right
           anchors.verticalCenter: parent.verticalCenter
           margin-left: 4
-          draggable: false
-
-        Label
-          id: heldItemName
-          anchors.left: heldItemSlot.right
-          anchors.right: removeHeldItemButton.left
-          anchors.verticalCenter: parent.verticalCenter
-          margin-left: 7
-          margin-right: 5
-          height: 18
-          color: #b8b8b8
-
-        Button
-          id: removeHeldItemButton
-          !text: tr('X')
-          !tooltip: tr('Remove held item')
-          size: 24 24
-          anchors.right: parent.right
-          anchors.verticalCenter: parent.verticalCenter
-          visible: false
-          @onClick: modules.game_pokebag.removeHeldItem()
 
       Label
         id: healthLabel
-        anchors.left: nameValue.left
+        anchors.left: levelInfo.left
         anchors.right: parent.right
-        anchors.top: heldItemInfo.bottom
+        anchors.top: genderInfo.bottom
+        margin-right: 10
         height: 16
         text-align: left
         color: #a8a8a8
 
       ProgressBar
         id: healthBar
-        anchors.left: nameValue.left
+        anchors.left: levelInfo.left
         anchors.right: parent.right
         anchors.top: healthLabel.bottom
         margin-right: 10
@@ -446,7 +454,7 @@ MainWindow
 
       Label
         id: experienceLabel
-        anchors.left: nameValue.left
+        anchors.left: levelInfo.left
         anchors.right: parent.right
         anchors.top: healthBar.bottom
         margin-top: 5
@@ -456,7 +464,7 @@ MainWindow
 
       ProgressBar
         id: experienceBar
-        anchors.left: nameValue.left
+        anchors.left: levelInfo.left
         anchors.right: parent.right
         anchors.top: experienceLabel.bottom
         margin-right: 10
@@ -465,7 +473,7 @@ MainWindow
 
       Label
         id: friendshipLabel
-        anchors.left: nameValue.left
+        anchors.left: levelInfo.left
         anchors.right: parent.right
         anchors.top: experienceBar.bottom
         margin-top: 5
@@ -475,7 +483,7 @@ MainWindow
 
       ProgressBar
         id: friendshipBar
-        anchors.left: nameValue.left
+        anchors.left: levelInfo.left
         anchors.right: parent.right
         anchors.top: friendshipLabel.bottom
         margin-right: 10

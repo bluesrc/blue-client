@@ -297,9 +297,41 @@ local function sendHeldItemRequest(action, item)
     return true
 end
 
-local function dropHeldItem(_, draggedWidget)
+local function dropHeldItem(widget, draggedWidget)
     local item = draggedWidget and draggedWidget.currentDragThing
-    return sendHeldItemRequest('E', item)
+    local accepted = sendHeldItemRequest('E', item)
+    widget:setBorderWidth(0)
+    g_dispatcher.scheduleEvent(function()
+        if widget and not widget:isDestroyed() then
+            widget:setBorderWidth(0)
+        end
+    end, 1)
+    return accepted
+end
+
+local function startHeldItemDrag(widget)
+    local info = selectedSlot and pokemonInfo[selectedSlot]
+    if not info or info.heldItemId == 0 then
+        return false
+    end
+
+    widget.heldItemDragOpacity = widget:getOpacity()
+    widget:setOpacity(widget.heldItemDragOpacity * 0.65)
+    widget:setBorderWidth(1)
+    g_mouse.pushCursor('target')
+    return true
+end
+
+local function finishHeldItemDrag(widget, _, mousePos)
+    widget:setOpacity(widget.heldItemDragOpacity or 1)
+    widget.heldItemDragOpacity = nil
+    widget:setBorderWidth(0)
+    g_mouse.popCursor('target')
+
+    if mousePos and not widget:containsPoint(mousePos) then
+        return sendHeldItemRequest('R')
+    end
+    return true
 end
 
 local function canChangeActiveMoves(showMessage)
@@ -565,8 +597,6 @@ local function renderDetails()
     abilityInfo:setTooltip(info.abilityDescription ~= '' and info.abilityDescription or nil)
 
     local heldItemSlot = detailsPanel:recursiveGetChildById('heldItemSlot')
-    local heldItemName = detailsPanel:recursiveGetChildById('heldItemName')
-    local removeHeldItemButton = detailsPanel:recursiveGetChildById('removeHeldItemButton')
     if info.heldItemClientId ~= 0 then
         heldItemSlot:setItemId(info.heldItemClientId)
     else
@@ -574,18 +604,17 @@ local function renderDetails()
     end
     heldItemSlot:setOpacity(info.heldItemId ~= 0 and not info.heldItemActive and 0.55 or 1)
     heldItemSlot:setTooltip(info.heldItemDescription ~= '' and info.heldItemDescription or nil)
-    heldItemName:setText(info.heldItemName ~= '' and info.heldItemName or tr('None'))
-    heldItemName:setTooltip(info.heldItemDescription ~= '' and info.heldItemDescription or nil)
-    removeHeldItemButton:setVisible(info.heldItemId ~= 0)
 
     local primaryTypeIcon = detailsPanel:recursiveGetChildById('primaryTypeIcon')
     local secondaryTypeIcon = detailsPanel:recursiveGetChildById('secondaryTypeIcon')
     setTypeIcon(primaryTypeIcon, info.primaryType)
     primaryTypeIcon:setVisible(true)
     if info.secondaryType and info.secondaryType ~= 0 then
+        primaryTypeIcon:setMarginLeft(7)
         setTypeIcon(secondaryTypeIcon, info.secondaryType)
         secondaryTypeIcon:setVisible(true)
     else
+        primaryTypeIcon:setMarginLeft(42)
         secondaryTypeIcon:setVisible(false)
     end
 
@@ -732,6 +761,11 @@ function init()
     learnedMovesList = movesPanel:recursiveGetChildById('learnedMovesList')
     local heldItemSlot = detailsPanel:recursiveGetChildById('heldItemSlot')
     heldItemSlot.onDrop = dropHeldItem
+    heldItemSlot.onDragEnter = startHeldItemDrag
+    heldItemSlot.onDragLeave = finishHeldItemDrag
+    heldItemSlot.onDoubleClick = function()
+        return sendHeldItemRequest('R')
+    end
 
     activeMovesList.onDrop = function(_, draggedWidget)
         return dropMoveOnActiveSlots(draggedWidget)
