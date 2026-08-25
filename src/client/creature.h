@@ -406,6 +406,11 @@ struct PokemonInfo
     uint16_t abilityId{ 0 };
     std::string abilityName;
     std::string abilityDescription;
+    uint16_t heldItemId{ 0 };
+    uint16_t heldItemClientId{ 0 };
+    std::string heldItemName;
+    std::string heldItemDescription;
+    bool heldItemActive{ false };
     Stats stats;
     Stats ivs;
     Stats evs;

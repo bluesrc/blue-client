@@ -15,6 +15,7 @@ local selectedSlot
 local selectedMoveId
 local currentDetailsTab = 'info'
 local POKEMON_MOVE_SLOTS_OPCODE = 76
+local POKEMON_HELD_ITEM_OPCODE = 77
 
 local natureNames = {
     [0] = 'None', 'Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Docile', 'Relaxed', 'Impish',
@@ -267,6 +268,70 @@ local function sendActiveMoveIds(moveIds)
     protocolGame:sendExtendedOpcode(POKEMON_MOVE_SLOTS_OPCODE, string.format(
         '%d;%d;%d;%d;%d', selectedSlot, moveIds[1] or 0, moveIds[2] or 0,
         moveIds[3] or 0, moveIds[4] or 0))
+end
+
+local function sendHeldItemRequest(action, item)
+    if not selectedSlot or not pokemonInfo[selectedSlot] then
+        return false
+    end
+
+    local protocolGame = g_game.getProtocolGame()
+    if not protocolGame then
+        return false
+    end
+
+    if action == 'R' then
+        protocolGame:sendExtendedOpcode(POKEMON_HELD_ITEM_OPCODE,
+            string.format('R;%d', selectedSlot))
+        return true
+    end
+
+    if not item or not item:isItem() then
+        return false
+    end
+
+    local position = item:getPosition()
+    protocolGame:sendExtendedOpcode(POKEMON_HELD_ITEM_OPCODE, string.format(
+        'E;%d;%d;%d;%d;%d;%d', selectedSlot, position.x, position.y, position.z,
+        item:getStackPos(), item:getId()))
+    return true
+end
+
+local function dropHeldItem(widget, draggedWidget)
+    local item = draggedWidget and draggedWidget.currentDragThing
+    local accepted = sendHeldItemRequest('E', item)
+    widget:setBorderWidth(0)
+    g_dispatcher.scheduleEvent(function()
+        if widget and not widget:isDestroyed() then
+            widget:setBorderWidth(0)
+        end
+    end, 1)
+    return accepted
+end
+
+local function startHeldItemDrag(widget)
+    local info = selectedSlot and pokemonInfo[selectedSlot]
+    if not info or info.heldItemId == 0 then
+        return false
+    end
+
+    widget.heldItemDragOpacity = widget:getOpacity()
+    widget:setOpacity(widget.heldItemDragOpacity * 0.65)
+    widget:setBorderWidth(1)
+    g_mouse.pushCursor('target')
+    return true
+end
+
+local function finishHeldItemDrag(widget, _, mousePos)
+    widget:setOpacity(widget.heldItemDragOpacity or 1)
+    widget.heldItemDragOpacity = nil
+    widget:setBorderWidth(0)
+    g_mouse.popCursor('target')
+
+    if mousePos and not widget:containsPoint(mousePos) then
+        return sendHeldItemRequest('R')
+    end
+    return true
 end
 
 local function canChangeActiveMoves(showMessage)
@@ -531,14 +596,25 @@ local function renderDetails()
     abilityInfo:setText(tr('Ability') .. ': ' .. (info.abilityName ~= '' and info.abilityName or tr('None')))
     abilityInfo:setTooltip(info.abilityDescription ~= '' and info.abilityDescription or nil)
 
+    local heldItemSlot = detailsPanel:recursiveGetChildById('heldItemSlot')
+    if info.heldItemClientId ~= 0 then
+        heldItemSlot:setItemId(info.heldItemClientId)
+    else
+        heldItemSlot:clearItem()
+    end
+    heldItemSlot:setOpacity(info.heldItemId ~= 0 and not info.heldItemActive and 0.55 or 1)
+    heldItemSlot:setTooltip(info.heldItemDescription ~= '' and info.heldItemDescription or nil)
+
     local primaryTypeIcon = detailsPanel:recursiveGetChildById('primaryTypeIcon')
     local secondaryTypeIcon = detailsPanel:recursiveGetChildById('secondaryTypeIcon')
     setTypeIcon(primaryTypeIcon, info.primaryType)
     primaryTypeIcon:setVisible(true)
     if info.secondaryType and info.secondaryType ~= 0 then
+        primaryTypeIcon:setMarginLeft(7)
         setTypeIcon(secondaryTypeIcon, info.secondaryType)
         secondaryTypeIcon:setVisible(true)
     else
+        primaryTypeIcon:setMarginLeft(42)
         secondaryTypeIcon:setVisible(false)
     end
 
@@ -683,6 +759,13 @@ function init()
     movesTab = detailsPanel:getChildById('movesTab')
     activeMovesList = movesPanel:recursiveGetChildById('activeMovesList')
     learnedMovesList = movesPanel:recursiveGetChildById('learnedMovesList')
+    local heldItemSlot = detailsPanel:recursiveGetChildById('heldItemSlot')
+    heldItemSlot.onDrop = dropHeldItem
+    heldItemSlot.onDragEnter = startHeldItemDrag
+    heldItemSlot.onDragLeave = finishHeldItemDrag
+    heldItemSlot.onDoubleClick = function()
+        return sendHeldItemRequest('R')
+    end
 
     activeMovesList.onDrop = function(_, draggedWidget)
         return dropMoveOnActiveSlots(draggedWidget)
@@ -821,7 +904,8 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
                            statHp, statAttack, statDefense, statSpecialAttack, statSpecialDefense, statSpeed,
                            ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed,
                            evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed,
-                           abilityId, abilityName, abilityDescription)
+                           abilityId, abilityName, abilityDescription,
+                           heldItemId, heldItemClientId, heldItemName, heldItemDescription, heldItemActive)
     if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
         return
     end
@@ -859,6 +943,11 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         abilityId = abilityId or 0,
         abilityName = abilityName or '',
         abilityDescription = abilityDescription or '',
+        heldItemId = heldItemId or 0,
+        heldItemClientId = heldItemClientId or 0,
+        heldItemName = heldItemName or '',
+        heldItemDescription = heldItemDescription or '',
+        heldItemActive = heldItemActive or false,
         stats = receivedStats,
         baseStats = baseStats,
         ivs = makeStats(ivHp, ivAttack, ivDefense, ivSpecialAttack, ivSpecialDefense, ivSpeed),
@@ -866,6 +955,10 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         moves = previousMoves
     }
     refreshList()
+end
+
+function removeHeldItem()
+    sendHeldItemRequest('R')
 end
 
 function onPokemonMoveList(_, slot, receivedMoves)
