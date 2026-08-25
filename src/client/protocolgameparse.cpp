@@ -4131,6 +4131,7 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     info.heldItemName = msg->getString();
     info.heldItemDescription = msg->getString();
     info.heldItemActive = static_cast<bool>(msg->getU8());
+    info.evolutionTarget = msg->getString();
 
     m_localPlayer->pokemonInfo(slot, info, active);
 }

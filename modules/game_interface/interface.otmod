@@ -40,6 +40,7 @@ Module
     - game_creatureinformation
     - game_pokebar
     - game_pokemonmoves
+    - game_pokemonactions
     - game_pokebag
     - game_trainercard
     - game_box

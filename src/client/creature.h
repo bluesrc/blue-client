@@ -411,6 +411,7 @@ struct PokemonInfo
     std::string heldItemName;
     std::string heldItemDescription;
     bool heldItemActive{ false };
+    std::string evolutionTarget;
     Stats stats;
     Stats ivs;
     Stats evs;

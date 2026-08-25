@@ -1,0 +1,55 @@
+PokemonContextAction < Panel
+  size: 32 32
+  background-color: #111820ee
+  border-width: 2
+  border-color: #6d8295
+  padding: 2
+  phantom: false
+  focusable: false
+
+  $hover:
+    background-color: #1b2934f2
+    border-color: #92d6a0
+
+  $pressed:
+    background-color: #0d141aee
+    border-color: #d6f2dc
+
+  UIWidget
+    id: actionIcon
+    anchors.centerIn: parent
+    size: 18 18
+    image-source: /images/topbuttons/pokeball
+    image-size: 18 18
+    phantom: true
+
+  Label
+    id: actionBadge
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-right: 1
+    margin-top: -2
+    text: +
+    color: #8fe19f
+    font: verdana-11px-rounded
+    text-auto-resize: true
+    phantom: true
+
+Panel
+  id: pokemonActionsWindow
+  anchors.left: parent.left
+  anchors.bottom: parent.bottom
+  margin-left: 12
+  margin-bottom: 12
+  width: 32
+  height: 32
+  visible: false
+  phantom: false
+  focusable: false
+  layout:
+    type: horizontalBox
+    spacing: 6
+
+  PokemonContextAction
+    id: evolutionAction
+    tooltip: Evolve Pokemon
