@@ -1,0 +1,8 @@
+Module
+  name: game_pokemonactions
+  description: Displays contextual actions for the active Pokemon
+  author: Blue Team
+  sandboxed: true
+  scripts: [ pokemonactions ]
+  @onLoad: init()
+  @onUnload: terminate()
