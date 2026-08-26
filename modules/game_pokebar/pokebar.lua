@@ -207,6 +207,10 @@ function setup()
 
             itemWidget.onMousePress = function(_, _, button)
                 if button == MouseLeftButton then
+                    if modules.game_box and modules.game_box.selectPartyPokemon and
+                        modules.game_box.selectPartyPokemon(currentSlot) then
+                        return true
+                    end
                     g_game.use(currentItem, currentSlot)
                     return true
                 end
