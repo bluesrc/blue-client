@@ -34,7 +34,9 @@
 #include <framework/core/eventdispatcher.h>
 #include <framework/core/filestream.h>
 #include <framework/core/graphicalapplication.h>
+#include <framework/core/resourcemanager.h>
 #include <framework/graphics/shadermanager.h>
+#include <framework/graphics/texturemanager.h>
 
 ItemPtr Item::create(int id)
 {
@@ -49,6 +51,19 @@ void Item::draw(const Point& dest, bool drawThings, LightView* lightView)
     if (!canDraw(m_color) || isHided())
         return;
 
+    if (m_pokemonPreviewTexture) {
+        if (drawThings) {
+            const int spriteSize = g_gameConfig.getSpriteSize();
+            const Size textureSize = m_pokemonPreviewTexture->getSize();
+            const int previewHeight = std::max<int>(1,
+                spriteSize * textureSize.height() / std::max<int>(1, textureSize.width()));
+            const Point previewDest = dest + Point(0, (spriteSize - previewHeight) / 2);
+            g_drawPool.addTexturedRect(Rect(previewDest, Size(spriteSize, previewHeight)),
+                m_pokemonPreviewTexture, Rect(Point(), textureSize), m_color, m_drawConductor);
+        }
+        return;
+    }
+
     // determine animation phase
     const int animationPhase = calculateAnimationPhase();
 
@@ -58,6 +73,22 @@ void Item::draw(const Point& dest, bool drawThings, LightView* lightView)
         internalDraw(animationPhase, dest, getMarkedColor(), drawThings, true);
     else if (isHighlighted())
         internalDraw(animationPhase, dest, getHighlightColor(), drawThings, true);
+}
+
+void Item::setPokemonPreview(uint16_t number)
+{
+    m_pokemonPreview = number;
+    m_pokemonPreviewTexture.reset();
+    if (number == 0)
+        return;
+
+    const std::string path = stdext::format("/images/pokemon/icon/%04d.png", number);
+    if (!g_resources.fileExists(path)) {
+        m_pokemonPreview = 0;
+        return;
+    }
+
+    m_pokemonPreviewTexture = g_textures.getTexture(path, false);
 }
 
 void Item::internalDraw(int animationPhase, const Point& dest, const Color& color, bool drawThings, bool replaceColorShader, LightView* lightView)

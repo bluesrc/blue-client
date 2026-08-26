@@ -7,6 +7,10 @@ controller:registerEvents(g_game, {
         g_game.enableFeature(GameFormatCreatureName)
         g_game.enableFeature(GameSpritesAlphaChannel)
 
+        if version >= 1097 and version <= 1098 then
+            g_game.enableFeature(GamePokemonItemPreview)
+        end
+
         if version >= 750 then
             g_game.enableFeature(GameSoul);
         end

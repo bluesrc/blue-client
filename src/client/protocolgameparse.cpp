@@ -3049,6 +3049,14 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id)
         }
     }
 
+    if (g_game.getFeature(Otc::GamePokemonItemPreview)) {
+        const uint8_t itemMetadataFlags = msg->getU8();
+        if ((itemMetadataFlags & 0x01) != 0)
+            item->setPokemonPreview(msg->getU16());
+        if ((itemMetadataFlags & 0x02) != 0)
+            item->setBoxSlot(msg->getU8());
+    }
+
     if (g_game.getFeature(Otc::GameThingPodium)) {
         if (item->isPodium()) {
             const uint16_t looktype = msg->getU16();

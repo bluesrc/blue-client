@@ -194,6 +194,7 @@ GameEnterGameShowAppearance = 114
 GameSmoothWalkElevation = 115
 GameNegativeOffset = 116
 GameItemTooltipV8 = 117
+GamePokemonItemPreview = 118
 
 TextColors = {
     red = '#f55e5e',    -- '#c83200'

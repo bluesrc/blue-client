@@ -16,6 +16,26 @@ local selectedMoveId
 local currentDetailsTab = 'info'
 local POKEMON_MOVE_SLOTS_OPCODE = 76
 local POKEMON_HELD_ITEM_OPCODE = 77
+local BOX_POKEMON_INFO_SLOT_BASE = 1000
+local BOX_SLOT_COUNT = 32
+local boxDetailsMounted = false
+
+local function isInventoryPokemonSlot(slot)
+    return slot >= InventoryPokeballSlotFirst and slot <= InventoryPokeballSlotLast
+end
+
+local function decodeBoxPokemonSlot(slot)
+    if slot < BOX_POKEMON_INFO_SLOT_BASE then
+        return nil
+    end
+
+    local encoded = slot - BOX_POKEMON_INFO_SLOT_BASE
+    local depotId = math.floor(encoded / BOX_SLOT_COUNT)
+    if depotId < 5 or depotId > 16 then
+        return nil
+    end
+    return depotId, encoded % BOX_SLOT_COUNT
+end
 
 local natureNames = {
     [0] = 'None', 'Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Docile', 'Relaxed', 'Impish',
@@ -274,6 +294,9 @@ local function sendHeldItemRequest(action, item)
     if not selectedSlot or not pokemonInfo[selectedSlot] then
         return false
     end
+    if not isInventoryPokemonSlot(selectedSlot) then
+        return false
+    end
 
     local protocolGame = g_game.getProtocolGame()
     if not protocolGame then
@@ -310,6 +333,9 @@ local function dropHeldItem(widget, draggedWidget)
 end
 
 local function startHeldItemDrag(widget)
+    if not selectedSlot or not isInventoryPokemonSlot(selectedSlot) then
+        return false
+    end
     local info = selectedSlot and pokemonInfo[selectedSlot]
     if not info or info.heldItemId == 0 then
         return false
@@ -339,6 +365,8 @@ local function canChangeActiveMoves(showMessage)
     local message
     if not info then
         return false
+    elseif not isInventoryPokemonSlot(selectedSlot) then
+        message = tr('Move a Pokemon to your Pokebag before changing its active moves.')
     elseif info.active then
         message = tr('Return this Pokemon before changing its active moves.')
     else
@@ -674,6 +702,14 @@ local function selectPokemon(slot)
     if not pokemonInfo[slot] then
         return
     end
+    local wasShowingBoxPokemon = selectedSlot and not isInventoryPokemonSlot(selectedSlot)
+    if wasShowingBoxPokemon then
+        hideBoxPokemon()
+        pokebagWindow:show()
+        pokebagWindow:raise()
+        pokebagWindow:focus()
+        pokebagButton:setOn(true)
+    end
     if selectedSlot ~= slot then
         selectedMoveId = nil
     end
@@ -795,6 +831,7 @@ function init()
 end
 
 function terminate()
+    hideBoxPokemon()
     g_keyboard.unbindKeyDown('P')
 
     disconnect(LocalPlayer, {
@@ -832,6 +869,7 @@ function terminate()
     pokemonInfo = {}
     selectedSlot = nil
     selectedMoveId = nil
+    boxDetailsMounted = false
 end
 
 function online()
@@ -839,6 +877,7 @@ function online()
 end
 
 function offline()
+    hideBoxPokemon()
     pokemonInfo = {}
     selectedSlot = nil
     selectedMoveId = nil
@@ -858,15 +897,127 @@ function toggle()
     if pokebagWindow:isVisible() then
         hide()
     else
-        pokebagWindow:show()
-        pokebagWindow:raise()
-        pokebagWindow:focus()
-        pokebagButton:setOn(true)
-        refreshList()
+        show()
+    end
+end
+
+function show()
+    if not g_game.isOnline() then
+        return
+    end
+
+    hideBoxPokemon()
+    selectedSlot = nil
+    selectedMoveId = nil
+    pokebagWindow:setText(tr('Pokebag'))
+    pokebagWindow:show()
+    pokebagWindow:raise()
+    pokebagWindow:focus()
+    pokebagButton:setOn(true)
+    refreshList()
+end
+
+local function mountBoxDetails(host)
+    if not host or host:isDestroyed() or not detailsPanel then
+        return false
+    end
+    if boxDetailsMounted and detailsPanel:getParent() == host then
+        return true
+    end
+
+    detailsPanel:breakAnchors()
+    detailsPanel:setParent(host)
+    detailsPanel:breakAnchors()
+    detailsPanel:fill('parent')
+    detailsPanel:setMargin(0)
+    boxDetailsMounted = true
+    return true
+end
+
+local function restorePokebagDetails()
+    if not boxDetailsMounted or not detailsPanel or not pokebagWindow then
+        return
+    end
+
+    detailsPanel:breakAnchors()
+    detailsPanel:setParent(pokebagWindow)
+    detailsPanel:breakAnchors()
+    detailsPanel:addAnchor(AnchorLeft, 'pokemonListFrame', AnchorRight)
+    detailsPanel:addAnchor(AnchorRight, 'parent', AnchorRight)
+    detailsPanel:addAnchor(AnchorTop, 'parent', AnchorTop)
+    detailsPanel:addAnchor(AnchorBottom, 'closeButton', AnchorTop)
+    detailsPanel:setMargin(0, 0, 10, 12)
+    boxDetailsMounted = false
+end
+
+function showBoxPokemon(slot)
+    local depotId, boxSlot = decodeBoxPokemonSlot(slot)
+    if not depotId or not modules.game_box or not modules.game_box.isSelectedPokemon or
+        not modules.game_box.isSelectedPokemon(depotId, boxSlot) or not pokemonInfo[slot] then
+        return
+    end
+
+    local host = modules.game_box.getPokemonDetailsHost and modules.game_box.getPokemonDetailsHost() or nil
+    if not mountBoxDetails(host) then
+        return
+    end
+
+    selectedSlot = slot
+    selectedMoveId = nil
+    currentDetailsTab = 'info'
+    pokebagWindow:hide()
+    pokebagButton:setOn(false)
+    modules.game_box.showPokemonDetails()
+    refreshList()
+end
+
+function showPartyPokemonInBox(slot)
+    if not isInventoryPokemonSlot(slot) or not pokemonInfo[slot] or not modules.game_box or
+        not modules.game_box.isSelectedPartyPokemon or not modules.game_box.isSelectedPartyPokemon(slot) then
+        return false
+    end
+
+    local host = modules.game_box.getPokemonDetailsHost and modules.game_box.getPokemonDetailsHost() or nil
+    if not mountBoxDetails(host) then
+        return false
+    end
+
+    selectedSlot = slot
+    selectedMoveId = nil
+    currentDetailsTab = 'info'
+    pokebagWindow:hide()
+    pokebagButton:setOn(false)
+    modules.game_box.showPokemonDetails()
+    refreshList()
+    return true
+end
+
+function hideBoxPokemon()
+    if not boxDetailsMounted and (not selectedSlot or isInventoryPokemonSlot(selectedSlot)) then
+        return
+    end
+
+    if selectedSlot and not isInventoryPokemonSlot(selectedSlot) then
+        pokemonInfo[selectedSlot] = nil
+    end
+    selectedSlot = nil
+    selectedMoveId = nil
+    restorePokebagDetails()
+    detailsPanel:setVisible(false)
+    pokebagWindow:setText(tr('Pokebag'))
+    if pokebagButton then
+        pokebagButton:setOn(false)
+    end
+    if modules.game_box and modules.game_box.closePokemonDetails then
+        modules.game_box.closePokemonDetails()
     end
 end
 
 function hide()
+    if boxDetailsMounted then
+        hideBoxPokemon()
+        return
+    end
     if pokebagWindow then
         pokebagWindow:hide()
     end
@@ -906,12 +1057,17 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
                            evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed,
                            abilityId, abilityName, abilityDescription,
                            heldItemId, heldItemClientId, heldItemName, heldItemDescription, heldItemActive)
-    if slot < InventoryPokeballSlotFirst or slot > InventoryPokeballSlotLast then
+    local boxDepotId, boxSlot = decodeBoxPokemonSlot(slot)
+    if not isInventoryPokemonSlot(slot) and not boxDepotId then
+        return
+    end
+    if boxDepotId and (not modules.game_box or not modules.game_box.isSelectedPokemon or
+        not modules.game_box.isSelectedPokemon(boxDepotId, boxSlot)) then
         return
     end
 
     local player = g_game.getLocalPlayer()
-    if not player or not player:getInventoryItem(slot) then
+    if isInventoryPokemonSlot(slot) and (not player or not player:getInventoryItem(slot)) then
         pokemonInfo[slot] = nil
         refreshList()
         return
@@ -954,7 +1110,12 @@ function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted,
         evs = makeStats(evHp, evAttack, evDefense, evSpecialAttack, evSpecialDefense, evSpeed),
         moves = previousMoves
     }
-    refreshList()
+    if boxDepotId and modules.game_box and modules.game_box.isSelectedPokemon and
+        modules.game_box.isSelectedPokemon(boxDepotId, boxSlot) then
+        showBoxPokemon(slot)
+    else
+        refreshList()
+    end
 end
 
 function removeHeldItem()

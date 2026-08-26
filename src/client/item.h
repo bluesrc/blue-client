@@ -85,11 +85,15 @@ public:
     void setColor(const Color& c) { if (m_color != c) m_color = c; }
     void setPosition(const Position& position, uint8_t stackPos = 0, bool hasElevation = false) override;
     void setTooltip(const std::string& str) { m_tooltip = str; }
+    void setPokemonPreview(uint16_t number);
+    void setBoxSlot(int16_t slot) { m_boxSlot = slot; }
 
     int getCountOrSubType() { return m_countOrSubType; }
     int getSubType();
     int getCount() { return isStackable() ? m_countOrSubType : 1; }
     std::string getTooltip() { return m_tooltip; }
+    uint16_t getPokemonPreview() const { return m_pokemonPreview; }
+    int16_t getBoxSlot() { return m_boxSlot; }
 
     bool isValid() { return getThingType() != nullptr; }
 
@@ -161,6 +165,9 @@ private:
 
     bool m_async{ true };
     std::string m_tooltip;
+    uint16_t m_pokemonPreview{ 0 };
+    int16_t m_boxSlot{ -1 };
+    TexturePtr m_pokemonPreviewTexture;
 
 #ifdef FRAMEWORK_EDITOR
     uint16_t m_serverId{ 0 };
