@@ -53,13 +53,37 @@ MainWindow
         font: verdana-11px-rounded
         text-auto-resize: true
 
+      Panel
+        id: inventorySourceTabs
+        height: 24
+        anchors.top: prev.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-top: 6
+
+        TabButton
+          id: inventoryItemsTab
+          !text: tr('Items')
+          anchors.left: parent.left
+          anchors.right: parent.horizontalCenter
+          checked: true
+          on: true
+          @onClick: modules.game_box.selectInventorySource('items')
+
+        TabButton
+          id: inventoryLootTab
+          !text: tr('Loot')
+          anchors.left: parent.horizontalCenter
+          anchors.right: parent.right
+          @onClick: modules.game_box.selectInventorySource('loot')
+
       Button
         id: inventoryUpButton
         !text: tr('Back')
         size: 56 20
         anchors.left: parent.left
-        anchors.top: parent.top
-        margin-top: 25
+        anchors.top: inventorySourceTabs.bottom
+        margin-top: 5
         visible: false
         @onClick: modules.game_box.openInventoryParent()
 

@@ -91,6 +91,11 @@ function refreshContainerPages(container)
 end
 
 function onContainerOpen(container, previousContainer)
+    if modules.game_inventory and modules.game_inventory.handlesContainer(container) then
+        modules.game_inventory.onContainerOpen(container, previousContainer)
+        return
+    end
+
     if modules.game_playertrade and modules.game_playertrade.handlesSourceContainer(container, previousContainer) then
         return
     end
@@ -180,6 +185,11 @@ function onContainerOpen(container, previousContainer)
 end
 
 function onContainerClose(container)
+    if modules.game_inventory and modules.game_inventory.handlesContainer(container) then
+        modules.game_inventory.onContainerClose(container)
+        return
+    end
+
     if modules.game_box and modules.game_box.handlesContainer(container) then
         return
     end
@@ -188,6 +198,11 @@ function onContainerClose(container)
 end
 
 function onContainerChangeSize(container, size)
+    if modules.game_inventory and modules.game_inventory.handlesContainer(container) then
+        modules.game_inventory.onContainerChangeSize(container, size)
+        return
+    end
+
     if modules.game_box and modules.game_box.handlesContainer(container) then
         return
     end
@@ -199,6 +214,11 @@ function onContainerChangeSize(container, size)
 end
 
 function onContainerUpdateItem(container, slot, item, oldItem)
+    if modules.game_inventory and modules.game_inventory.handlesContainer(container) then
+        modules.game_inventory.onContainerUpdateItem(container, slot, item, oldItem)
+        return
+    end
+
     if modules.game_box and modules.game_box.handlesContainer(container) then
         return
     end
