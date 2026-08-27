@@ -84,12 +84,17 @@ local function renderMoves()
     for slot = 1, 4 do
         local move = activeMoves[slot]
         if move and move.name ~= '' then
-            local currentMove = move
+            local currentSlot = slot
             local entry = g_ui.createWidget('PokemonMoveEntry', movesWindow)
             entry:setId('move' .. slot)
-            entry:getChildById('slot'):setText(slot .. '.')
+            local keyCombo = modules.game_hotkeys and modules.game_hotkeys.getBinding and
+                                 modules.game_hotkeys.getBinding('pokemon_move_' .. slot) or tostring(slot)
+            if keyCombo == '' then
+                keyCombo = '-'
+            end
+            entry:getChildById('slot'):setText(keyCombo)
             entry:getChildById('moveName'):setText(move.name)
-            entry:setTooltip(tr('Click to use %s', move.name))
+            entry:setTooltip(tr('Click to use %s', move.name) .. ' (' .. keyCombo .. ')')
             entry.onMousePress = function(_, _, button)
                 return button == MouseLeftButton
             end
@@ -97,9 +102,7 @@ local function renderMoves()
                 if button ~= MouseLeftButton then
                     return false
                 end
-                if not currentMove.endsAt or currentMove.endsAt <= g_clock.millis() then
-                    g_game.talk(currentMove.name)
-                end
+                useMove(currentSlot)
                 return true
             end
             rendered = rendered + 1
@@ -115,6 +118,24 @@ local function renderMoves()
     movesWindow:setHeight((rendered * ENTRY_HEIGHT) + ((rendered - 1) * ENTRY_SPACING))
     movesWindow:show()
     updateCooldowns()
+end
+
+function refreshHotkeys()
+    if movesWindow and activePokemonId ~= 0 then
+        renderMoves()
+    end
+end
+
+function useMove(slot)
+    local move = activeMoves[slot]
+    if not g_game.isOnline() or not move or move.name == '' then
+        return false
+    end
+    if move.endsAt and move.endsAt > g_clock.millis() then
+        return false
+    end
+    g_game.talk(move.name)
+    return true
 end
 
 function init()

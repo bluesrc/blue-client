@@ -60,8 +60,6 @@ function init()
     pingLabel = topMenu:getChildById('pingLabel')
     fpsLabel = topMenu:getChildById('fpsLabel')
 
-    g_keyboard.bindKeyDown('Ctrl+Shift+T', toggle)
-
     if g_game.isOnline() then
         online()
     end

@@ -1,41 +1,212 @@
-PokebarActivePokemon < UIImageView
-  id: activePokemon
-  size: 72 72
+PokebarEntry < Panel
+  size: 150 52
+  anchors.left: parent.left
+  phantom: false
+  focusable: false
 
-PokebarItem < UIImageView
-  id: pokemon
-  size: 36 36
-  anchors.horizontalCenter: parent.horizontalCenter
+  Panel
+    id: statusPanel
+    size: 88 25
+    anchors.left: portrait.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 6
+    background-color: #11171ddd
+    border-width: 1
+    border-color: #27343e
+    phantom: true
 
-  ProgressBar
-    id: healthBar
-    anchors.bottom: parent.bottom
-    anchors.horizontalCenter: parent.horizontalCenter
-    size: 36 5
+    ProgressBar
+      id: healthBar
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-left: 5
+      margin-right: 5
+      margin-top: 5
+      height: 9
+      text: ''
+      phantom: true
+
+    ProgressBar
+      id: experienceBar
+      anchors.left: healthBar.left
+      anchors.right: healthBar.right
+      anchors.top: healthBar.bottom
+      margin-top: 3
+      height: 3
+      background-color: #50aee8
+      text: ''
+      phantom: true
+
+  Panel
+    id: portrait
+    size: 52 52
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    background-color: #11171ddd
+    border-width: 1
+    border-color: #27343e
+    phantom: true
+
+    UIImageView
+      id: pokemonIcon
+      size: 44 44
+      anchors.centerIn: parent
+      phantom: true
+
+    UIImageView
+      id: genderIcon
+      size: 11 11
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 3
+      margin-top: 3
+      phantom: true
+
+    Label
+      id: levelLabel
+      width: 38
+      height: 12
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-right: 3
+      margin-bottom: 2
+      font: verdana-10px
+      color: #ffffff
+      text-align: right
+      phantom: true
 
 PokebarActive < Panel
-  size: 72 72
-  anchors.horizontalCenter: parent.horizontalCenter
+  size: 208 62
+  anchors.left: parent.left
+  phantom: false
+  focusable: false
 
-  PokebarActivePokemon
-    id: activePokemon
-    anchors.horizontalCenter: parent.horizontalCenter
+  Panel
+    id: statusPanel
+    size: 106 38
+    anchors.left: portrait.right
     anchors.verticalCenter: parent.verticalCenter
+    margin-left: 6
+    background-color: #11171ddd
+    border-width: 1
+    border-color: #27343e
+    phantom: true
 
-  ProgressBar
-    id: activeHealthBar
-    anchors.bottom: parent.bottom
-    anchors.horizontalCenter: parent.horizontalCenter
-    size: 60 15
+    ProgressBar
+      id: healthBar
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-left: 5
+      margin-right: 5
+      margin-top: 6
+      height: 17
+      image-color: #ffffff
+      color: #ffffff
+      text-offset: 0 2
+      phantom: true
+
+    ProgressBar
+      id: experienceBar
+      anchors.left: healthBar.left
+      anchors.right: healthBar.right
+      anchors.top: healthBar.bottom
+      margin-top: 4
+      height: 5
+      image-color: #ffffff
+      background-color: #50aee8
+      text: ''
+      phantom: true
+
+  Panel
+    id: portrait
+    size: 62 62
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    background-color: #f4f4f4
+    border-width: 1
+    border-color: #b8b8b8
+    phantom: true
+
+    UIImageView
+      id: pokemonIcon
+      size: 52 52
+      anchors.centerIn: parent
+      phantom: true
+
+    UIImageView
+      id: genderIcon
+      size: 11 11
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 4
+      margin-top: 4
+      phantom: true
+
+    Label
+      id: levelLabel
+      width: 42
+      height: 12
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-right: 4
+      margin-bottom: 3
+      font: verdana-10px
+      color: #101010
+      text-align: right
+      phantom: true
+
+  Panel
+    id: evolutionAction
+    size: 28 28
+    anchors.left: statusPanel.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 6
+    visible: false
+    background-color: #111820ee
+    border-width: 2
+    border-color: #6d8295
+    padding: 2
+    phantom: false
+    focusable: false
+
+    $hover:
+      background-color: #1b2934f2
+      border-color: #92d6a0
+
+    $pressed:
+      background-color: #0d141aee
+      border-color: #d6f2dc
+
+    UIWidget
+      id: evolutionIcon
+      anchors.centerIn: parent
+      size: 18 18
+      image-source: /images/topbuttons/pokeball
+      image-size: 18 18
+      phantom: true
+
+    Label
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-right: -1
+      margin-top: -4
+      text: +
+      color: #8fe19f
+      font: verdana-11px-rounded
+      text-auto-resize: true
+      phantom: true
 
 Panel
   id: pokebarWindow
   anchors.left: parent.left
   anchors.verticalCenter: parent.verticalCenter
-  width: 75
+  margin-left: 8
+  width: 212
   height: 1
   visible: true
   draggable: false
-  phantom: false
+  phantom: true
   focusable: true
   &save: true

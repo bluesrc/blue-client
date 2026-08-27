@@ -72,12 +72,11 @@ function init()
         onGameEnd = offline
     })
 
-    g_keyboard.bindKeyDown('T', toggleFromHotkey)
     trainerCardWindow = g_ui.displayUI('trainercard')
     trainerCardWindow:hide()
 
     trainerCardButton = modules.client_topmenu.addRightGameToggleButton(
-        'trainerCardButton', tr('Trainer Card') .. ' (T)', '/images/topbuttons/skills', toggle)
+        'trainerCardButton', tr('Trainer Card'), '/images/topbuttons/skills', toggle)
     trainerCardButton:setIconWidth(16)
     trainerCardButton:setIconHeight(16)
     trainerCardButton:setIconOffsetX(5)
@@ -90,7 +89,6 @@ function init()
 end
 
 function terminate()
-    g_keyboard.unbindKeyDown('T')
     disconnect(LocalPlayer, {
         onExperienceChange = refresh,
         onLevelChange = refresh,

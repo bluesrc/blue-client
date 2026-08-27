@@ -142,8 +142,6 @@ function init()
 
     g_ui.importStyle('shaders.otui')
 
-    g_keyboard.bindKeyDown(HOTKEY, toggle)
-
     shadersPanel = g_ui.createWidget('ShadersPanel', modules.game_interface.getMapPanel())
     shadersPanel:hide()
 
@@ -214,7 +212,6 @@ function terminate()
         onGameStart = attachShaders
     })
 
-    g_keyboard.unbindKeyDown(HOTKEY)
     shadersPanel:destroy()
     shadersPanel = nil
 end
