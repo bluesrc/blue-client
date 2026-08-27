@@ -120,8 +120,7 @@ function init()
         onGameEnd = offline
     })
 
-    g_keyboard.bindKeyDown('I', toggleFromHotkey)
-    inventoryButton = modules.client_topmenu.addRightGameToggleButton('inventoryButton', tr('Inventory') .. ' (I)',
+    inventoryButton = modules.client_topmenu.addRightGameToggleButton('inventoryButton', tr('Inventory'),
                                                                       '/images/topbuttons/inventory', toggle)
 
     inventoryWindow = g_ui.loadUI('inventory')
@@ -145,7 +144,6 @@ function terminate()
         onGameEnd = offline
     })
 
-    g_keyboard.unbindKeyDown('I')
     inventoryWindow:destroy()
     inventoryButton:destroy()
 

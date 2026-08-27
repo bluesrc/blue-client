@@ -96,7 +96,6 @@ function init()
         onUpdateItem = onContainerUpdateItem
     })
 
-    g_keyboard.bindKeyDown('B', toggleFromHotkey)
     buildBoxSelectors()
     refreshParty()
 end
@@ -240,7 +239,6 @@ function terminate()
     if modules.game_pokebag and modules.game_pokebag.hideBoxPokemon then
         modules.game_pokebag.hideBoxPokemon()
     end
-    g_keyboard.unbindKeyDown('B')
 
     disconnect(g_game, {
         onGameStart = refreshParty,

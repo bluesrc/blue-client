@@ -63,13 +63,12 @@ end
 
 function init() -- Initiating the module (load)
     g_ui.importStyle('battlebutton')
-    battleButton = modules.client_topmenu.addRightGameToggleButton('battleButton', tr('Battle') .. ' (Ctrl+B)',
+    battleButton = modules.client_topmenu.addRightGameToggleButton('battleButton', tr('Battle'),
         '/images/topbuttons/battle', toggle)
     battleButton:setOn(true)
     battleWindow = g_ui.loadUI('battle')
 
     -- Binding Ctrl + B shortcut
-    g_keyboard.bindKeyDown('Ctrl+B', toggle)
 
     -- Disabling scrollbar auto hiding
     local scrollbar = battleWindow:getChildById('miniwindowScrollBar')
@@ -1076,7 +1075,6 @@ function terminate() -- Terminating the Module (unload)
     filterPanel = nil
     toggleFilterButton = nil
 
-    g_keyboard.unbindKeyDown('Ctrl+B')
 
     disconnect(g_game, {
         onAttackingCreatureChange = onAttack,

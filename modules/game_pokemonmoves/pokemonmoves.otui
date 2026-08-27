@@ -23,7 +23,7 @@ PokemonMoveEntry < Panel
     anchors.left: parent.left
     anchors.verticalCenter: parent.verticalCenter
     margin-bottom: 2
-    width: 20
+    width: 42
     color: #8fa8bd
     font: verdana-11px-monochrome
     text-align: center

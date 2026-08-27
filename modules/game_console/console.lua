@@ -144,7 +144,6 @@ consoleTextEdit = nil
 consoleToggleChat = nil
 chatModeActive = false
 hotkeysSuspended = false
-movingKeysBound = false
 channels = nil
 channelsWindow = nil
 communicationWindow = nil
@@ -278,17 +277,10 @@ function init()
         consoleTabBar:selectPrevTab()
         return true
     end, consoleTextEdit)
-    g_keyboard.bindKeyDown('Enter', toggleChat)
-
     -- apply buttom functions after loaded
     consoleTabBar:setNavigation(consolePanel:recursiveGetChildById('prevChannelButton'),
         consolePanel:recursiveGetChildById('nextChannelButton'))
     consoleTabBar.onTabChange = onTabChange
-
-    -- tibia like hotkeys
-    g_keyboard.bindKeyDown('Ctrl+O', g_game.requestChannels)
-    g_keyboard.bindKeyDown('Ctrl+E', removeCurrentTab)
-    g_keyboard.bindKeyDown('Ctrl+H', openHelp)
 
     -- toggle WASD
     consoleToggleChat = consolePanel:recursiveGetChildById('toggleChat')
@@ -346,47 +338,15 @@ function selectAll(consoleBuffer)
 end
 
 local function unbindMovingKeys()
-    local gameInterface = modules.game_interface
-    gameInterface.unbindWalkKey('W')
-    gameInterface.unbindWalkKey('D')
-    gameInterface.unbindWalkKey('S')
-    gameInterface.unbindWalkKey('A')
-
-    gameInterface.unbindWalkKey('E')
-    gameInterface.unbindWalkKey('Q')
-    gameInterface.unbindWalkKey('C')
-    gameInterface.unbindWalkKey('Z')
-
-    gameInterface.unbindTurnKey('Ctrl+W')
-    gameInterface.unbindTurnKey('Ctrl+D')
-    gameInterface.unbindTurnKey('Ctrl+S')
-    gameInterface.unbindTurnKey('Ctrl+A')
-
-    movingKeysBound = false
+    if modules.game_hotkeys and modules.game_hotkeys.setMovementEnabled then
+        modules.game_hotkeys.setMovementEnabled(false)
+    end
 end
 
 local function bindMovingKeys()
-    if movingKeysBound then
-        return
+    if modules.game_hotkeys and modules.game_hotkeys.setMovementEnabled then
+        modules.game_hotkeys.setMovementEnabled(true)
     end
-
-    local gameInterface = modules.game_interface
-    gameInterface.bindWalkKey('W', North)
-    gameInterface.bindWalkKey('D', East)
-    gameInterface.bindWalkKey('S', South)
-    gameInterface.bindWalkKey('A', West)
-
-    gameInterface.bindWalkKey('E', NorthEast)
-    gameInterface.bindWalkKey('Q', NorthWest)
-    gameInterface.bindWalkKey('C', SouthEast)
-    gameInterface.bindWalkKey('Z', SouthWest)
-
-    gameInterface.bindTurnKey('Ctrl+W', North)
-    gameInterface.bindTurnKey('Ctrl+D', East)
-    gameInterface.bindTurnKey('Ctrl+S', South)
-    gameInterface.bindTurnKey('Ctrl+A', West)
-
-    movingKeysBound = true
 end
 
 function toggleChat()
@@ -407,9 +367,6 @@ local function suspendGameHotkeys(suspend)
     end
 
     hotkeysSuspended = suspend
-    if modules.game_hotkeys and modules.game_hotkeys.enableHotkeys then
-        modules.game_hotkeys.enableHotkeys(not suspend)
-    end
 end
 
 function enterChatMode()
@@ -516,10 +473,6 @@ function terminate()
         clear()
     end
 
-    g_keyboard.unbindKeyDown('Ctrl+O')
-    g_keyboard.unbindKeyDown('Ctrl+E')
-    g_keyboard.unbindKeyDown('Ctrl+H')
-    g_keyboard.unbindKeyDown('Enter')
 
     saveCommunicationSettings()
 
@@ -2071,9 +2024,6 @@ function online()
         local tab = addTab('NPCs', false)
         tab.npcChat = true
     end
-    if g_game.getClientVersion() < 862 then
-        g_keyboard.bindKeyDown('Ctrl+R', openPlayerReportRuleViolationWindow)
-    end
     -- open last channels
     local lastChannelsOpen = g_settings.getNode('lastChannelsOpen')
     if lastChannelsOpen then
@@ -2098,9 +2048,6 @@ end
 function offline()
     leaveChatMode()
     unbindMovingKeys()
-    if g_game.getClientVersion() < 862 then
-        g_keyboard.unbindKeyDown('Ctrl+R')
-    end
     clear()
 end
 

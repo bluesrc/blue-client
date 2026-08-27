@@ -204,6 +204,14 @@ function setup()
             itemWidget:setOpacity(info.fainted and 0.5 or 1)
             itemWidget:setPhantom(false)
             itemWidget:setFocusable(false)
+            local partyIndex = currentSlot - InventoryPokeballSlotFirst + 1
+            local keyCombo = modules.game_hotkeys and modules.game_hotkeys.getBinding and
+                                 modules.game_hotkeys.getBinding('pokemon_slot_' .. partyIndex) or ''
+            local tooltip = tr('Pokebag slot %d', partyIndex)
+            if keyCombo ~= '' then
+                tooltip = tooltip .. ' (' .. keyCombo .. ')'
+            end
+            itemWidget:setTooltip(tooltip)
 
             itemWidget.onMousePress = function(_, _, button)
                 if button == MouseLeftButton then
@@ -229,6 +237,10 @@ function setup()
     end
 
     pokebarWindow:setHeight(math.max(totalHeight, 1))
+end
+
+function refreshHotkeys()
+    scheduleSetup()
 end
 
 function updatePokemonInfo(_, slot, p_id, number, level, healthPercent, fainted, active)

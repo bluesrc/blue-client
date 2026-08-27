@@ -28,7 +28,7 @@ local function updateCameraPosition()
     minimapWidget:setCrossPosition(pos)
 end
 
-local function toggle()
+function toggle()
     if minimapButton:isOn() then
         controller.ui:close()
     else
@@ -36,7 +36,7 @@ local function toggle()
     end
 end
 
-local function toggleFullMap()
+function toggleFullMap()
     local rootPanel = modules.game_interface.getRootPanel()
     local minimapWidget = controller.ui.contentsPanel.minimap
     if not minimapWidget then
@@ -65,6 +65,22 @@ local function toggleFullMap()
     minimapWidget:setCameraPosition(pos)
 end
 
+function panLeft()
+    minimapWidget:move(1, 0)
+end
+
+function panRight()
+    minimapWidget:move(-1, 0)
+end
+
+function panUp()
+    minimapWidget:move(0, 1)
+end
+
+function panDown()
+    minimapWidget:move(0, -1)
+end
+
 controller = Controller:new()
 controller:setUI('minimap', modules.game_interface.getRightPanel())
 local localPlayerEvent = controller:addEvent(LocalPlayer, {
@@ -72,28 +88,11 @@ local localPlayerEvent = controller:addEvent(LocalPlayer, {
 })
 
 function controller:onInit()
-    minimapButton = modules.client_topmenu.addRightGameToggleButton('minimapButton', tr('Minimap') .. ' (Ctrl+M)',
+    minimapButton = modules.client_topmenu.addRightGameToggleButton('minimapButton', tr('Minimap'),
         '/images/topbuttons/minimap', toggle)
     minimapButton:setOn(true)
 
     minimapWidget = self.ui.contentsPanel.minimap
-
-    local gameRootPanel = modules.game_interface.getRootPanel()
-    self:bindKeyPress('Alt+Left', function()
-        minimapWidget:move(1, 0)
-    end, gameRootPanel)
-    self:bindKeyPress('Alt+Right', function()
-        minimapWidget:move(-1, 0)
-    end, gameRootPanel)
-    self:bindKeyPress('Alt+Up', function()
-        minimapWidget:move(0, 1)
-    end, gameRootPanel)
-    self:bindKeyPress('Alt+Down', function()
-        minimapWidget:move(0, -1)
-    end, gameRootPanel)
-
-    self:bindKeyDown('Ctrl+M', toggle)
-    self:bindKeyDown('Ctrl+Shift+M', toggleFullMap)
 
     self.ui:setContentMinimumHeight(80)
     self.ui:setup()

@@ -76,11 +76,6 @@ function init()
     optionsTabBar = optionsWindow:getChildById('optionsTabBar')
     optionsTabBar:setContentWidget(optionsWindow:getChildById('optionsTabContent'))
 
-    g_keyboard.bindKeyDown('Ctrl+Shift+F', function()
-        toggleOption('fullscreen')
-    end)
-    g_keyboard.bindKeyDown('Ctrl+N', toggleDisplays)
-
     generalPanel = g_ui.loadUI('general')
     optionsTabBar:addTab(tr('General'), generalPanel, '/images/optionstab/game')
 
@@ -109,8 +104,6 @@ function init()
 end
 
 function terminate()
-    g_keyboard.unbindKeyDown('Ctrl+Shift+F')
-    g_keyboard.unbindKeyDown('Ctrl+N')
     optionsWindow:destroy()
     optionsButton:destroy()
     audioButton:destroy()

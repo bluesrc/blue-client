@@ -781,8 +781,6 @@ function init()
         onHealthPercentChange = onPokemonHealthChange
     })
 
-    g_keyboard.bindKeyDown('P', toggleFromHotkey)
-
     pokebagWindow = g_ui.displayUI('pokebag')
     pokebagWindow:hide()
     pokemonList = pokebagWindow:recursiveGetChildById('pokemonList')
@@ -832,8 +830,6 @@ end
 
 function terminate()
     hideBoxPokemon()
-    g_keyboard.unbindKeyDown('P')
-
     disconnect(LocalPlayer, {
         onInventoryChange = onInventoryChange,
         onPokemonInfo = updatePokemonInfo,

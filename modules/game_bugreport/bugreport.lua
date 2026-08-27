@@ -12,11 +12,9 @@ function init()
 
     bugTextEdit = bugReportWindow:getChildById('bugTextEdit')
 
-    g_keyboard.bindKeyDown(HOTKEY, show)
 end
 
 function terminate()
-    g_keyboard.unbindKeyDown(HOTKEY)
     bugReportWindow:destroy()
 end
 
