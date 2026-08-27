@@ -4,6 +4,7 @@ local POKEMON = 2
 local BOX_OPCODE = 73
 local BACKPACK_OPCODE = 75
 local BACKPACK_CONTAINER_ID = 14
+local LOOT_CONTAINER_ID = 11
 local BOX_CONTAINER_ID = 15
 local ITEM_BOX_COUNT = 5
 local TOTAL_BOX_COUNT = 17
@@ -18,6 +19,8 @@ local inventoryPanel
 local inventoryItemsPanel
 local inventoryUpButton
 local inventoryName
+local inventoryItemsTab
+local inventoryLootTab
 local partyPanel
 local pokemonDetailsHost
 local pokemonDetailsContent
@@ -35,6 +38,7 @@ local selectedDepotId = 0
 local selectedButton
 local currentContainer
 local inventoryContainer
+local inventorySourceMode = 'items'
 local suppressBoxRequest = false
 local selectedBoxSlot
 local selectedPartySlot
@@ -56,6 +60,8 @@ function init()
     inventoryItemsPanel = boxWindow:recursiveGetChildById('inventoryItems')
     inventoryUpButton = boxWindow:recursiveGetChildById('inventoryUpButton')
     inventoryName = boxWindow:recursiveGetChildById('inventoryName')
+    inventoryItemsTab = boxWindow:recursiveGetChildById('inventoryItemsTab')
+    inventoryLootTab = boxWindow:recursiveGetChildById('inventoryLootTab')
     partyPanel = boxWindow:recursiveGetChildById('partyPanel')
     pokemonDetailsHost = boxWindow:recursiveGetChildById('pokemonDetailsHost')
     pokemonDetailsContent = boxWindow:recursiveGetChildById('pokemonDetailsContent')
@@ -185,7 +191,8 @@ function requestInventory()
         return
     end
 
-    local existing = g_game.getContainer(BACKPACK_CONTAINER_ID)
+    local containerId = inventorySourceMode == 'loot' and LOOT_CONTAINER_ID or BACKPACK_CONTAINER_ID
+    local existing = g_game.getContainer(containerId)
     if existing then
         inventoryContainer = existing
         if existing.window and modules.game_containers then
@@ -197,8 +204,30 @@ function requestInventory()
 
     local protocolGame = g_game.getProtocolGame()
     if protocolGame then
-        protocolGame:sendExtendedOpcode(BACKPACK_OPCODE, 'B')
+        protocolGame:sendExtendedOpcode(BACKPACK_OPCODE, inventorySourceMode == 'loot' and 'L' or 'B')
     end
+end
+
+function selectInventorySource(mode)
+    if mode ~= 'items' and mode ~= 'loot' then
+        return
+    end
+
+    if inventoryItemsTab then
+        inventoryItemsTab:setChecked(mode == 'items')
+    end
+    if inventoryLootTab then
+        inventoryLootTab:setChecked(mode == 'loot')
+    end
+
+    if inventorySourceMode == mode then
+        requestInventory()
+        return
+    end
+
+    closeInventory()
+    inventorySourceMode = mode
+    requestInventory()
 end
 
 function openInventoryParent()
@@ -241,6 +270,8 @@ function terminate()
 
     currentContainer = nil
     inventoryContainer = nil
+    inventoryItemsTab = nil
+    inventoryLootTab = nil
     selectedButton = nil
     radioTabs = nil
     boxWindow = nil
@@ -493,7 +524,8 @@ function handlesContainer(container)
     if container:getId() == BOX_CONTAINER_ID then
         return true
     end
-    return container:getId() == BACKPACK_CONTAINER_ID and boxWindow and boxWindow:isVisible() and
+    local isInventoryContainer = container:getId() == BACKPACK_CONTAINER_ID or container:getId() == LOOT_CONTAINER_ID
+    return isInventoryContainer and boxWindow and boxWindow:isVisible() and
         selectedType == ITEM and not (modules.game_playertrade and modules.game_playertrade.isTradeOpen and
         modules.game_playertrade.isTradeOpen())
 end
@@ -503,7 +535,11 @@ function onContainerOpen(container, previousContainer)
         return false
     end
 
-    if container:getId() == BACKPACK_CONTAINER_ID then
+    if container:getId() == BACKPACK_CONTAINER_ID or container:getId() == LOOT_CONTAINER_ID then
+        local expectedId = inventorySourceMode == 'loot' and LOOT_CONTAINER_ID or BACKPACK_CONTAINER_ID
+        if container:getId() ~= expectedId then
+            return false
+        end
         local validNavigation = not previousContainer or previousContainer == inventoryContainer
         if not validNavigation then
             return false
@@ -534,7 +570,7 @@ function onContainerClose(container)
         return false
     end
 
-    if container:getId() == BACKPACK_CONTAINER_ID then
+    if container:getId() == BACKPACK_CONTAINER_ID or container:getId() == LOOT_CONTAINER_ID then
         if inventoryContainer == container then
             inventoryContainer = nil
             clearInventoryItems()

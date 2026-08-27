@@ -2,6 +2,7 @@ local TRADE_OPCODE = 74
 local BOX_OPCODE = 73
 local BACKPACK_OPCODE = 75
 local BACKPACK_CONTAINER_ID = 14
+local LOOT_CONTAINER_ID = 11
 local BOX_CONTAINER_ID = 15
 local ITEM_SLOT_COUNT = 50
 local SOURCE_SLOT_COUNT = 50
@@ -257,7 +258,7 @@ local function updateSourceLayout(slotCount)
     previousButton:setVisible(showPages)
     nextButton:setVisible(showPages)
     pageLabel:setVisible(showPages)
-    sourceFrame:setHeight(math.max(140, 8 + gridHeight + (showPages and 27 or 0)))
+    sourceFrame:setHeight(math.max(176, 8 + gridHeight + (showPages and 27 or 0)))
 end
 
 local function refreshSourcePages()
@@ -335,7 +336,8 @@ local function adoptSourceContainer(container, previousContainer)
 	local isCurrentNavigation = previousContainer and sourceContainer and previousContainer == sourceContainer
 	local isExpectedContainer = expectedSourceContainerId ~= nil and container:getId() == expectedSourceContainerId
 	local isInitialBackpack = sourceMode == 'bag' and container:getId() == BACKPACK_CONTAINER_ID
-	if not isCurrentNavigation and not isExpectedContainer and not isInitialBackpack then
+	local isInitialLoot = sourceMode == 'loot' and container:getId() == LOOT_CONTAINER_ID
+	if not isCurrentNavigation and not isExpectedContainer and not isInitialBackpack and not isInitialLoot then
 		return false
 	end
 
@@ -379,6 +381,28 @@ function openBackpackSource(button)
 	expectedSourceContainerId = BACKPACK_CONTAINER_ID
 	refreshSourceItems()
 	sendExtendedOpcode(BACKPACK_OPCODE, 'O')
+end
+
+function openLootSource(button)
+    if not g_game.isOnline() then
+        return
+    end
+
+    local lootButton = button or (tradeWindow and tradeWindow:recursiveGetChildById('lootSourceButton'))
+    if sourceContainer and sourceMode == 'loot' and not sourceContainer:hasParent() then
+        updateSourceButton(lootButton)
+        refreshSourceItems()
+        return
+    end
+    if sourceContainer then
+        g_game.close(sourceContainer)
+    end
+    sourceMode = 'loot'
+    sourceContainer = nil
+    expectedSourceContainerId = LOOT_CONTAINER_ID
+    updateSourceButton(lootButton)
+    refreshSourceItems()
+    sendExtendedOpcode(BACKPACK_OPCODE, 'L')
 end
 
 function openBoxSource(depotId, button)

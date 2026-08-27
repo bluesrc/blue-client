@@ -177,7 +177,7 @@ TradeWindow < MainWindow
 
   FlatPanel
     id: sourceFrame
-    size: 200 140
+    size: 200 176
     anchors.left: parent.left
     anchors.verticalCenter: parent.verticalCenter
     padding: 8
@@ -194,12 +194,22 @@ TradeWindow < MainWindow
       @onClick: modules.game_playertrade.openBackpackSource(self)
 
     TabButton
+      id: lootSourceButton
+      !text: tr('Loot')
+      width: 62
+      height: 20
+      anchors.left: parent.left
+      anchors.top: bagSourceButton.bottom
+      margin-top: 2
+      @onClick: modules.game_playertrade.openLootSource(self)
+
+    TabButton
       id: boxSourceButton1
       !text: tr('Box 1')
       width: 62
       height: 20
       anchors.left: parent.left
-      anchors.top: bagSourceButton.bottom
+      anchors.top: lootSourceButton.bottom
       margin-top: 2
       @onClick: modules.game_playertrade.openBoxSource(0, self)
 

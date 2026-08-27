@@ -1,148 +1,153 @@
-InventoryItem < Item
-  $on:
-    image-source: /images/ui/item-blessed
+InventoryBagSlot < Item
+  size: 34 34
+  padding: 1
+  border-width: 1
+  border-color: #4a5563
 
-HeadSlot < InventoryItem
-  id: slot1
-  image-source: /images/game/slots/head
-  &position: {x=65535, y=1, z=0}
-  $on:
-    image-source: /images/game/slots/head-blessed
-
-BodySlot < InventoryItem
-  id: slot4
-  image-source: /images/game/slots/body
-  &position: {x=65535, y=4, z=0}
-  $on:
-    image-source: /images/game/slots/body-blessed
-
-LegSlot < InventoryItem
-  id: slot7
-  image-source: /images/game/slots/legs
-  &position: {x=65535, y=7, z=0}
-  $on:
-    image-source: /images/game/slots/legs-blessed
-
-FeetSlot < InventoryItem
-  id: slot8
-  image-source: /images/game/slots/feet
-  &position: {x=65535, y=8, z=0}
-  $on:
-    image-source: /images/game/slots/feet-blessed
-
-NeckSlot < InventoryItem
-  id: slot2
-  image-source: /images/game/slots/neck
-  &position: {x=65535, y=2, z=0}
-  $on:
-    image-source: /images/game/slots/neck-blessed
-
-LeftSlot < InventoryItem
-  id: slot6
-  image-source: /images/game/slots/left-hand
-  &position: {x=65535, y=6, z=0}
-  $on:
-    image-source: /images/game/slots/left-hand-blessed
-
-FingerSlot < InventoryItem
-  id: slot9
-  image-source: /images/game/slots/finger
-  &position: {x=65535, y=9, z=0}
-  $on:
-    image-source: /images/game/slots/finger-blessed
-
-BackSlot < InventoryItem
-  id: slot3
-  image-source: /images/game/slots/back
-  &position: {x=65535, y=3, z=0}
-  $on:
-    image-source: /images/game/slots/back-blessed
-
-RightSlot < InventoryItem
-  id: slot5
-  image-source: /images/game/slots/right-hand
-  &position: {x=65535, y=5, z=0}
-  $on:
-    image-source: /images/game/slots/right-hand-blessed
-
-AmmoSlot < InventoryItem
-  id: slot10
-  image-source: /images/game/slots/ammo
-  &position: {x=65535, y=10, z=0}
-  $on:
-    image-source: /images/game/slots/ammo-blessed
-
-PurseButton < Button
-  id: purseButton
-  size: 26 26
-  !tooltip: tr('Open purse')
-  icon-source: /images/game/slots/purse
-  icon-size: 24 24
-  icon-offset: 1 1
+InventoryTabButton < TabButton
+  height: 24
+  text-align: center
 
 MiniWindow
   id: inventoryWindow
   !text: tr('Inventory')
   icon: /images/topbuttons/inventory
-  height: 175
+  width: 202
+  height: 211
   @onOpen: modules.game_inventory.onMiniWindowOpen()
   @onClose: modules.game_inventory.onMiniWindowClose()
   &save: true
 
   MiniWindowContents
-    HeadSlot
+    padding: 4
+
+    Panel
+      id: tabsPanel
+      height: 24
       anchors.top: parent.top
-      anchors.horizontalCenter: parent.horizontalCenter
-      margin-top: 3
+      anchors.left: parent.left
+      anchors.right: parent.right
 
-    BodySlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      InventoryTabButton
+        id: itemsTab
+        !text: tr('Items')
+        !tooltip: tr('Drop loot here to move it to your items bag')
+        anchors.left: parent.left
+        anchors.right: parent.horizontalCenter
+        @onClick: modules.game_inventory.selectTab('items')
 
-    LegSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      InventoryTabButton
+        id: lootTab
+        !text: tr('Loot')
+        anchors.left: parent.horizontalCenter
+        anchors.right: parent.right
+        @onClick: modules.game_inventory.selectTab('loot')
 
-    FeetSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+    Panel
+      id: itemsPage
+      anchors.top: tabsPanel.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
 
-    NeckSlot
-      anchors.top: slot1.top
-      anchors.right: slot1.left
-      margin-top: 10
-      margin-right: 5
+      Button
+        id: itemsUpButton
+        !text: tr('Back')
+        size: 48 20
+        anchors.top: parent.top
+        anchors.left: parent.left
+        visible: false
+        @onClick: modules.game_inventory.openContainerParent('items')
 
-    LeftSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      Label
+        id: itemsName
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 20
+        text-align: center
+        color: #b7c2ce
 
-    FingerSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+      VerticalScrollBar
+        id: itemsScroll
+        anchors.top: itemsName.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        step: 36
+        pixels-scroll: true
 
-    BackSlot
-      anchors.top: slot1.top
-      anchors.left: slot1.right
-      margin-top: 10
-      margin-left: 5
+      ScrollablePanel
+        id: itemsFrame
+        anchors.top: itemsScroll.top
+        anchors.left: parent.left
+        anchors.right: itemsScroll.left
+        anchors.bottom: parent.bottom
+        margin-right: 2
+        vertical-scrollbar: itemsScroll
 
-    RightSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+        Panel
+          id: itemsGrid
+          width: 175
+          height: 0
+          anchors.top: parent.top
+          anchors.right: parent.right
+          layout:
+            type: grid
+            cell-size: 35 35
+            num-columns: 5
+            flow: true
 
-    AmmoSlot
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
-      margin-top: 3
+    Panel
+      id: lootPage
+      anchors.top: tabsPanel.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      visible: false
 
-    PurseButton
-      margin-top: 3
-      anchors.top: prev.bottom
-      anchors.horizontalCenter: prev.horizontalCenter
+      Button
+        id: lootUpButton
+        !text: tr('Back')
+        size: 48 20
+        anchors.top: parent.top
+        anchors.left: parent.left
+        visible: false
+        @onClick: modules.game_inventory.openContainerParent('loot')
+
+      Label
+        id: lootName
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 20
+        text-align: center
+        color: #b7c2ce
+
+      VerticalScrollBar
+        id: lootScroll
+        anchors.top: lootName.bottom
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        step: 36
+        pixels-scroll: true
+
+      ScrollablePanel
+        id: lootFrame
+        anchors.top: lootScroll.top
+        anchors.left: parent.left
+        anchors.right: lootScroll.left
+        anchors.bottom: parent.bottom
+        margin-right: 2
+        vertical-scrollbar: lootScroll
+
+        Panel
+          id: lootGrid
+          width: 175
+          height: 0
+          anchors.top: parent.top
+          anchors.right: parent.right
+          layout:
+            type: grid
+            cell-size: 35 35
+            num-columns: 5
+            flow: true

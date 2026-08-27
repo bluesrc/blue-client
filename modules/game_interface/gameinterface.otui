@@ -67,6 +67,7 @@ UIWidget
 
   GameSidePanel
     id: gameRightPanel
+    width: 210
     anchors.right: parent.right
     anchors.top: parent.top
     anchors.bottom: parent.bottom
