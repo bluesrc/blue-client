@@ -541,6 +541,12 @@ void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
 
     callLuaField("onPokemonEvolution", slot, info.p_id, active, info.evolutionTarget);
 
+    callLuaField("onPokemonStatus", slot, info.p_id, active,
+        static_cast<int32_t>(info.battleStatStages[0]), static_cast<int32_t>(info.battleStatStages[1]),
+        static_cast<int32_t>(info.battleStatStages[2]), static_cast<int32_t>(info.battleStatStages[3]),
+        static_cast<int32_t>(info.battleStatStages[4]), static_cast<int32_t>(info.battleStatStages[5]),
+        info.statusCondition, info.flinchDuration);
+
     using LuaPokemonMove = std::tuple<uint16_t, std::string, uint8_t, uint8_t, uint16_t, uint16_t, uint8_t, uint8_t, uint32_t, uint8_t, uint8_t, uint8_t>;
     std::vector<LuaPokemonMove> learnedMoves;
     learnedMoves.reserve(info.learnedMoves.size());
@@ -554,4 +560,9 @@ void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
 void LocalPlayer::pokemonMoveCooldown(uint32_t pokemonId, uint8_t slot, uint32_t duration)
 {
     callLuaField("onPokemonMoveCooldown", pokemonId, slot, duration);
+}
+
+void LocalPlayer::playerCooldown(uint8_t cooldown, uint32_t duration)
+{
+    callLuaField("onPlayerCooldown", cooldown, duration);
 }

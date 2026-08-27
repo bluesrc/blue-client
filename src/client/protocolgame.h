@@ -139,6 +139,7 @@ public:
     void parsePokemonInfo(const InputMessagePtr& msg);
     void parseTrainerInfo(const InputMessagePtr& msg) const;
     void parsePokemonMoveCooldown(const InputMessagePtr& msg);
+    void parsePlayerCooldown(const InputMessagePtr& msg);
 
 protected:
     void onConnect() override;

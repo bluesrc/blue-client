@@ -417,4 +417,7 @@ struct PokemonInfo
     Stats evs;
     std::array<Move, 4> moves;
     std::vector<LearnedMove> learnedMoves;
+    std::array<int8_t, 6> battleStatStages{};
+    uint8_t statusCondition{ 0 };
+    uint32_t flinchDuration{ 0 };
 };

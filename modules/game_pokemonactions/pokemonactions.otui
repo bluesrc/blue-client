@@ -35,6 +35,35 @@ PokemonContextAction < Panel
     text-auto-resize: true
     phantom: true
 
+PokemonCooldownAction < Panel
+  size: 32 32
+  visible: false
+  background-color: #111820ee
+  border-width: 2
+  border-color: #6d8295
+  padding: 2
+  phantom: false
+  focusable: false
+
+  UIWidget
+    id: actionIcon
+    anchors.centerIn: parent
+    size: 22 22
+    image-size: 22 22
+    phantom: true
+
+  UIProgressRect
+    id: cooldownProgress
+    anchors.fill: parent
+    margin: 1
+    background: #080b0dcc
+    percent: 100
+    color: #ffffff
+    font: verdana-11px-rounded
+    text-align: center
+    phantom: true
+    visible: false
+
 Panel
   id: pokemonActionsWindow
   anchors.left: parent.left
@@ -53,3 +82,19 @@ Panel
   PokemonContextAction
     id: evolutionAction
     tooltip: Evolve Pokemon
+
+  PokemonCooldownAction
+    id: actionCooldown
+    tooltip: Action: ready
+
+  PokemonCooldownAction
+    id: gobackCooldown
+    tooltip: GoBack: ready
+
+  PokemonCooldownAction
+    id: tryCatchCooldown
+    tooltip: TryCatch: ready
+
+  PokemonCooldownAction
+    id: combatCooldown
+    tooltip: Combat lock: ready

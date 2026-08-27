@@ -573,6 +573,9 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 case Proto::GameServerPokemonMoveCooldown:
                     parsePokemonMoveCooldown(msg);
                     break;
+                case Proto::GameServerPlayerCooldown:
+                    parsePlayerCooldown(msg);
+                    break;
 
                 default:
                     throw Exception("unhandled opcode %d", opcode);
@@ -4141,6 +4144,11 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     info.heldItemActive = static_cast<bool>(msg->getU8());
     info.evolutionTarget = msg->getString();
 
+    for (int8_t& stage : info.battleStatStages)
+        stage = static_cast<int8_t>(msg->getU8());
+    info.statusCondition = msg->getU8();
+    info.flinchDuration = msg->getU32();
+
     m_localPlayer->pokemonInfo(slot, info, active);
 }
 
@@ -4150,6 +4158,13 @@ void ProtocolGame::parsePokemonMoveCooldown(const InputMessagePtr& msg)
     const uint8_t slot = msg->getU8();
     const uint32_t duration = msg->getU32();
     m_localPlayer->pokemonMoveCooldown(pokemonId, slot, duration);
+}
+
+void ProtocolGame::parsePlayerCooldown(const InputMessagePtr& msg)
+{
+    const uint8_t cooldown = msg->getU8();
+    const uint32_t duration = msg->getU32();
+    m_localPlayer->playerCooldown(cooldown, duration);
 }
 
 void ProtocolGame::parseTrainerInfo(const InputMessagePtr& msg) const

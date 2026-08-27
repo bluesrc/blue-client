@@ -82,6 +82,7 @@ namespace Proto
         GameServerPokemonInfo = 57,
         GameServerTrainerInfo = 58,
         GameServerPokemonMoveCooldown = 59,
+        GameServerPlayerCooldown = 60,
 
         // original tibia ONLY
         GameServerImbuementDurations = 93,
