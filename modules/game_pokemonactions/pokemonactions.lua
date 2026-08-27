@@ -1,9 +1,4 @@
 local actionsWindow
-local evolutionAction
-local activePokemonId = 0
-local evolutionTarget = ''
-local clickLocked = false
-local unlockEvent
 local cooldownWidgets = {}
 local cooldownStates = {}
 local cooldownUpdateEvent
@@ -32,9 +27,6 @@ local function updateWindowGeometry()
     end
 
     local actionCount = 0
-    if evolutionAction and evolutionAction:isExplicitlyVisible() then
-        actionCount = actionCount + 1
-    end
 
     for cooldown in pairs(cooldownDefinitions) do
         local widget = cooldownWidgets[cooldown]
@@ -157,78 +149,20 @@ local function startCooldown(cooldown, duration)
     updateCooldowns()
 end
 
-local function unlockClick()
-    clickLocked = false
-    unlockEvent = nil
-end
-
-local function cancelUnlockEvent()
-    if unlockEvent then
-        removeEvent(unlockEvent)
-        unlockEvent = nil
-    end
-    clickLocked = false
-end
-
 local function clearActions()
-    cancelUnlockEvent()
     clearCooldowns()
-    activePokemonId = 0
-    evolutionTarget = ''
-
-    if evolutionAction then
-        evolutionAction:hide()
-    end
     if actionsWindow then
         actionsWindow:hide()
     end
 end
 
 local function online()
-    cancelUnlockEvent()
     clearCooldowns()
-    activePokemonId = 0
-    evolutionTarget = ''
-    evolutionAction:hide()
     updateWindowGeometry()
-end
-
-local function updateEvolutionAction(active, pokemonId, target)
-    if not actionsWindow or not evolutionAction then
-        return
-    end
-
-    activePokemonId = active and pokemonId or 0
-    evolutionTarget = active and target or ''
-    if activePokemonId == 0 or evolutionTarget == '' then
-        evolutionAction:hide()
-        updateWindowGeometry()
-        return
-    end
-
-    evolutionAction:setTooltip(tr('Evolve into %s', evolutionTarget))
-    evolutionAction:show()
-    updateWindowGeometry()
-    actionsWindow:show()
-end
-
-local function evolveActivePokemon(_, _, button)
-    if button ~= MouseLeftButton then
-        return false
-    end
-    if clickLocked or activePokemonId == 0 or evolutionTarget == '' or not g_game.isOnline() then
-        return true
-    end
-
-    clickLocked = true
-    g_game.talk('/evolve')
-    unlockEvent = scheduleEvent(unlockClick, 750)
-    return true
 end
 
 function init()
     connect(LocalPlayer, {
-        onPokemonEvolution = onPokemonEvolution,
         onPlayerCooldown = onPlayerCooldown
     })
     connect(g_game, {
@@ -237,11 +171,6 @@ function init()
     })
 
     actionsWindow = g_ui.loadUI('pokemonactions', modules.game_interface.getMapPanel())
-    evolutionAction = actionsWindow:getChildById('evolutionAction')
-    evolutionAction.onMousePress = function(_, _, button)
-        return button == MouseLeftButton
-    end
-    evolutionAction.onMouseRelease = evolveActivePokemon
     for cooldown, definition in pairs(cooldownDefinitions) do
         cooldownWidgets[cooldown] = actionsWindow:getChildById(definition.id)
         cooldownWidgets[cooldown]:getChildById('actionIcon'):setImageSource(definition.icon)
@@ -256,7 +185,6 @@ end
 
 function terminate()
     disconnect(LocalPlayer, {
-        onPokemonEvolution = onPokemonEvolution,
         onPlayerCooldown = onPlayerCooldown
     })
     disconnect(g_game, {
@@ -264,22 +192,16 @@ function terminate()
         onGameEnd = offline
     })
 
-    cancelUnlockEvent()
     clearCooldowns()
     if actionsWindow then
         actionsWindow:destroy()
         actionsWindow = nil
     end
-    evolutionAction = nil
     cooldownWidgets = {}
 end
 
 function offline()
     clearActions()
-end
-
-function onPokemonEvolution(_, _, pokemonId, active, target)
-    updateEvolutionAction(active, pokemonId, target or '')
 end
 
 function onPlayerCooldown(_, cooldown, duration)

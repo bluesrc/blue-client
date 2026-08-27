@@ -55,9 +55,9 @@ PokemonMoveEntry < Panel
 
 Panel
   id: pokemonMovesWindow
-  anchors.right: parent.right
+  anchors.left: parent.left
   anchors.bottom: parent.bottom
-  margin-right: 12
+  margin-left: 12
   margin-bottom: 12
   width: 210
   height: 1
