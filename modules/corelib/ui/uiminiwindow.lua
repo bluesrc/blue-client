@@ -185,6 +185,9 @@ end
 
 function UIMiniWindow:onVisibilityChange(visible)
     self:fitOnParent()
+    if not visible and modules.game_interface and modules.game_interface.restoreGameFocusAfterWindowClose then
+        modules.game_interface.restoreGameFocusAfterWindowClose()
+    end
 end
 
 function UIMiniWindow:onDragEnter(mousePos)

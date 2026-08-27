@@ -137,12 +137,14 @@ MAX_HISTORY = 500
 MAX_LINES = 100
 HELP_CHANNEL = 9
 
-bottomPanel = nil
 consolePanel = nil
 consoleContentPanel = nil
 consoleTabBar = nil
 consoleTextEdit = nil
 consoleToggleChat = nil
+chatModeActive = false
+hotkeysSuspended = false
+movingKeysBound = false
 channels = nil
 channelsWindow = nil
 communicationWindow = nil
@@ -185,21 +187,45 @@ function init()
         onChannelEvent = onChannelEvent
     })
 
-    bottomPanel = modules.game_interface.getBottomPanel()
-    consolePanel = g_ui.loadUI('console', bottomPanel)
-    consoleTextEdit = consolePanel:getChildById('consoleTextEdit')
-    consoleContentPanel = consolePanel:getChildById('consoleContentPanel')
-    consoleTabBar = consolePanel:getChildById('consoleTabBar')
+    consolePanel = g_ui.loadUI('console', modules.game_interface.getRootPanel())
+    consoleTextEdit = consolePanel:recursiveGetChildById('consoleTextEdit')
+    consoleContentPanel = consolePanel:recursiveGetChildById('consoleContentPanel')
+    consoleTabBar = consolePanel:recursiveGetChildById('consoleTabBar')
     consoleTabBar:setContentWidget(consoleContentPanel)
     channels = {}
 
-    consolePanel.onDragEnter = onDragEnter
-    consolePanel.onDragLeave = onDragLeave
-    consolePanel.onDragMove = onDragMove
     consoleTabBar.onDragEnter = onDragEnter
     consoleTabBar.onDragLeave = onDragLeave
     consoleTabBar.onDragMove = onDragMove
+    consolePanel.onDragEnter = function(self, mousePos)
+        local oldPos = self:getPosition()
+        self:breakAnchors()
+        self.movingReference = {
+            x = mousePos.x - oldPos.x,
+            y = mousePos.y - oldPos.y
+        }
+        self:setPosition(oldPos)
+        self.free = true
+        return true
+    end
+    consolePanel.onDragMove = function(self, mousePos, mouseMoved)
+        return UIWindow.onDragMove(self, mousePos, mouseMoved)
+    end
+    connect(consolePanel, {
+        onFocusChange = function(self, focused)
+            if not focused and chatModeActive then
+                leaveChatMode(false)
+            end
+        end
+    })
     consolePanel.onKeyPress = function(self, keyCode, keyboardModifiers)
+        if chatModeActive then
+            if keyCode == KeyEscape then
+                leaveChatMode()
+            end
+            return true
+        end
+
         if not (keyboardModifiers == KeyboardCtrlModifier and keyCode == KeyC) then
             return false
         end
@@ -218,26 +244,45 @@ function init()
         return true
     end
 
-    g_keyboard.bindKeyPress('Shift+Up', function()
+    consoleTextEdit.onKeyDown = function(self, keyCode)
+        if not chatModeActive then
+            return false
+        end
+
+        if keyCode == KeyEnter then
+            sendCurrentMessage()
+        end
+        return true
+    end
+    consoleTextEdit.onFocusChange = function(self, focused)
+        if focused then
+            enterChatMode()
+        elseif chatModeActive then
+            leaveChatMode(false)
+        end
+    end
+
+    g_keyboard.bindKeyPress('Up', function()
         navigateMessageHistory(1)
-    end, consolePanel)
-    g_keyboard.bindKeyPress('Shift+Down', function()
+        return true
+    end, consoleTextEdit)
+    g_keyboard.bindKeyPress('Down', function()
         navigateMessageHistory(-1)
-    end, consolePanel)
+        return true
+    end, consoleTextEdit)
     g_keyboard.bindKeyPress('Tab', function()
         consoleTabBar:selectNextTab()
-    end, consolePanel)
+        return true
+    end, consoleTextEdit)
     g_keyboard.bindKeyPress('Shift+Tab', function()
         consoleTabBar:selectPrevTab()
-    end, consolePanel)
+        return true
+    end, consoleTextEdit)
     g_keyboard.bindKeyDown('Enter', toggleChat)
-    g_keyboard.bindKeyPress('Ctrl+A', function()
-        consoleTextEdit:clearText()
-    end, consolePanel)
 
     -- apply buttom functions after loaded
-    consoleTabBar:setNavigation(consolePanel:getChildById('prevChannelButton'),
-        consolePanel:getChildById('nextChannelButton'))
+    consoleTabBar:setNavigation(consolePanel:recursiveGetChildById('prevChannelButton'),
+        consolePanel:recursiveGetChildById('nextChannelButton'))
     consoleTabBar.onTabChange = onTabChange
 
     -- tibia like hotkeys
@@ -246,8 +291,30 @@ function init()
     g_keyboard.bindKeyDown('Ctrl+H', openHelp)
 
     -- toggle WASD
-    consoleToggleChat = consolePanel:getChildById('toggleChat')
+    consoleToggleChat = consolePanel:recursiveGetChildById('toggleChat')
+    consolePanel:setup()
+    consolePanel:setDraggable(true)
+    consolePanel:enableResize()
+    consolePanel:setContentMinimumHeight(110)
+    consolePanel:setContentMaximumHeight(900)
+
+    local bottomResizeBorder = consolePanel:recursiveGetChildById('bottomResizeBorder')
+    local rightResizeBorder = consolePanel:recursiveGetChildById('rightResizeBorder')
+    bottomResizeBorder:setHeight(7)
+    bottomResizeBorder:setMinimum(140)
+    bottomResizeBorder:enable()
+    bottomResizeBorder:raise()
+    rightResizeBorder:setWidth(7)
+    rightResizeBorder:setMinimum(320)
+    rightResizeBorder:enable()
+    rightResizeBorder:raise()
+
     load()
+
+    local gameRootPanel = modules.game_interface.getRootPanel()
+    consolePanel:breakAnchors()
+    local initialY = math.max(0, gameRootPanel:getHeight() - consolePanel:getHeight() - 8)
+    consolePanel:setPosition(topoint(string.format('8 %d', initialY)))
 
     if g_game.isOnline() then
         online()
@@ -294,9 +361,15 @@ local function unbindMovingKeys()
     gameInterface.unbindTurnKey('Ctrl+D')
     gameInterface.unbindTurnKey('Ctrl+S')
     gameInterface.unbindTurnKey('Ctrl+A')
+
+    movingKeysBound = false
 end
 
 local function bindMovingKeys()
+    if movingKeysBound then
+        return
+    end
+
     local gameInterface = modules.game_interface
     gameInterface.bindWalkKey('W', North)
     gameInterface.bindWalkKey('D', East)
@@ -312,23 +385,116 @@ local function bindMovingKeys()
     gameInterface.bindTurnKey('Ctrl+D', East)
     gameInterface.bindTurnKey('Ctrl+S', South)
     gameInterface.bindTurnKey('Ctrl+A', West)
+
+    movingKeysBound = true
 end
 
 function toggleChat()
-    if consolePanel:isVisible() then
+    if chatModeActive then
         sendCurrentMessage()
     else
-        unbindMovingKeys()
-        consolePanel:setVisible(true)
-        consolePanel:addAnchor(AnchorRight, 'parent', AnchorRight) -- gambiarra
+        enterChatMode()
     end
 end
 
 function isChatEnabled()
-    return consoleTextEdit:isVisible()
+    return chatModeActive
+end
+
+local function suspendGameHotkeys(suspend)
+    if suspend == hotkeysSuspended then
+        return
+    end
+
+    hotkeysSuspended = suspend
+    if modules.game_hotkeys and modules.game_hotkeys.enableHotkeys then
+        modules.game_hotkeys.enableHotkeys(not suspend)
+    end
+end
+
+function enterChatMode()
+    if not consolePanel or not g_game.isOnline() then
+        return
+    end
+
+    if not consolePanel:isVisible() then
+        consolePanel:open()
+    end
+    consolePanel:raise()
+
+    if not chatModeActive then
+        chatModeActive = true
+        unbindMovingKeys()
+        suspendGameHotkeys(true)
+    end
+
+    local gameRootPanel = modules.game_interface.getRootPanel()
+    local contentsPanel = consoleTextEdit:getParent()
+    gameRootPanel:focus()
+    gameRootPanel:focusChild(consolePanel, KeyboardFocusReason)
+    consolePanel:focusChild(contentsPanel, KeyboardFocusReason)
+    contentsPanel:focusChild(consoleTextEdit, KeyboardFocusReason)
+    consoleTextEdit:setCursorPos(-1)
+end
+
+function leaveChatMode(focusGame)
+    if chatModeActive then
+        chatModeActive = false
+        suspendGameHotkeys(false)
+
+        local player = g_game.getLocalPlayer()
+        if player then
+            player:setTyping(false)
+        end
+    end
+
+    -- The initial game state already has chatModeActive=false, so binding only
+    -- inside the transition above leaves WASD unavailable on the first login.
+    bindMovingKeys()
+
+    if focusGame ~= false and modules.game_interface then
+        modules.game_interface.getBottomPanel():focus()
+    end
+end
+
+function switchChatOnCall()
+    enterChatMode()
+end
+
+function onConsoleClose()
+    leaveChatMode()
+end
+
+local function normalizeConsoleGeometry()
+    local parent = modules.game_interface.getRootPanel()
+    if not parent or parent:getWidth() <= 0 or parent:getHeight() <= 0 then
+        return
+    end
+
+    local maxWidth = math.max(320, parent:getWidth() - 40)
+    local maxHeight = math.max(140, parent:getHeight() - 40)
+    local width = consolePanel:getWidth()
+    local height = consolePanel:getHeight()
+
+    -- Recover configurations polluted by the old action bar, which anchored the
+    -- console to every edge and consequently saved a full-screen geometry.
+    if width >= parent:getWidth() - 4 then
+        width = math.min(540, maxWidth)
+    end
+    if height >= parent:getHeight() - 4 then
+        height = math.min(240, maxHeight)
+    end
+
+    consolePanel:recursiveGetChildById('rightResizeBorder'):setMaximum(maxWidth)
+    consolePanel:recursiveGetChildById('bottomResizeBorder'):setMaximum(maxHeight)
+    consolePanel:setWidth(math.max(320, math.min(width, maxWidth)))
+    consolePanel:setHeight(math.max(140, math.min(height, maxHeight)))
+    consolePanel:bindRectToParent()
 end
 
 function terminate()
+    leaveChatMode()
+    unbindMovingKeys()
     save()
     disconnect(g_game, {
         onTalk = onTalk,
@@ -353,6 +519,7 @@ function terminate()
     g_keyboard.unbindKeyDown('Ctrl+O')
     g_keyboard.unbindKeyDown('Ctrl+E')
     g_keyboard.unbindKeyDown('Ctrl+H')
+    g_keyboard.unbindKeyDown('Enter')
 
     saveCommunicationSettings()
 
@@ -384,6 +551,7 @@ function save()
     local settings = {}
     settings.messageHistory = messageHistory
     settings.wasdMode = consoleToggleChat:isChecked()
+    settings.windowWidth = consolePanel:getWidth()
     g_settings.setNode('game_console', settings)
 end
 
@@ -392,6 +560,9 @@ function load()
     if settings then
         messageHistory = settings.messageHistory or {}
         consoleToggleChat:setChecked(settings.wasdMode or false)
+        if settings.windowWidth then
+            consolePanel:setWidth(math.max(320, settings.windowWidth))
+        end
     end
     loadCommunicationSettings()
 end
@@ -404,12 +575,12 @@ function onTabChange(tabBar, tab)
     local player = g_game.getLocalPlayer()
     local message = consoleTextEdit:getText()
     if tab == defaultTab or tab == serverTab then
-        consolePanel:getChildById('closeChannelButton'):disable()
+        consolePanel:recursiveGetChildById('closeChannelButton'):disable()
         if player then
             player:setTyping(message ~= "")
         end
     else
-        consolePanel:getChildById('closeChannelButton'):enable()
+        consolePanel:recursiveGetChildById('closeChannelButton'):enable()
         player:setTyping(false)
     end
 end
@@ -1196,9 +1367,9 @@ end
 
 function sendCurrentMessage()
     local message = consoleTextEdit:getText()
-    if #message == 0 then
-        consolePanel:setVisible(false)
-        bindMovingKeys()
+    if #message:trim() == 0 then
+        consoleTextEdit:clearText()
+        consolePanel:close()
         return
     end
     consoleTextEdit:clearText()
@@ -1312,7 +1483,7 @@ function sendMessage(message, tab)
     if (channel or tab == defaultTab) and not chatCommandPrivateReady then
         if tab == defaultTab then
             speaktypedesc = chatCommandSayMode or
-                SayModes[consolePanel:getChildById('sayModeButton').sayMode].speakTypeDesc
+                SayModes[consolePanel:recursiveGetChildById('sayModeButton').sayMode].speakTypeDesc
             if speaktypedesc ~= 'say' then
                 sayModeChange(2)
             end -- head back to say mode
@@ -1360,7 +1531,7 @@ function sendMessage(message, tab)
 end
 
 function sayModeChange(sayMode)
-    local buttom = consolePanel:getChildById('sayModeButton')
+    local buttom = consolePanel:recursiveGetChildById('sayModeButton')
     if sayMode == nil then
         sayMode = buttom.sayMode + 1
     end
@@ -1889,6 +2060,10 @@ function onClickIgnoreButton()
 end
 
 function online()
+    consolePanel:setupOnStart()
+    normalizeConsoleGeometry()
+    leaveChatMode()
+
     defaultTab = addTab(tr('Default'), true)
     serverTab = addTab(tr('Server Log'), false)
 
@@ -1921,6 +2096,8 @@ function online()
 end
 
 function offline()
+    leaveChatMode()
+    unbindMovingKeys()
     if g_game.getClientVersion() < 862 then
         g_keyboard.unbindKeyDown('Ctrl+R')
     end

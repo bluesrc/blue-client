@@ -19,6 +19,7 @@ firstStep = false
 hookedMenuOptions = {}
 lastDirTime = g_clock.millis()
 lastManualWalk = 0
+focusRestoreEvent = nil
 
 function init()
     g_ui.importStyle('styles/countwindow')
@@ -168,6 +169,10 @@ end
 
 function terminate()
     hide()
+    if focusRestoreEvent then
+        removeEvent(focusRestoreEvent)
+        focusRestoreEvent = nil
+    end
     if g_app.hasUpdater() then
         disconnect(g_app, {
             onUpdateFinished = load,
@@ -1047,6 +1052,31 @@ function getRootPanel()
     return gameRootPanel
 end
 
+function restoreGameFocusAfterWindowClose()
+    if focusRestoreEvent then
+        return
+    end
+
+    focusRestoreEvent = addEvent(function()
+        focusRestoreEvent = nil
+        if not g_game.isOnline() or not gameRootPanel or not gameRootPanel:isVisible() then
+            return
+        end
+        if modules.game_console and modules.game_console.isChatEnabled() then
+            return
+        end
+
+        local focusedWidget = rootWidget:getFocusedChild()
+        if focusedWidget and focusedWidget ~= gameRootPanel and focusedWidget:isVisible() then
+            return
+        end
+
+        gameRootPanel:focus()
+        gameRootPanel:focusChild(gameBottomPanel, ActiveFocusReason)
+        stopSmartWalk()
+    end)
+end
+
 function getMapPanel()
     return gameMapPanel
 end
@@ -1114,6 +1144,6 @@ function setupView()
     gameRightPanel:setOn(true)
     gameMapPanel:setOn(true)
 
-    modules.game_console.toggleChat()
+    modules.game_console.leaveChatMode()
     modules.game_actionbar.terminate() -- warning destroying two times
 end

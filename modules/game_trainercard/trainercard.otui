@@ -92,8 +92,25 @@ MainWindow
           phantom: true
       TrainerCardFieldLabel
         !text: tr('Money') .. ':'
-      TrainerCardFieldValue
-        id: moneyValue
+      Panel
+        id: moneyValuePanel
+
+        UIWidget
+          id: moneyIcon
+          size: 20 20
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          image-source: /images/topbuttons/shop
+          image-clip: 0 0 20 20
+          phantom: true
+          !tooltip: tr('Money')
+
+        TrainerCardFieldValue
+          id: moneyValue
+          anchors.left: moneyIcon.right
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 4
       TrainerCardFieldLabel
         !text: tr('Level') .. ':'
       TrainerCardFieldValue
