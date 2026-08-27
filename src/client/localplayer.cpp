@@ -555,3 +555,8 @@ void LocalPlayer::pokemonMoveCooldown(uint32_t pokemonId, uint8_t slot, uint32_t
 {
     callLuaField("onPokemonMoveCooldown", pokemonId, slot, duration);
 }
+
+void LocalPlayer::playerCooldown(uint8_t cooldown, uint32_t duration)
+{
+    callLuaField("onPlayerCooldown", cooldown, duration);
+}
