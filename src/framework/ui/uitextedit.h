@@ -53,6 +53,7 @@ public:
     void setAutoScroll(bool autoScroll) { setProp(PropAutoScroll, autoScroll); }
 
     void moveCursorHorizontally(bool right);
+    void moveCursorByWord(bool right);
     void moveCursorVertically(bool up);
     void appendText(const std::string_view text);
     void appendCharacter(char c);
@@ -63,7 +64,12 @@ public:
     void paste(const std::string_view text);
     std::string copy();
     std::string cut();
-    void selectAll() { setSelection(0, m_text.length()); }
+    void selectAll()
+    {
+        m_selectionReference = 0;
+        setSelection(0, m_text.length());
+        setCursorPos(m_text.length());
+    }
     void clearSelection() { setSelection(0, 0); }
 
     void wrapText();
@@ -121,6 +127,7 @@ private:
     };
 
     void updateDisplayedText();
+    void updateSelectionAfterCursorMove(int oldCursorPos);
     void disableUpdates() { setProp(PropUpdatesEnabled, false); }
     void enableUpdates() { setProp(PropUpdatesEnabled, true); }
     void recacheGlyphs() { setProp(PropGlyphsMustRecache, true); }

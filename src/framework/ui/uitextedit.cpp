@@ -31,6 +31,8 @@
 
 #include "framework/graphics/drawpoolmanager.h"
 
+#include <cctype>
+
 UITextEdit::UITextEdit()
 {
     setProp(Props::PropCursorInRange, true);
@@ -497,18 +499,44 @@ void UITextEdit::wrapText()
 
 void UITextEdit::moveCursorHorizontally(bool right)
 {
-    if (right) {
-        if (static_cast<size_t>(m_cursorPos) + 1 <= m_text.length())
-            ++m_cursorPos;
-        else
-            m_cursorPos = 0;
-    } else if (m_cursorPos - 1 >= 0)
-        --m_cursorPos;
+    if (right)
+        m_cursorPos = std::clamp(m_cursorPos + 1, 0, static_cast<int>(m_text.length()));
     else
-        m_cursorPos = m_text.length();
+        m_cursorPos = std::clamp(m_cursorPos - 1, 0, static_cast<int>(m_text.length()));
 
     blinkCursor();
     update(true);
+}
+
+void UITextEdit::moveCursorByWord(bool right)
+{
+    size_t pos = static_cast<size_t>(std::clamp(m_cursorPos, 0, static_cast<int>(m_text.length())));
+    const auto isWhitespace = [this](size_t index) {
+        return std::isspace(static_cast<unsigned char>(m_text[index])) != 0;
+    };
+
+    if (right) {
+        while (pos < m_text.length() && !isWhitespace(pos))
+            ++pos;
+        while (pos < m_text.length() && isWhitespace(pos))
+            ++pos;
+    } else {
+        while (pos > 0 && isWhitespace(pos - 1))
+            --pos;
+        while (pos > 0 && !isWhitespace(pos - 1))
+            --pos;
+    }
+
+    m_cursorPos = static_cast<int>(pos);
+    blinkCursor();
+    update(true);
+}
+
+void UITextEdit::updateSelectionAfterCursorMove(int oldCursorPos)
+{
+    if (!hasSelection())
+        m_selectionReference = oldCursorPos;
+    setSelection(m_selectionReference, m_cursorPos);
 }
 
 void UITextEdit::moveCursorVertically(bool)
@@ -729,10 +757,51 @@ bool UITextEdit::onKeyPress(uint8_t keyCode, int keyboardModifiers, int autoRepe
                 return true;
             }
         } else if (keyCode == Fw::KeyA && getProp(PropSelectable)) {
-            if (m_text.length() > 0) {
+            if (!m_text.empty()) {
                 selectAll();
                 return true;
             }
+        } else if (keyCode == Fw::KeyLeft || keyCode == Fw::KeyRight) {
+            clearSelection();
+            moveCursorByWord(keyCode == Fw::KeyRight);
+            return true;
+        } else if (keyCode == Fw::KeyHome || keyCode == Fw::KeyEnd) {
+            clearSelection();
+            setCursorPos(keyCode == Fw::KeyHome ? 0 : m_text.length());
+            return true;
+        } else if (keyCode == Fw::KeyBackspace && getProp(PropEditable)) {
+            if (!hasSelection()) {
+                const int oldCursorPos = m_cursorPos;
+                moveCursorByWord(false);
+                if (m_cursorPos == oldCursorPos)
+                    return true;
+                setSelection(m_cursorPos, oldCursorPos);
+            }
+            del(false);
+            return true;
+        } else if (keyCode == Fw::KeyDelete && getProp(PropEditable)) {
+            if (!hasSelection()) {
+                const int oldCursorPos = m_cursorPos;
+                moveCursorByWord(true);
+                if (m_cursorPos == oldCursorPos)
+                    return true;
+                setSelection(oldCursorPos, m_cursorPos);
+            }
+            del(true);
+            return true;
+        }
+    } else if (keyboardModifiers == (Fw::KeyboardCtrlModifier | Fw::KeyboardShiftModifier)) {
+        if (keyCode == Fw::KeyLeft || keyCode == Fw::KeyRight) {
+            const int oldCursorPos = m_cursorPos;
+            moveCursorByWord(keyCode == Fw::KeyRight);
+            updateSelectionAfterCursorMove(oldCursorPos);
+            return true;
+        }
+        if (keyCode == Fw::KeyHome || keyCode == Fw::KeyEnd) {
+            const int oldCursorPos = m_cursorPos;
+            setCursorPos(keyCode == Fw::KeyHome ? 0 : m_text.length());
+            updateSelectionAfterCursorMove(oldCursorPos);
+            return true;
         }
     } else if (keyboardModifiers == Fw::KeyboardShiftModifier) {
         if (keyCode == Fw::KeyTab && !getProp(PropShiftNavigation)) {
@@ -741,7 +810,7 @@ bool UITextEdit::onKeyPress(uint8_t keyCode, int keyboardModifiers, int autoRepe
             return true;
         }
         if (keyCode == Fw::KeyRight || keyCode == Fw::KeyLeft) {
-            const size_t oldCursorPos = m_cursorPos;
+            const int oldCursorPos = m_cursorPos;
 
             if (keyCode == Fw::KeyRight) // move cursor right
                 moveCursorHorizontally(true);
@@ -751,22 +820,22 @@ bool UITextEdit::onKeyPress(uint8_t keyCode, int keyboardModifiers, int autoRepe
             if (getProp(PropShiftNavigation))
                 clearSelection();
             else {
-                if (!hasSelection())
-                    m_selectionReference = oldCursorPos;
-                setSelection(m_selectionReference, m_cursorPos);
+                updateSelectionAfterCursorMove(oldCursorPos);
             }
             return true;
         }
         if (keyCode == Fw::KeyHome) { // move cursor to first character
             if (m_cursorPos != 0) {
-                setSelection(m_cursorPos, 0);
+                const int oldCursorPos = m_cursorPos;
                 setCursorPos(0);
+                updateSelectionAfterCursorMove(oldCursorPos);
                 return true;
             }
         } else if (keyCode == Fw::KeyEnd) { // move cursor to last character
             if (m_cursorPos != static_cast<int>(m_text.length())) {
-                setSelection(m_cursorPos, m_text.length());
+                const int oldCursorPos = m_cursorPos;
                 setCursorPos(m_text.length());
+                updateSelectionAfterCursorMove(oldCursorPos);
                 return true;
             }
         }
