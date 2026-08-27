@@ -1,0 +1,9 @@
+Module
+  name: game_pokemonstatus
+  description: Displays the active Pokemon battle stages and status conditions
+  author: Blue Team
+  sandboxed: true
+  dependencies: [ game_pokemonmoves ]
+  scripts: [ pokemonstatus ]
+  @onLoad: init()
+  @onUnload: terminate()

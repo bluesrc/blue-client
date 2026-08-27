@@ -4144,6 +4144,11 @@ void ProtocolGame::parsePokemonInfo(const InputMessagePtr& msg)
     info.heldItemActive = static_cast<bool>(msg->getU8());
     info.evolutionTarget = msg->getString();
 
+    for (int8_t& stage : info.battleStatStages)
+        stage = static_cast<int8_t>(msg->getU8());
+    info.statusCondition = msg->getU8();
+    info.flinchDuration = msg->getU32();
+
     m_localPlayer->pokemonInfo(slot, info, active);
 }
 
