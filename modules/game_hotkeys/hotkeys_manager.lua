@@ -63,6 +63,10 @@ HotkeyBindings = {
     { id = 'walk_south_east', category = 'movement', text = tr('Walk south-east'), description = tr('Move diagonally south-east.'), defaults = {'C', 'Numpad3'}, direction = SouthEast },
     { id = 'walk_south_west', category = 'movement', text = tr('Walk south-west'), description = tr('Move diagonally south-west.'), defaults = {'Z', 'Numpad1'}, direction = SouthWest },
     { id = 'walk_north_west', category = 'movement', text = tr('Walk north-west'), description = tr('Move diagonally north-west.'), defaults = {'Q', 'Numpad7'}, direction = NorthWest },
+    { id = 'turn_north', category = 'movement', text = tr('Turn north'), description = tr('Face north without moving.'), defaults = {'Ctrl+Up', ''}, turnDirection = North },
+    { id = 'turn_east', category = 'movement', text = tr('Turn east'), description = tr('Face east without moving.'), defaults = {'Ctrl+Right', ''}, turnDirection = East },
+    { id = 'turn_south', category = 'movement', text = tr('Turn south'), description = tr('Face south without moving.'), defaults = {'Ctrl+Down', ''}, turnDirection = South },
+    { id = 'turn_west', category = 'movement', text = tr('Turn west'), description = tr('Face west without moving.'), defaults = {'Ctrl+Left', ''}, turnDirection = West },
 
     { id = 'pokemon_move_1', category = 'pokemon', text = tr('Pokemon move 1'), description = tr('Use the first active move.'), defaults = {'1', ''} },
     { id = 'pokemon_move_2', category = 'pokemon', text = tr('Pokemon move 2'), description = tr('Use the second active move.'), defaults = {'2', ''} },
@@ -275,7 +279,11 @@ end
 
 function unbindConfiguredHotkeys()
     for _, record in ipairs(configuredCallbacks) do
-        if record.movement then
+        if record.turning then
+            if modules.game_interface and modules.game_interface.unbindTurnKey then
+                modules.game_interface.unbindTurnKey(record.key)
+            end
+        elseif record.movement then
             if modules.game_interface and modules.game_interface.unbindWalkKey then
                 modules.game_interface.unbindWalkKey(record.key)
             end
@@ -295,6 +303,14 @@ local function bindConfiguredAction(binding, keyCombo)
         if movementEnabled and modules.game_interface and modules.game_interface.bindWalkKey then
             modules.game_interface.bindWalkKey(keyCombo, binding.direction)
             table.insert(configuredCallbacks, { key = keyCombo, movement = true })
+        end
+        return
+    end
+
+    if binding.turnDirection then
+        if movementEnabled and modules.game_interface and modules.game_interface.bindTurnKey then
+            modules.game_interface.bindTurnKey(keyCombo, binding.turnDirection)
+            table.insert(configuredCallbacks, { key = keyCombo, turning = true })
         end
         return
     end

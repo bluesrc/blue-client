@@ -112,8 +112,6 @@ function bindTurnKey(key, dir)
     local function callback(widget, code, repeatTicks)
         if g_clock.millis() - lastDirTime >= modules.client_options.getOption('turnDelay') then
             g_game.turn(dir)
-            changeWalkDir(dir)
-
             lastDirTime = g_clock.millis()
         end
     end
