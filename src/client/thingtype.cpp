@@ -229,7 +229,6 @@ void ThingType::unserializeAppearance(uint16_t clientId, ThingCategory category,
     // corpse
     // player_corpse
     // cyclopediaitem
-    // ammo
 
     if (flags.has_show_off_socket() && flags.show_off_socket()) {
         m_flags |= ThingFlagAttrPodium;

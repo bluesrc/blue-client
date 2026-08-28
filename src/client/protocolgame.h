@@ -212,7 +212,6 @@ private:
     void parseCreatureLight(const InputMessagePtr& msg);
     void parseCreatureOutfit(const InputMessagePtr& msg) const;
     void parseCreatureSpeed(const InputMessagePtr& msg);
-    void parseCreatureSkulls(const InputMessagePtr& msg);
     void parseCreatureShields(const InputMessagePtr& msg);
     void parseCreatureUnpass(const InputMessagePtr& msg);
     void parseEditText(const InputMessagePtr& msg);
@@ -224,8 +223,6 @@ private:
     void parsePlayerState(const InputMessagePtr& msg) const;
     void parsePlayerCancelAttack(const InputMessagePtr& msg);
     void parsePlayerModes(const InputMessagePtr& msg);
-    void parseMoveCooldown(const InputMessagePtr& msg);
-    void parseMoveGroupCooldown(const InputMessagePtr& msg);
     void parseMultiUseCooldown(const InputMessagePtr& msg);
     void parseTalk(const InputMessagePtr& msg);
     void parseChannelList(const InputMessagePtr& msg);

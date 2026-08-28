@@ -160,7 +160,6 @@ local creatureEvents = {
     onChangeName = onChangeName,
     onTypeChange = function(creature, id) setIcon(creature, id, getTypeImagePath, 'type') end,
     onIconChange = function(creature, id) setIcon(creature, id, getIconImagePath, 'icon') end,
-    onSkullChange = function(creature, id) setIcon(creature, id, getSkullImagePath, 'skull') end,
     onShieldChange = function(creature, id) setIcon(creature, id, getShieldImagePathAndBlink, 'shield') end,
     onEmblemChange = function(creature, id) setIcon(creature, id, getEmblemImagePath, 'emblem') end,
 };
@@ -202,7 +201,6 @@ if devMode then
 
             creatureEvents.onTypeChange(creature, creature:getType())
             creatureEvents.onIconChange(creature, creature:getIcon())
-            creatureEvents.onSkullChange(creature, creature:getSkull())
             creatureEvents.onShieldChange(creature, creature:getShield())
             creatureEvents.onEmblemChange(creature, creature:getEmblem())
         end

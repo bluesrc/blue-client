@@ -15,31 +15,6 @@ CreatureTypeHidden = 5
 
 -- @}
 
-function getNextSkullId(skullId)
-    if skullId == SkullRed or skullId == SkullBlack then
-        return SkullBlack
-    end
-    return SkullRed
-end
-
-function getSkullImagePath(skullId)
-    local path
-    if skullId == SkullYellow then
-        path = '/images/game/skulls/skull_yellow'
-    elseif skullId == SkullGreen then
-        path = '/images/game/skulls/skull_green'
-    elseif skullId == SkullWhite then
-        path = '/images/game/skulls/skull_white'
-    elseif skullId == SkullRed then
-        path = '/images/game/skulls/skull_red'
-    elseif skullId == SkullBlack then
-        path = '/images/game/skulls/skull_black'
-    elseif skullId == SkullOrange then
-        path = '/images/game/skulls/skull_orange'
-    end
-    return path
-end
-
 function getShieldImagePathAndBlink(shieldId)
     local path, blink
     if shieldId == ShieldWhiteYellow then
@@ -122,13 +97,6 @@ function getIconImagePath(iconId)
         path = '/images/game/npcicons/icon_tradequest'
     end
     return path
-end
-
-function Creature:onSkullChange(skullId)
-    local imagePath = getSkullImagePath(skullId)
-    if imagePath then
-        self:setSkullTexture(imagePath)
-    end
 end
 
 function Creature:onShieldChange(shieldId)

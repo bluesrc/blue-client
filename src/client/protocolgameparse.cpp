@@ -212,9 +212,6 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 case Proto::GameServerCreatureSpeed:
                     parseCreatureSpeed(msg);
                     break;
-                case Proto::GameServerCreatureSkull:
-                    parseCreatureSkulls(msg);
-                    break;
                 case Proto::GameServerCreatureParty:
                     parseCreatureShields(msg);
                     break;
@@ -322,12 +319,6 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                     parseQuestLine(msg);
                     break;
                     // PROTOCOL>=870
-                case Proto::GameServerMoveDelay:
-                    parseMoveCooldown(msg);
-                    break;
-                case Proto::GameServerMoveGroupDelay:
-                    parseMoveGroupCooldown(msg);
-                    break;
                 case Proto::GameServerMultiUseDelay:
                     parseMultiUseCooldown(msg);
                     break;
@@ -1534,20 +1525,6 @@ void ProtocolGame::parseCreatureSpeed(const InputMessagePtr& msg)
         creature->setBaseSpeed(baseSpeed);
 }
 
-void ProtocolGame::parseCreatureSkulls(const InputMessagePtr& msg)
-{
-    const uint32_t id = msg->getU32();
-    const uint8_t skull = msg->getU8();
-
-    const auto& creature = g_map.getCreatureById(id);
-    if (!creature) {
-        g_logger.traceError("could not get creature");
-        return;
-    }
-
-    creature->setSkull(skull);
-}
-
 void ProtocolGame::parseCreatureShields(const InputMessagePtr& msg)
 {
     const uint32_t id = msg->getU32();
@@ -1638,14 +1615,9 @@ void ProtocolGame::parsePlayerInfo(const InputMessagePtr& msg) const
         msg->getU8(); // reserved legacy flag
     }
 
-    const uint16_t moveCount = msg->getU16();
-    std::vector<uint16_t> moves;
-    for (int_fast32_t i = 0; i < moveCount; ++i) {
-        if (g_game.getFeature(Otc::GameUshortMove)) {
-            moves.push_back(msg->getU16()); // move id
-        } else {
-            moves.push_back(static_cast<uint16_t>(msg->getU8())); // move id
-        }
+    const uint16_t reservedActionCount = msg->getU16();
+    for (int_fast32_t i = 0; i < reservedActionCount; ++i) {
+        msg->getU8();
     }
 
     if (g_game.getClientVersion() >= 1281) {
@@ -1654,7 +1626,6 @@ void ProtocolGame::parsePlayerInfo(const InputMessagePtr& msg) const
 
     m_localPlayer->setPremium(premium);
     m_localPlayer->setVocation(vocation);
-    m_localPlayer->setMoves(moves);
 }
 
 void ProtocolGame::parsePlayerStats(const InputMessagePtr& msg) const
@@ -1833,24 +1804,6 @@ void ProtocolGame::parsePlayerSkills(const InputMessagePtr& msg) const
         msg->getU8();
     }
 
-    if (g_game.getFeature(Otc::GameAdditionalSkills)) {
-        // Critical, Life Leech, Mana Leech, Dodge, Fatal, Momentum have no level percent, nor loyalty bonus
-
-        const uint8_t lastSkill = g_game.getClientVersion() >= 1281 ? Otc::LastSkill : Otc::ManaLeechAmount + 1;
-        for (int_fast32_t skill = Otc::CriticalChance; skill < lastSkill; ++skill) {
-            if (!g_game.getFeature(Otc::GameLeechAmount)) {
-                if (skill == Otc::LifeLeechAmount || skill == Otc::ManaLeechAmount) {
-                    continue;
-                }
-            }
-
-            const uint16_t level = msg->getU16();
-            const uint16_t baseLevel = msg->getU16();
-            m_localPlayer->setSkill(static_cast<Otc::Skill>(skill), level, 0);
-            m_localPlayer->setBaseSkill(static_cast<Otc::Skill>(skill), baseLevel);
-        }
-    }
-
     if (g_game.getClientVersion() >= 1281) {
         // bonus cap
         const uint32_t capacity = msg->getU32(); // base + bonus capacity
@@ -1898,27 +1851,6 @@ void ProtocolGame::parsePlayerModes(const InputMessagePtr& msg)
         pvpMode = msg->getU8();
 
     g_game.processPlayerModes(static_cast<Otc::FightModes>(fightMode), static_cast<Otc::ChaseModes>(chaseMode), safeMode, static_cast<Otc::PVPModes>(pvpMode));
-}
-
-void ProtocolGame::parseMoveCooldown(const InputMessagePtr& msg)
-{
-    uint16_t moveId;
-    if (g_game.getFeature(Otc::GameUshortMove)) {
-        moveId = msg->getU16();
-    } else {
-        moveId = msg->getU8();
-    }
-    const uint32_t delay = msg->getU32();
-
-    g_lua.callGlobalField("g_game", "onMoveCooldown", moveId, delay);
-}
-
-void ProtocolGame::parseMoveGroupCooldown(const InputMessagePtr& msg)
-{
-    const uint8_t groupId = msg->getU8();
-    const uint32_t delay = msg->getU32();
-
-    g_lua.callGlobalField("g_game", "onMoveGroupCooldown", groupId, delay);
 }
 
 void ProtocolGame::parseMultiUseCooldown(const InputMessagePtr& msg)
@@ -2778,7 +2710,7 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
             }
         }
 
-        const uint8_t skull = msg->getU8();
+        msg->getU8(); // reserved alignment byte
         const uint8_t shield = msg->getU8();
 
         // emblem is sent only when the creature is not known
@@ -2848,7 +2780,6 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
             creature->turn(direction);
             creature->setOutfit(outfit);
             creature->setSpeed(speed);
-            creature->setSkull(skull);
             creature->setShield(shield);
             creature->setPassable(!unpass);
             creature->setLight(light);
@@ -2934,7 +2865,7 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id)
                 msg->getU32();
             }
 
-            // quiver ammo count
+            // reserved container metadata
             if ((containerFlags & 2) != 0) {
                 msg->getU32();
             }
@@ -2954,12 +2885,6 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id)
                 }
             }
 
-            if (g_game.getFeature(Otc::GameThingQuiver)) {
-                const uint8_t hasQuiverAmmoCount = msg->getU8();
-                if (hasQuiverAmmoCount) {
-                    msg->getU32(); // ammoTotal
-                }
-            }
         }
     }
 
@@ -3182,7 +3107,7 @@ void ProtocolGame::parseBlessDialog(const InputMessagePtr& msg)
     msg->getU8(); // pve exp loss
     msg->getU8(); // equip pvp loss
     msg->getU8(); // equip pve loss
-    msg->getU8(); // skull
+    msg->getU8(); // reserved alignment byte
     msg->getU8(); // aol
 
     // parse log

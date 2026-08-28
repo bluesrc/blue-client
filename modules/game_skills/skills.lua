@@ -245,14 +245,9 @@ function refresh()
     onRegenerationChange(player, player:getRegenerationTime())
     onSpeedChange(player, player:getSpeed())
 
-    local hasAdditionalSkills = g_game.getFeature(GameAdditionalSkills)
-    for i = Skill.Fist, Skill.ManaLeechAmount do
+    for i = Skill.Fist, Skill.Fishing do
         onSkillChange(player, i, player:getSkillLevel(i), player:getSkillLevelPercent(i))
         onBaseSkillChange(player, i, player:getSkillBaseLevel(i))
-
-        if i > Skill.Fishing then
-            toggleSkill('skillId' .. i, hasAdditionalSkills)
-        end
     end
 
     update()

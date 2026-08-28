@@ -28,8 +28,6 @@ Module
     - game_playermount
     - game_ruleviolation
     - game_market
-    - game_movelist
-    - game_cooldown
     - game_modaldialog
     - game_shaders
     - game_attachedeffects

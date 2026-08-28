@@ -729,31 +729,9 @@ end
 
 local function onChangeCategory(combobox, option)
     local id = getMarketCategoryId(option)
-    if id == MarketCategory.MetaWeapons then
-        -- enable and load weapons filter/items
-        subCategoryList:setEnabled(true)
-        slotFilterList:setEnabled(true)
-        local subId = getMarketCategoryId(subCategoryList:getCurrentOption().text)
-        Market.loadMarketItems(subId)
-    else
-        subCategoryList:setEnabled(false)
-        slotFilterList:setEnabled(false)
-        Market.loadMarketItems(id) -- load standard filter
-    end
-end
-
-local function onChangeSubCategory(combobox, option)
-    Market.loadMarketItems(getMarketCategoryId(option))
-    slotFilterList:clearOptions()
-
-    local subId = getMarketCategoryId(subCategoryList:getCurrentOption().text)
-    local slots = MarketCategoryWeapons[subId].slots
-    for _, slot in pairs(slots) do
-        if table.haskey(MarketSlotFilters, slot) then
-            slotFilterList:addOption(MarketSlotFilters[slot])
-        end
-    end
-    slotFilterList:setEnabled(true)
+	subCategoryList:setEnabled(false)
+	slotFilterList:setEnabled(false)
+	Market.loadMarketItems(id)
 end
 
 local function onChangeSlotFilter(combobox, option)
@@ -1011,20 +989,14 @@ local function initInterface()
     slotFilterList:addOption(MarketSlotFilters[255])
     slotFilterList:setEnabled(false)
 
-    for i = MarketCategory.First, MarketCategory.Last do
-        if i >= MarketCategory.Ammunition and i <= MarketCategory.WandsRods then
-            subCategoryList:addOption(getMarketCategoryName(i))
-        else
-            categoryList:addOption(getMarketCategoryName(i))
-        end
+    for _, id in ipairs(MarketVisibleCategories) do
+        categoryList:addOption(getMarketCategoryName(id))
     end
-    categoryList:addOption(getMarketCategoryName(255)) -- meta weapons
-    categoryList:setCurrentOption(getMarketCategoryName(MarketCategory.First))
+    categoryList:setCurrentOption(getMarketCategoryName(MarketVisibleCategories[1]))
     subCategoryList:setEnabled(false)
 
     -- hook item filters
     categoryList.onOptionChange = onChangeCategory
-    subCategoryList.onOptionChange = onChangeSubCategory
     slotFilterList.onOptionChange = onChangeSlotFilter
 
     -- setup tables
@@ -1222,9 +1194,6 @@ end
 
 function Market.updateCurrentItems()
     local id = getMarketCategoryId(categoryList:getCurrentOption().text)
-    if id == MarketCategory.MetaWeapons then
-        id = getMarketCategoryId(subCategoryList:getCurrentOption().text)
-    end
     Market.loadMarketItems(id)
 end
 

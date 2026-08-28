@@ -56,7 +56,6 @@ public:
     void setPremium(bool premium);
     void setRegenerationTime(uint16_t regenerationTime);
     void setOfflineTrainingTime(uint16_t offlineTrainingTime);
-    void setMoves(const std::vector<uint16_t>& moves);
     void setBlessings(uint16_t blessings);
     void setResourceBalance(Otc::ResourceTypes_t type, uint64_t value);
     void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild,
@@ -94,7 +93,6 @@ public:
     uint32_t getPokedexCount() { return m_pokedexCount; }
     uint64_t getTotalCaught() { return m_totalCaught; }
 
-    const std::vector<uint16_t>& getMoves() { return m_moves; }
     ItemPtr getInventoryItem(Otc::InventorySlot inventory) { return m_inventoryItems[inventory]; }
 
     uint64_t getResourceBalance(Otc::ResourceTypes_t type)
@@ -167,7 +165,6 @@ private:
     ItemPtr m_inventoryItems[Otc::LastInventorySlot];
 
     std::array<Skill, Otc::LastSkill> m_skills;
-    std::vector<uint16_t> m_moves;
 
     stdext::map<Otc::ResourceTypes_t, uint64_t> m_resourcesBalance;
 

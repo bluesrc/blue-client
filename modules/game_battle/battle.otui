@@ -30,9 +30,6 @@ BattleNPCs < BattleIcon
 BattlePokemons < BattleIcon
   image-source: /images/game/battle/battle_pokemons
 
-BattleSkulls < BattleIcon
-  image-source: /images/game/battle/battle_skulls
-
 BattleParty < BattleIcon
   image-source: /images/game/battle/battle_party
 

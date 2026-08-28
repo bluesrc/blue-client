@@ -459,17 +459,6 @@ void LocalPlayer::setOfflineTrainingTime(uint16_t offlineTrainingTime)
     callLuaField("onOfflineTrainingChange", offlineTrainingTime, oldOfflineTrainingTime);
 }
 
-void LocalPlayer::setMoves(const std::vector<uint16_t>& moves)
-{
-    if (m_moves == moves)
-        return;
-
-    const std::vector<uint16_t> oldMoves = m_moves;
-    m_moves = moves;
-
-    callLuaField("onMovesChange", moves, oldMoves);
-}
-
 void LocalPlayer::setBlessings(uint16_t blessings)
 {
     if (blessings == m_blessings)

@@ -122,7 +122,7 @@ namespace Proto
         GameServerCreatureLight = 141,
         GameServerCreatureOutfit = 142,
         GameServerCreatureSpeed = 143,
-        GameServerCreatureSkull = 144,
+        GameServerReserved144 = 144,
         GameServerCreatureParty = 145,
         GameServerCreatureUnpass = 146,
         GameServerCreatureMarks = 147,
@@ -141,8 +141,8 @@ namespace Proto
         GameServerPlayerState = 162,
         GameServerClearTarget = 163,
         GameServerPlayerModes = 167,
-        GameServerMoveDelay = 164, // 870
-        GameServerMoveGroupDelay = 165, // 870
+        GameServerReserved164 = 164,
+        GameServerReserved165 = 165,
         GameServerMultiUseDelay = 166, // 870
         GameServerSetStoreDeepLink = 168, // 1097
         GameServerSendRestingAreaState = 169,

@@ -8,8 +8,6 @@ actionBar = nil
 actionBarPanel = nil
 bottomPanel = nil
 slotToEdit = nil
-moveAssignWindow = nil
-movesPanel = nil
 textAssignWindow = nil
 objectAssignWindow = nil
 mouseGrabberWidget = nil
@@ -19,14 +17,6 @@ missedSlotToEdit = nil
 itemDragRetry = nil
 slotReassign = nil
 lastHotkeyTime = 0
-cooldown = {}
-groupCooldown = {}
-
-local ProgressCallback = {
-    update = 1,
-    finish = 2
-}
-
 function init()
     bottomPanel = modules.game_interface.getBottomPanel()
     actionBar = g_ui.loadUI('game_actionbar', bottomPanel)
@@ -45,9 +35,7 @@ function init()
 
     connect(g_game, {
         onGameStart = online,
-        onGameEnd = offline,
-        onMoveGroupCooldown = onMoveGroupCooldown,
-        onMoveCooldown = onMoveCooldown
+        onGameEnd = offline
     })
 
 end
@@ -57,13 +45,8 @@ function terminate()
     mouseGrabberWidget:destroy()
     disconnect(g_game, {
         onGameStart = online,
-        onGameEnd = offline,
-        onMoveGroupCooldown = onMoveGroupCooldown,
-        onMoveCooldown = onMoveCooldown
+        onGameEnd = offline
     })
-    if moveAssignWindow then
-        closeMoveAssignWindow()
-    end
     if objectAssignWindow then
         closeObjectAssignWindow()
     end
@@ -73,17 +56,6 @@ function terminate()
     if editHotkeyWindow then
         closeEditHotkeyWindow()
     end
-    if movesPanel then
-        disconnect(movesPanel, {
-            onChildFocusChange = function(self, focusedChild)
-                if focusedChild == nil then
-                    return
-                end
-                updatePreviewMove(focusedChild)
-            end
-        })
-    end
-
 end
 
 function online()
@@ -109,12 +81,11 @@ function copySlot(fromSlotId, toSlotId, visible)
     tmpslot:setVisible(visible)
     local tmptext = not fromSlot.text
     local tmpid = not fromSlot.itemId
-    local tmpwords = not fromSlot.words
     local imageSource = fromSlot:getImageSource()
     local imageClip = fromSlot:getImageClip()
     local imgsrcbool = not imageSource
     local imgclipbool = not imageClip
-    imageSource = (imgsrcbool or (tmptext and tmpid and tmpwords)) and '/images/game/actionbar/slot-actionbar' or
+    imageSource = (imgsrcbool or (tmptext and tmpid)) and '/images/game/actionbar/slot-actionbar' or
                       imageSource
     imageClip = imgclipbool and '0 0 0 0' or imageClip
     tmpslot:setImageSource(imageSource)
@@ -129,7 +100,6 @@ function copySlot(fromSlotId, toSlotId, visible)
     tmpslot.autoSend = fromSlot.autoSend
     tmpslot.itemId = fromSlot.itemId
     tmpslot.subType = fromSlot.subType
-    tmpslot.words = fromSlot.words
     tmpslot.text = fromSlot.text
     tmpslot.parameter = fromSlot.parameter
     tmpslot.useType = fromSlot.useType
@@ -175,7 +145,6 @@ function setupActionBar()
         slot:setVisible(true)
         slot.itemId = nil
         slot.subType = nil
-        slot.words = nil
         slot.text = nil
         slot.useType = nil
         g_mouse.bindPress(slot, function()
@@ -199,9 +168,6 @@ end
 function createMenu(slotId)
     local menu = g_ui.createWidget('PopupMenu')
     slotToEdit = slotId
-    menu:addOption('Assign Move', function()
-        openMoveAssignWindow()
-    end)
     menu:addOption('Assign Object', function()
         startChooseItem()
         openObjectAssignWindow()
@@ -213,127 +179,13 @@ function createMenu(slotId)
         openEditHotkeyWindow()
     end)
     local actionSlot = actionBarPanel:recursiveGetChildById(slotToEdit)
-    if actionSlot.itemId or actionSlot.words or actionSlot.text or actionSlot.useType or actionSlot.hotkey then
+    if actionSlot.itemId or actionSlot.text or actionSlot.useType or actionSlot.hotkey then
         menu:addOption('Clear Slot', function()
             clearSlot()
             clearHotkey()
         end)
     end
     menu:display()
-end
-
-function openMoveAssignWindow()
-    moveAssignWindow = g_ui.loadUI('assign_move', g_ui.getRootWidget())
-    movesPanel = moveAssignWindow:getChildById('movesPanel')
-    addEvent(function()
-        initializeMovelist()
-    end)
-    moveAssignWindow:raise()
-    moveAssignWindow:focus()
-    moveAssignWindow:getChildById('filterTextEdit'):focus()
-    modules.game_hotkeys.enableHotkeys(false)
-end
-
-function closeMoveAssignWindow()
-    moveAssignWindow:destroy()
-    moveAssignWindow = nil
-    movesPanel = nil
-    modules.game_hotkeys.enableHotkeys(true)
-end
-
-function initializeMovelist()
-    g_keyboard.bindKeyPress('Down', function()
-        movesPanel:focusNextChild(KeyboardFocusReason)
-    end, movesPanel:getParent())
-    g_keyboard.bindKeyPress('Up', function()
-        movesPanel:focusPreviousChild(KeyboardFocusReason)
-    end, movesPanel:getParent())
-
-    for moveProfile, _ in pairs(MovelistSettings) do
-        for i = 1, #MovelistSettings[moveProfile].moveOrder do
-            local move = MovelistSettings[moveProfile].moveOrder[i]
-            local info = MoveInfo[moveProfile][move]
-            if info then
-                local tmpLabel = g_ui.createWidget('MoveListLabel', movesPanel)
-                tmpLabel:setId(move)
-                tmpLabel:setText(move .. '\n\'' .. info.words .. '\'')
-                tmpLabel:setPhantom(false)
-                tmpLabel.defaultHeight = tmpLabel:getHeight()
-                tmpLabel.words = info.words:lower()
-                tmpLabel.name = move:lower()
-
-                local iconId = tonumber(info.icon)
-                if not iconId and MoveIcons[info.icon] then
-                    iconId = MoveIcons[info.icon][1]
-                end
-
-                tmpLabel:setHeight(MovelistSettings[moveProfile].iconSize.height + 4)
-                tmpLabel:setTextOffset(topoint((MovelistSettings[moveProfile].iconSize.width + 10) .. ' ' ..
-                                                   (MovelistSettings[moveProfile].iconSize.height - 32) / 2 + 3))
-                tmpLabel:setImageSource(MovelistSettings[moveProfile].iconFile)
-                tmpLabel:setImageClip(Moves.getImageClip(iconId, moveProfile))
-                tmpLabel:setImageSize(tosize(MovelistSettings[moveProfile].iconSize.width .. ' ' ..
-                                                 MovelistSettings[moveProfile].iconSize.height))
-            end
-        end
-    end
-
-    for v, k in ipairs(movesPanel:getChildren()) do
-        if k:isVisible() then
-            movesPanel:focusChild(k, KeyboardFocusReason)
-            updatePreviewMove(k)
-            break
-        end
-    end
-    connect(movesPanel, {
-        onChildFocusChange = function(self, focusedChild)
-            if focusedChild == nil then
-                return
-            end
-            updatePreviewMove(focusedChild)
-        end
-    })
-end
-
-function updatePreviewMove(focusedChild)
-    local moveName = focusedChild:getId()
-    iconId = tonumber(Moves.getClientId(moveName))
-    local move = Moves.getMoveByName(moveName)
-    local profile = Moves.getMoveProfileByName(moveName)
-    movesPanel:getParent():getChildById('previewMove'):setImageSource(MovelistSettings[profile].iconFile)
-    movesPanel:getParent():getChildById('previewMove'):setImageClip(Moves.getImageClip(iconId, profile))
-    movesPanel:getParent():getChildById('previewMoveName'):setText(moveName)
-    movesPanel:getParent():getChildById('previewMoveWords'):setText('\'' .. move.words .. '\'')
-    if move.parameter then
-        moveAssignWindow:getChildById('parameterTextEdit'):enable()
-    else
-        moveAssignWindow:getChildById('parameterTextEdit'):disable()
-    end
-end
-
-function moveAssignAccept()
-    clearSlot()
-    local focusedChild = movesPanel:getFocusedChild()
-    if not focusedChild then
-        return
-    end
-    local moveName = focusedChild:getId()
-    iconId = tonumber(Moves.getClientId(moveName))
-    local move = Moves.getMoveByName(moveName)
-    local profile = Moves.getMoveProfileByName(moveName)
-    local slot = actionBarPanel:getChildById(slotToEdit)
-    slot:setImageSource(Moves.getIconFileByProfile(profile))
-    slot:setImageClip(Moves.getImageClip(iconId, profile))
-    slot.words = move.words
-    slot.itemId = 469
-    slot:setItemId(469)
-    if move.parameter then
-        slot.parameter = moveAssignWindow:getChildById('parameterTextEdit'):getText():gsub('"', '')
-    else
-        slot.parameter = nil
-    end
-    closeMoveAssignWindow()
-    setupHotkeys()
 end
 
 function clearSlot()
@@ -344,7 +196,6 @@ function clearSlot()
     slot:setText('')
     slot.itemId = nil
     slot.subType = nil
-    slot.words = nil
     slot.text = nil
     slot.useType = nil
     slot:getChildById('text'):setText('')
@@ -359,7 +210,6 @@ function clearSlotById(slotId)
     slot:setText('')
     slot.itemId = nil
     slot.subType = nil
-    slot.words = nil
     slot.text = nil
     slot.useType = nil
     slot:getChildById('text'):setText('')
@@ -390,47 +240,21 @@ function textAssignAccept()
     if text == '' then
         return
     end
-    local checkForParameter = text:split(' "')
-    local name, parameter = nil, nil
-    if #checkForParameter == 2 then
-        name = checkForParameter[1]
-        parameter = checkForParameter[2]
-    else
-        name = text
-    end
-
-    local move, profile, moveName = Moves.getMoveByWords(name)
-
     local slot = actionBarPanel:getChildById(slotToEdit)
-    if moveName then
-        iconId = tonumber(Moves.getClientId(moveName))
-        clearSlot()
-        slot:setImageSource(Moves.getIconFileByProfile(profile))
-        slot:setImageClip(Moves.getImageClip(iconId, profile))
-        slot.words = move.words
-        slot.itemId = 469
-        slot:setItemId(469)
-        if parameter and move.parameter then
-            slot.parameter = parameter
-        else
-            slot.parameter = nil
-        end
-    else
-        clearSlot()
-        slot:getChildById('text'):setText(text)
-        while slot:getChildById('text'):getTextSize().height > 30 do
-            local subString = slot:getChildById('text'):getText()
-            subString = string.sub(subString, 1, #subString - 1)
-            slot:getChildById('text'):setText(subString)
-        end
-        slot:setImageSource('/images/game/actionbar/item-background')
-        slot.text = text
-        slot.itemId = 469
-        slot:setItemId(469)
-        slot.autoSend = textAssignWindow:recursiveGetChildById('sendAutomaticallyCheckBox'):isChecked()
-        slot:setTooltip(slot.text)
-        setupHotkeys()
+    clearSlot()
+    slot:getChildById('text'):setText(text)
+    while slot:getChildById('text'):getTextSize().height > 30 do
+        local subString = slot:getChildById('text'):getText()
+        subString = string.sub(subString, 1, #subString - 1)
+        slot:getChildById('text'):setText(subString)
     end
+    slot:setImageSource('/images/game/actionbar/item-background')
+    slot.text = text
+    slot.itemId = 469
+    slot:setItemId(469)
+    slot.autoSend = textAssignWindow:recursiveGetChildById('sendAutomaticallyCheckBox'):isChecked()
+    slot:setTooltip(slot.text)
+    setupHotkeys()
     closeTextAssignWindow()
 end
 
@@ -637,12 +461,6 @@ function setupHotkeys()
                         g_game.equipItem(item)
                     end
                 end
-            elseif slot.words then
-                if slot.parameter and slot.parameter ~= '' then
-                    g_game.talk(slot.words .. ' "' .. slot.parameter)
-                else
-                    g_game.talk(slot.words)
-                end
             elseif slot.text then
                 if slot.autoSend then
                     g_game.talk(slot.text)
@@ -679,12 +497,6 @@ function setupHotkeys()
                         if item then
                             g_game.equipItem(item)
                         end
-                    end
-                elseif slot.words then
-                    if slot.parameter and slot.parameter ~= '' then
-                        g_game.talk(slot.words .. ' "' .. slot.parameter)
-                    else
-                        g_game.talk(slot.words)
                     end
                 elseif slot.text then
                     if slot.autoSend then
@@ -786,23 +598,12 @@ function saveActionBar()
             subType = slot.subType,
             useType = slot.useType,
             text = slot.text,
-            words = slot.words,
             parameter = slot.parameter
         }
     end
 
     g_settings.setNode('game_actionbar', hotkeySettings)
     g_settings.save()
-end
-
-function loadMove(slot)
-    local move, profile, moveName = Moves.getMoveByWords(slot.words)
-    iconId = tonumber(Moves.getClientId(moveName))
-    slot:setImageSource(Moves.getIconFileByProfile(profile))
-    slot:setImageClip(Moves.getImageClip(iconId, profile))
-    slot:getChildById('text'):setText('')
-    slot:setBorderWidth(0)
-    setupHotkeys()
 end
 
 function loadObject(slot)
@@ -844,7 +645,6 @@ function loadActionBar()
                 slot.itemId = setting.itemId
                 slot:setItemId(setting.itemId)
                 slot.subType = setting.subType
-                slot.words = setting.words
                 slot.text = setting.text
                 slot.hotkey = setting.hotkey
                 slot.useType = setting.useType
@@ -860,9 +660,7 @@ function loadActionBar()
                     end
                     slot:getChildById('key'):setText(text)
                 end
-                if slot.words then
-                    loadMove(slot)
-                elseif slot.text then
+                if slot.text then
                     loadText(slot)
                 elseif slot.itemId and slot.itemId > 0 then
                     loadObject(slot)
@@ -871,167 +669,4 @@ function loadActionBar()
         end
     end
     setupHotkeys()
-end
-
-function round(n)
-    return n % 1 >= 0.5 and math.ceil(n) or math.floor(n)
-end
-
-function updateCooldown(progressRect, duration, moveId, count)
-    progressRect:setPercent(progressRect:getPercent() + 10000 / duration)
-    local cd = round(duration - (progressRect:getPercent() * duration / 100)) / 1000
-    if cd > 0 then
-        progressRect:setText(cd .. 's')
-    end
-
-    if progressRect:getPercent() < 100 then
-        removeEvent(progressRect.event)
-        cooldown[moveId] = duration - count * 100
-        progressRect.event = scheduleEvent(function()
-            updateCooldown(progressRect, duration, moveId, count + 1)
-        end, 100)
-    else
-        cooldown[moveId] = nil
-        progressRect:destroy()
-    end
-end
-
-function updateGroupCooldown(progressRect, duration, groupId)
-    progressRect:setPercent(progressRect:getPercent() + 10000 / duration)
-    local cd = round(duration - (progressRect:getPercent() * duration / 100)) / 1000
-    if cd > 0 then
-        progressRect:setText(cd .. 's')
-    end
-
-    if progressRect:getPercent() < 100 then
-        removeEvent(progressRect.event)
-        progressRect.event = scheduleEvent(function()
-            updateGroupCooldown(progressRect, duration, groupId)
-        end, 100)
-    else
-        groupCooldown[groupId] = nil
-        progressRect:destroy()
-    end
-end
-
-function onMoveCooldown(moveId, duration)
-    local slot
-    for v, k in pairs(actionBarPanel:getChildren()) do
-        local move, profile, moveName = Moves.getMoveByIcon(moveId)
-        if not move then
-            print('[WARNING] Can not set cooldown on move with id: ' .. moveId)
-            return true
-        end
-        if k.words == move.words or move.clientId and move.clientId == k.itemId then
-            slot = k
-            local progressRect = slot:recursiveGetChildById('progress' .. move.id)
-            if not progressRect then
-                progressRect = g_ui.createWidget('MoveProgressRect', slot)
-                progressRect:setId('progress' .. move.id)
-                progressRect.item = slot
-                progressRect:fill('parent')
-                progressRect:setFont('verdana-11px-rounded')
-            else
-                progressRect:setPercent(0)
-            end
-
-            local updateFunc = function()
-                updateCooldown(progressRect, duration, move.id, 0)
-            end
-            local finishFunc = function()
-                cooldown[move.id] = nil
-                progressRect:hide()
-            end
-            progressRect:setPercent(0)
-            updateFunc()
-            cooldown[move.id] = duration
-        end
-    end
-end
-
-function onMoveGroupCooldown(groupId, duration)
-    local slot
-    local moveGroup = 0
-    for v, k in pairs(actionBarPanel:getChildren()) do
-        local move, profile, moveName
-        if k.words then
-            move, profile, moveName = Moves.getMoveByWords(k.words)
-        else
-            if k.itemId and k.itemId > 0 then
-                move, profile, moveName = Moves.getMoveByClientId(k.itemId)
-            end
-        end
-        if move then
-            if move.group[groupId] ~= nil then
-                local continue = false
-                if not cooldown[move.id] or cooldown[move.id] and cooldown[move.id] < duration then
-                    local oldProgressBar = k:recursiveGetChildById('progress' .. move.id)
-                    if oldProgressBar then
-                        cooldown[move.id] = nil
-                        oldProgressBar:hide()
-                    end
-                    continue = true
-                elseif cooldown[move.id] and cooldown[move.id] >= duration then
-                    continue = false
-                end
-                if continue then
-                    slot = k
-                    local progressRect = slot:recursiveGetChildById('progress' .. groupId)
-                    if not progressRect then
-                        progressRect = g_ui.createWidget('MoveProgressRect', slot)
-                        progressRect:setId('progress' .. groupId)
-                        progressRect.item = slot
-                        progressRect:fill('parent')
-                        progressRect:setFont('verdana-11px-rounded')
-                    else
-                        progressRect:setPercent(0)
-                    end
-
-                    local updateFunc = function()
-                        updateGroupCooldown(progressRect, duration, groupId)
-                    end
-                    local finishFunc = function()
-                        groupCooldown[groupId] = false
-                        progressRect:hide()
-                    end
-                    progressRect:setPercent(0)
-                    updateFunc()
-                    groupCooldown[groupId] = true
-                end
-            end
-        end
-    end
-end
-
-function filterMoves(text)
-    if #text > 0 then
-        text = text:lower()
-
-        for index, moveListLabel in pairs(movesPanel:getChildren()) do
-            if string.find(moveListLabel.name:lower(), text) or string.find(moveListLabel.words:lower(), text) then
-                showMove(moveListLabel)
-            else
-                hideMove(moveListLabel)
-            end
-        end
-
-    else
-        for index, moveListLabel in pairs(movesPanel:getChildren()) do
-            showMove(moveListLabel)
-        end
-    end
-end
-
-function hideMove(moveListLabel)
-    if moveListLabel:isVisible() then
-        moveListLabel:hide()
-        moveListLabel:setHeight(0)
-    end
-end
-
-function showMove(moveListLabel)
-    if not moveListLabel:isVisible() then
-        moveListLabel:setHeight(moveListLabel.defaultHeight)
-        moveListLabel:show()
-    end
 end

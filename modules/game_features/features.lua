@@ -64,7 +64,6 @@ controller:registerEvents(g_game, {
         if version >= 870 then
             g_game.enableFeature(GameDoubleExperience);
             g_game.enableFeature(GamePlayerMounts);
-            g_game.enableFeature(GameMoveList);
         end
 
         if version >= 910 then
@@ -177,8 +176,6 @@ controller:registerEvents(g_game, {
         end
 
         if version >= 1094 then
-            g_game.enableFeature(GameAdditionalSkills);
-            g_game.enableFeature(GameLeechAmount);
         end
 
         if version >= 1200 then
@@ -186,10 +183,6 @@ controller:registerEvents(g_game, {
             g_game.enableFeature(GameTournamentPackets);
             g_game.enableFeature(GameVipGroups);
             g_game.enableFeature(GameEnterGameShowAppearance);
-        end
-
-        if version >= 1260 then
-            g_game.enableFeature(GameThingQuiver);
         end
 
         if version >= 1264 then
@@ -216,7 +209,6 @@ controller:registerEvents(g_game, {
 
         if version >= 1300 then
             g_game.enableFeature(GameDoubleHealth);
-            g_game.enableFeature(GameUshortMove);
             g_game.enableFeature(GameConcotions);
             g_game.enableFeature(GameAnthem);
         end
@@ -231,7 +223,6 @@ controller:registerEvents(g_game, {
             g_game.enableFeature(GameContainerTypes);
             g_game.enableFeature(GameBosstiaryTracker);
             g_game.enableFeature(GamePlayerStateCounter);
-            g_game.disableFeature(GameLeechAmount);
             g_game.enableFeature(GameItemAugment);
             g_game.enableFeature(GameDynamicBugReporter);
         end

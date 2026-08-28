@@ -36,8 +36,8 @@ enum ItemTypeAttr : uint8_t
     ItemTypeAttrSlot = 21,   // deprecated
     ItemTypeAttrMaxItems = 22,   // deprecated
     ItemTypeAttrWeight = 23,   // deprecated
-    ItemTypeAttrWeapon = 24,   // deprecated
-    ItemTypeAttrAmmunition = 25,   // deprecated
+	ItemTypeAttrReserved24 = 24,
+	ItemTypeAttrReserved25 = 25,
     ItemTypeAttrArmor = 26,   // deprecated
     ItemTypeAttrMagicLevel = 27,   // deprecated
     ItemTypeAttrMagicField = 28,   // deprecated
@@ -50,8 +50,8 @@ enum ItemTypeAttr : uint8_t
     ItemTypeAttr08 = 35,
     ItemTypeAttrLight = 36,
     ItemTypeAttrDecay2 = 37,   // deprecated
-    ItemTypeAttrWeapon2 = 38,   // deprecated
-    ItemTypeAttrAmmunition2 = 39,   // deprecated
+	ItemTypeAttrReserved38 = 38,
+	ItemTypeAttrReserved39 = 39,
     ItemTypeAttrArmor2 = 40,   // deprecated
     ItemTypeAttrWritable2 = 41,   // deprecated
     ItemTypeAttrLight2 = 42,
@@ -66,9 +66,9 @@ enum ItemCategory : uint8_t
     ItemCategoryInvalid = 0,
     ItemCategoryGround = 1,
     ItemCategoryContainer = 2,
-    ItemCategoryWeapon = 3,
-    ItemCategoryAmmunition = 4,
-    ItemCategoryArmor = 5,
+	ItemCategoryReserved3 = 3,
+	ItemCategoryReserved4 = 4,
+	ItemCategoryReserved5 = 5,
     ItemCategoryCharges = 6,
     ItemCategoryTeleport = 7,
     ItemCategoryMagicField = 8,

@@ -19,7 +19,6 @@ local function connecting()
     })
 
     connect(Creature, {
-        onSkullChange = updateCreatureSkull,
         onEmblemChange = updateCreatureEmblem,
         onOutfitChange = onCreatureOutfitChange,
         onHealthPercentChange = onCreatureHealthPercentChange,
@@ -45,7 +44,6 @@ local function disconnecting(gameEvent)
     })
 
     disconnect(Creature, {
-        onSkullChange = updateCreatureSkull,
         onEmblemChange = updateCreatureEmblem,
         onOutfitChange = onCreatureOutfitChange,
         onHealthPercentChange = onCreatureHealthPercentChange,
@@ -773,14 +771,6 @@ function onCreatureOutfitChange(creature, outfit, oldOutfit) -- Insert/Remove cr
         removeCreature(creature)
     elseif battleButton == nil and fit then
         addCreature(creature, getSortType())
-    end
-end
-
-function updateCreatureSkull(creature, skullId) -- Update skull
-    local battleButton = battleButtons[creature:getId()]
-
-    if battleButton then
-        battleButton:updateSkull(skullId)
     end
 end
 

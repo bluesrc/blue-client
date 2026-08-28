@@ -100,7 +100,7 @@ namespace Otc
         InventorySlotLegs,
         InventorySlotFeet,
         InventorySlotRing,
-        InventorySlotAmmo,
+        InventorySlotUtility,
         InventorySlotPokeball1,
         InventorySlotPokeball2,
         InventorySlotPokeball3,
@@ -141,15 +141,6 @@ namespace Otc
         Distance,
         Shielding,
         Fishing,
-        CriticalChance,
-        CriticalDamage,
-        LifeLeechChance,
-        LifeLeechAmount,
-        ManaLeechChance,
-        ManaLeechAmount,
-        Fatal,
-        Dodge,
-        Momentum,
         LastSkill
     };
 
@@ -219,17 +210,6 @@ namespace Otc
         WhiteHand = 1,
         YellowHand = 2,
         RedFist = 3
-    };
-
-    enum CreatureSkulls : uint8_t
-    {
-        SkullNone = 0,
-        SkullYellow,
-        SkullGreen,
-        SkullWhite,
-        SkullRed,
-        SkullBlack,
-        SkullOrange
     };
 
     enum PlayerShields : uint8_t
@@ -380,7 +360,6 @@ namespace Otc
         GameOfflineTrainingTime = 20,
         GamePurseSlot = 21,
         GameFormatCreatureName = 22,
-        GameMoveList = 23,
         GameClientPing = 24,
         GameExtendedClientPing = 25,
         GameDoubleHealth = 28,
@@ -430,21 +409,18 @@ namespace Otc
         GameIngameStore = 73,
         GameIngameStoreHighlights = 74,
         GameIngameStoreServiceType = 75,
-        GameAdditionalSkills = 76,
         GameDistanceEffectU16 = 77,
         GameLevelU16 = 78,
         GameSoul = 79,
         GameMapOldEffectRendering = 80,
         GameMapDontCorrectCorpse = 81,
         GameThingQuickLoot = 83,
-        GameThingQuiver = 84,
         GameThingPodium = 85,
         GameThingUpgradeClassification = 86,
         GameThingCounter = 87,
         GameThingClock = 88,
         GameThingPodiumItemType = 89,
         GameSequencedPackets = 90,
-        GameUshortMove = 91,
         GameTournamentPackets = 92,
         GameDynamicForgeVariables = 93,
         GameConcotions = 94,
@@ -462,7 +438,6 @@ namespace Otc
         GameContainerTypes = 106,
         GameBosstiaryTracker = 107,
         GamePlayerStateCounter = 108,
-        GameLeechAmount = 109,
         GameItemAugment = 110,
         GameDynamicBugReporter = 111,
         GameWrapKit = 112,
@@ -601,10 +576,10 @@ namespace Otc
         ITEM_DESC_MINLEVEL = 8,
         ITEM_DESC_MINMAGICLEVEL = 9,
         ITEM_DESC_VOCATION = 10,
-        ITEM_DESC_RUNE = 11,
+		ITEM_DESC_RESERVED_11 = 11,
         ITEM_DESC_ABILITY = 12,
         ITEM_DESC_CHARGES = 13,
-        ITEM_DESC_WEAPONTYPE = 14,
+		ITEM_DESC_RESERVED_14 = 14,
         ITEM_DESC_WEIGHT = 15,
         ITEM_DESC_AUGMENT = 16,
         ITEM_DESC_MAGICSHIELD = 18,
