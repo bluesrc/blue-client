@@ -14,20 +14,8 @@ FightDefensiveBox < CombatBox
   image-source: /images/game/combatmodes/fightdefensive
 ChaseModeBox < CombatBox
   image-source: /images/game/combatmodes/chasemode
-SafeFightBox < CombatBox
-  image-source: /images/game/combatmodes/safefight
-
 MountButton < CombatBox
   image-source: /images/game/combatmodes/mount
-
-WhiteDoveBox < CombatBox
-  image-source: /images/game/combatmodes/whitedovemode
-WhiteHandBox < CombatBox
-  image-source: /images/game/combatmodes/whitehandmode
-YellowHandBox < CombatBox
-  image-source: /images/game/combatmodes/yellowhandmode
-RedFistBox < CombatBox
-  image-source: /images/game/combatmodes/redfistmode
 
 MiniWindow
   id: combatControlsWindow
@@ -35,8 +23,6 @@ MiniWindow
   icon: /images/topbuttons/combatcontrols
   height: 49
   &save: true
-  &simpleControlsHeight: 49
-  &extendedControlsHeight: 72
   @onOpen: modules.game_combatcontrols.onMiniWindowOpen()
   @onClose: modules.game_combatcontrols.onMiniWindowClose()
 
@@ -61,34 +47,5 @@ MiniWindow
     ChaseModeBox
       id: chaseModeBox
       anchors.top: parent.top
-      anchors.right: next.left
-    SafeFightBox
-      id: safeFightBox
-      anchors.top: parent.top
       anchors.right: parent.right
       margin: 2 1
-
-    Panel
-      id: pvpModesPanel
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.bottom: parent.bottom
-      height: 20
-
-      WhiteDoveBox
-        id: whiteDoveBox
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        margin: 2 1
-      WhiteHandBox
-        id: whiteHandBox
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-      YellowHandBox
-        id: yellowHandBox
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom
-      RedFistBox
-        id: redFistBox
-        anchors.left: prev.right
-        anchors.bottom: parent.bottom

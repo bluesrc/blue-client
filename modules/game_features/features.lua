@@ -41,7 +41,6 @@ controller:registerEvents(g_game, {
         if version >= 840 then
             g_game.enableFeature(GameProtocolChecksum);
             g_game.enableFeature(GameAccountNames);
-            g_game.enableFeature(GameDoubleFreeCapacity);
         end
 
         if version >= 841 then
@@ -68,7 +67,6 @@ controller:registerEvents(g_game, {
 
         if version >= 910 then
             g_game.enableFeature(GameNameOnNpcTrade);
-            g_game.enableFeature(GameTotalCapacity);
             g_game.enableFeature(GameSkillsBase);
             g_game.enableFeature(GamePlayerRegenerationTime);
             g_game.enableFeature(GameChannelPlayerList);
@@ -111,7 +109,6 @@ controller:registerEvents(g_game, {
 
         if version >= 1000 then
             g_game.enableFeature(GameThingMarks);
-            g_game.enableFeature(GamePVPMode);
         end
 
         if version >= 1035 then

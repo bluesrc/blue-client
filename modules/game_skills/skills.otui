@@ -85,13 +85,6 @@ MiniWindow
       SkillValueLabel
 
     SkillButton
-      id: capacity
-      height: 15
-      SkillNameLabel
-        !text: tr('Capacity')
-      SkillValueLabel
-
-    SkillButton
       id: speed
       height: 15
       SkillNameLabel

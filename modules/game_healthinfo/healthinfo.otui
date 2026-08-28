@@ -26,30 +26,14 @@ ExperienceBar < ProgressBar
 
 SoulLabel < GameLabel
   id: soulLabel
-  text-align: right
+  text-align: center
   color: white
   font: verdana-11px-rounded
   anchors.bottom: parent.bottom
   anchors.right: parent.right
-  anchors.left: parent.horizontalCenter
+  anchors.left: parent.left
   margin-top: 5
   margin-right: 3
-  on: true
-
-  $!on:
-    visible: false
-    margin-top: 0
-    height: 0
-
-CapLabel < GameLabel
-  id: capLabel
-  color: white
-  font: verdana-11px-rounded
-  anchors.bottom: parent.bottom
-  anchors.left: parent.left
-  anchors.right: parent.horizontalCenter
-  margin-top: 5
-  margin-left: 3
   on: true
 
   $!on:
@@ -90,4 +74,3 @@ MiniWindow
       border-color: #00000077
       background-color: #ffffff11
     SoulLabel
-    CapLabel

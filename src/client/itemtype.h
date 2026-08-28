@@ -35,7 +35,7 @@ enum ItemTypeAttr : uint8_t
     ItemTypeAttrSpeed = 20,
     ItemTypeAttrSlot = 21,   // deprecated
     ItemTypeAttrMaxItems = 22,   // deprecated
-    ItemTypeAttrWeight = 23,   // deprecated
+    ItemTypeAttrReserved23 = 23,
 	ItemTypeAttrReserved24 = 24,
 	ItemTypeAttrReserved25 = 25,
     ItemTypeAttrArmor = 26,   // deprecated

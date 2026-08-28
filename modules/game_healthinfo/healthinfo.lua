@@ -90,7 +90,6 @@ healthBar = nil
 manaBar = nil
 experienceBar = nil
 soulLabel = nil
-capLabel = nil
 healthTooltip = 'Your character health is %d out of %d.'
 manaTooltip = 'Your character mana is %d out of %d.'
 experienceTooltip = 'You have %d%% to advance to level %d.'
@@ -101,8 +100,7 @@ function init()
         onManaChange = onManaChange,
         onLevelChange = onLevelChange,
         onStatesChange = onStatesChange,
-        onSoulChange = onSoulChange,
-        onFreeCapacityChange = onFreeCapacityChange
+        onSoulChange = onSoulChange
     })
 
     connect(g_game, {
@@ -120,7 +118,6 @@ function init()
     manaBar = healthInfoWindow:recursiveGetChildById('manaBar')
     experienceBar = healthInfoWindow:recursiveGetChildById('experienceBar')
     soulLabel = healthInfoWindow:recursiveGetChildById('soulLabel')
-    capLabel = healthInfoWindow:recursiveGetChildById('capLabel')
 
     -- load condition icons
     for k, v in pairs(Icons) do
@@ -134,7 +131,6 @@ function init()
         onLevelChange(localPlayer, localPlayer:getLevel(), localPlayer:getLevelPercent())
         onStatesChange(localPlayer, localPlayer:getStates(), 0)
         onSoulChange(localPlayer, localPlayer:getSoul())
-        onFreeCapacityChange(localPlayer, localPlayer:getFreeCapacity())
     end
 
     healthInfoWindow:setup()
@@ -149,8 +145,7 @@ function terminate()
         onManaChange = onManaChange,
         onLevelChange = onLevelChange,
         onStatesChange = onStatesChange,
-        onSoulChange = onSoulChange,
-        onFreeCapacityChange = onFreeCapacityChange
+        onSoulChange = onSoulChange
     })
 
     disconnect(g_game, {
@@ -166,7 +161,6 @@ function terminate()
     manaBar = nil
     experienceBar = nil
     soulLabel = nil
-    capLabel = nil
 end
 
 function toggle()
@@ -237,10 +231,6 @@ end
 
 function onSoulChange(localPlayer, soul)
     soulLabel:setText(tr('Soul') .. ': ' .. soul)
-end
-
-function onFreeCapacityChange(player, freeCapacity)
-    capLabel:setText(tr('Cap') .. ': ' .. freeCapacity)
 end
 
 function onStatesChange(localPlayer, now, old)

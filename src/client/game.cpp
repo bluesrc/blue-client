@@ -58,8 +58,6 @@ void Game::resetGameStates()
     m_canReportBugs = false;
     m_fightMode = Otc::FightBalanced;
     m_chaseMode = Otc::DontChase;
-    m_pvpMode = Otc::WhiteDove;
-    m_safeFight = true;
     m_followingCreature = nullptr;
     m_attackingCreature = nullptr;
     m_localPlayer = nullptr;
@@ -166,7 +164,7 @@ void Game::processGameStart()
     g_app.resetTargetFps();
 
     // synchronize fight modes with the server
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
+    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode);
 
     // NOTE: the entire map description and local player information is not known yet (bot call is allowed here)
     enableBotCall();
@@ -230,17 +228,13 @@ void Game::processPlayerHelpers(int helpers)
     g_lua.callGlobalField("g_game", "onPlayerHelpersUpdate", helpers);
 }
 
-void Game::processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode, bool safeMode, Otc::PVPModes pvpMode)
+void Game::processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode)
 {
     m_fightMode = fightMode;
     m_chaseMode = chaseMode;
-    m_safeFight = safeMode;
-    m_pvpMode = pvpMode;
 
     g_lua.callGlobalField("g_game", "onFightModeChange", fightMode);
     g_lua.callGlobalField("g_game", "onChaseModeChange", chaseMode);
-    g_lua.callGlobalField("g_game", "onSafeFightChange", safeMode);
-    g_lua.callGlobalField("g_game", "onPVPModeChange", pvpMode);
 }
 
 void Game::processPing()
@@ -426,7 +420,7 @@ void Game::processOpenOutfitWindow(const Outfit& currentOutfit, const std::vecto
     g_lua.callGlobalField("g_game", "onOpenOutfitWindow", virtualOutfitCreature, outfitList, virtualMountCreature, mountList);
 }
 
-void Game::processOpenNpcTrade(const std::vector<std::tuple<ItemPtr, std::string, int, int, int> >& items)
+void Game::processOpenNpcTrade(const std::vector<std::tuple<ItemPtr, std::string, int, int> >& items)
 {
     g_lua.callGlobalField("g_game", "onOpenNpcTrade", items);
 }
@@ -1168,7 +1162,7 @@ void Game::setChaseMode(Otc::ChaseModes chaseMode)
         return;
 
     m_chaseMode = chaseMode;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
+    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode);
     g_lua.callGlobalField("g_game", "onChaseModeChange", chaseMode);
 }
 
@@ -1181,37 +1175,8 @@ void Game::setFightMode(Otc::FightModes fightMode)
         return;
 
     m_fightMode = fightMode;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
+    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode);
     g_lua.callGlobalField("g_game", "onFightModeChange", fightMode);
-}
-
-void Game::setSafeFight(bool on)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (m_safeFight == on)
-        return;
-
-    m_safeFight = on;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
-    g_lua.callGlobalField("g_game", "onSafeFightChange", on);
-}
-
-void Game::setPVPMode(Otc::PVPModes pvpMode)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (!getFeature(Otc::GamePVPMode))
-        return;
-
-    if (m_pvpMode == pvpMode)
-        return;
-
-    m_pvpMode = pvpMode;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
-    g_lua.callGlobalField("g_game", "onPVPModeChange", pvpMode);
 }
 
 void Game::inspectNpcTrade(const ItemPtr& item)
@@ -1222,12 +1187,12 @@ void Game::inspectNpcTrade(const ItemPtr& item)
     m_protocolGame->sendInspectNpcTrade(item->getId(), item->getCount());
 }
 
-void Game::buyItem(const ItemPtr& item, int amount, bool ignoreCapacity, bool buyWithBackpack)
+void Game::buyItem(const ItemPtr& item, int amount, bool buyWithBackpack)
 {
     if (!canPerformGameAction() || !item)
         return;
 
-    m_protocolGame->sendBuyItem(item->getId(), item->getCountOrSubType(), amount, ignoreCapacity, buyWithBackpack);
+    m_protocolGame->sendBuyItem(item->getId(), item->getCountOrSubType(), amount, buyWithBackpack);
 }
 
 void Game::sellItem(const ItemPtr& item, int amount, bool ignoreEquipped)

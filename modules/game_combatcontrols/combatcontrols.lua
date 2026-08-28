@@ -4,15 +4,8 @@ fightOffensiveBox = nil
 fightBalancedBox = nil
 fightDefensiveBox = nil
 chaseModeButton = nil
-safeFightButton = nil
-whiteDoveBox = nil
-whiteHandBox = nil
-yellowHandBox = nil
-redFistBox = nil
 mountButton = nil
-pvpModesPanel = nil
 fightModeRadioGroup = nil
-pvpModeRadioGroup = nil
 
 function init()
     combatControlsButton = modules.client_topmenu.addRightGameToggleButton('combatControlsButton',
@@ -27,48 +20,26 @@ function init()
     fightDefensiveBox = combatControlsWindow:recursiveGetChildById('fightDefensiveBox')
 
     chaseModeButton = combatControlsWindow:recursiveGetChildById('chaseModeBox')
-    safeFightButton = combatControlsWindow:recursiveGetChildById('safeFightBox')
 
     mountButton = combatControlsWindow:recursiveGetChildById('mountButton')
     mountButton.onClick = onMountButtonClick
-
-    pvpModesPanel = combatControlsWindow:recursiveGetChildById('pvpModesPanel')
-
-    whiteDoveBox = combatControlsWindow:recursiveGetChildById('whiteDoveBox')
-    whiteHandBox = combatControlsWindow:recursiveGetChildById('whiteHandBox')
-    yellowHandBox = combatControlsWindow:recursiveGetChildById('yellowHandBox')
-    redFistBox = combatControlsWindow:recursiveGetChildById('redFistBox')
 
     fightModeRadioGroup = UIRadioGroup.create()
     fightModeRadioGroup:addWidget(fightOffensiveBox)
     fightModeRadioGroup:addWidget(fightBalancedBox)
     fightModeRadioGroup:addWidget(fightDefensiveBox)
 
-    pvpModeRadioGroup = UIRadioGroup.create()
-    pvpModeRadioGroup:addWidget(whiteDoveBox)
-    pvpModeRadioGroup:addWidget(whiteHandBox)
-    pvpModeRadioGroup:addWidget(yellowHandBox)
-    pvpModeRadioGroup:addWidget(redFistBox)
-
     connect(fightModeRadioGroup, {
         onSelectionChange = onSetFightMode
     })
-    connect(pvpModeRadioGroup, {
-        onSelectionChange = onSetPVPMode
-    })
     connect(chaseModeButton, {
         onCheckChange = onSetChaseMode
-    })
-    connect(safeFightButton, {
-        onCheckChange = onSetSafeFight
     })
     connect(g_game, {
         onGameStart = online,
         onGameEnd = offline,
         onFightModeChange = update,
         onChaseModeChange = update,
-        onSafeFightChange = update,
-        onPVPModeChange = update,
         onWalk = check,
         onAutoWalk = check
     })
@@ -90,7 +61,6 @@ function terminate()
     end
 
     fightModeRadioGroup:destroy()
-    pvpModeRadioGroup:destroy()
     combatControlsWindow:destroy()
     combatControlsButton:destroy()
 
@@ -99,8 +69,6 @@ function terminate()
         onGameEnd = offline,
         onFightModeChange = update,
         onChaseModeChange = update,
-        onSafeFightChange = update,
-        onPVPModeChange = update,
         onWalk = check,
         onAutoWalk = check
     })
@@ -115,15 +83,8 @@ function terminate()
     fightBalancedBox = nil
     fightDefensiveBox = nil
     chaseModeButton = nil
-    safeFightButton = nil
-    whiteDoveBox = nil
-    whiteHandBox = nil
-    yellowHandBox = nil
-    redFistBox = nil
     mountButton = nil
-    pvpModesPanel = nil
     fightModeRadioGroup = nil
-    pvpModeRadioGroup = nil
 end
 
 function update()
@@ -138,17 +99,6 @@ function update()
 
     local chaseMode = g_game.getChaseMode()
     chaseModeButton:setChecked(chaseMode == ChaseOpponent)
-
-    local safeFight = g_game.isSafeFight()
-    safeFightButton:setChecked(not safeFight)
-
-    if g_game.getFeature(GamePVPMode) then
-        local pvpMode = g_game.getPVPMode()
-        local pvpWidget = getPVPBoxByMode(pvpMode)
-        if pvpWidget then
-            pvpModeRadioGroup:selectWidget(pvpWidget)
-        end
-    end
 end
 
 function check()
@@ -171,10 +121,6 @@ function online()
             if lastCombatControls[char] then
                 g_game.setFightMode(lastCombatControls[char].fightMode)
                 g_game.setChaseMode(lastCombatControls[char].chaseMode)
-                g_game.setSafeFight(lastCombatControls[char].safeFight)
-                if lastCombatControls[char].pvpMode then
-                    g_game.setPVPMode(lastCombatControls[char].pvpMode)
-                end
             end
         end
 
@@ -185,13 +131,6 @@ function online()
             mountButton:setVisible(false)
         end
 
-        if g_game.getFeature(GamePVPMode) then
-            pvpModesPanel:setVisible(true)
-            combatControlsWindow:setHeight(combatControlsWindow.extendedControlsHeight)
-        else
-            pvpModesPanel:setVisible(false)
-            combatControlsWindow:setHeight(combatControlsWindow.simpleControlsHeight)
-        end
     end
 
     update()
@@ -209,13 +148,8 @@ function offline()
         local char = g_game.getCharacterName()
         lastCombatControls[char] = {
             fightMode = g_game.getFightMode(),
-            chaseMode = g_game.getChaseMode(),
-            safeFight = g_game.isSafeFight()
+            chaseMode = g_game.getChaseMode()
         }
-
-        if g_game.getFeature(GamePVPMode) then
-            lastCombatControls[char].pvpMode = g_game.getPVPMode()
-        end
 
         -- save last combat control settings
         g_settings.setNode('LastCombatControls', lastCombatControls)
@@ -262,30 +196,6 @@ function onSetChaseMode(self, checked)
     g_game.setChaseMode(chaseMode)
 end
 
-function onSetSafeFight(self, checked)
-    g_game.setSafeFight(not checked)
-end
-
-function onSetPVPMode(self, selectedPVPButton)
-    if selectedPVPButton == nil then
-        return
-    end
-
-    local buttonId = selectedPVPButton:getId()
-    local pvpMode = PVPWhiteDove
-    if buttonId == 'whiteDoveBox' then
-        pvpMode = PVPWhiteDove
-    elseif buttonId == 'whiteHandBox' then
-        pvpMode = PVPWhiteHand
-    elseif buttonId == 'yellowHandBox' then
-        pvpMode = PVPYellowHand
-    elseif buttonId == 'redFistBox' then
-        pvpMode = PVPRedFist
-    end
-
-    g_game.setPVPMode(pvpMode)
-end
-
 function onMiniWindowOpen()
     combatControlsButton:setOn(true)
 end
@@ -307,18 +217,4 @@ function onOutfitChange(localPlayer, outfit, oldOutfit)
     end
 
     mountButton:setChecked(outfit.mount ~= nil and outfit.mount > 0)
-end
-
-function getPVPBoxByMode(mode)
-    local widget = nil
-    if mode == PVPWhiteDove then
-        widget = whiteDoveBox
-    elseif mode == PVPWhiteHand then
-        widget = whiteHandBox
-    elseif mode == PVPYellowHand then
-        widget = yellowHandBox
-    elseif mode == PVPRedFist then
-        widget = redFistBox
-    end
-    return widget
 end

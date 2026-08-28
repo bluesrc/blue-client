@@ -40,8 +40,6 @@ public:
     void setSkill(Otc::Skill skillId, uint16_t level, uint16_t levelPercent);
     void setBaseSkill(Otc::Skill skill, uint16_t baseLevel);
     void setHealth(uint32_t health, uint32_t maxHealth);
-    void setFreeCapacity(uint32_t freeCapacity);
-    void setTotalCapacity(uint32_t totalCapacity);
     void setExperience(uint64_t experience);
     void setLevel(uint16_t level, uint8_t levelPercent);
     void setMana(uint32_t mana, uint32_t maxMana);
@@ -60,9 +58,6 @@ public:
     void setResourceBalance(Otc::ResourceTypes_t type, uint64_t value);
     void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild,
                         uint32_t pokedexCount, uint64_t totalCaught);
-
-    uint32_t getFreeCapacity() { return m_freeCapacity; }
-    uint32_t getTotalCapacity() { return m_totalCapacity; }
 
     uint8_t getVocation() { return m_vocation; }
     uint8_t getMagicLevel() { return m_magicLevel; }
@@ -173,9 +168,6 @@ private:
     uint32_t m_states{ 0 };
     uint8_t m_vocation{ 0 };
     uint16_t m_blessings{ Otc::BlessingNone };
-
-    uint32_t m_freeCapacity{ 0 };
-    uint32_t m_totalCapacity{ 0 };
 
     uint32_t m_health{ 0 };
     uint32_t m_maxHealth{ 0 };

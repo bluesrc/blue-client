@@ -333,7 +333,7 @@ void ProtocolGame::sendInspectNpcTrade(int itemId, int count)
     send(msg);
 }
 
-void ProtocolGame::sendBuyItem(int itemId, int subType, int amount, bool ignoreCapacity, bool buyWithBackpack)
+void ProtocolGame::sendBuyItem(int itemId, int subType, int amount, bool buyWithBackpack)
 {
     const auto& msg = std::make_shared<OutputMessage>();
     msg->addU8(Proto::ClientBuyItem);
@@ -343,7 +343,6 @@ void ProtocolGame::sendBuyItem(int itemId, int subType, int amount, bool ignoreC
         msg->addU16(amount);
     else
         msg->addU8(amount);
-    msg->addU8(ignoreCapacity ? 0x01 : 0x00);
     msg->addU8(buyWithBackpack ? 0x01 : 0x00);
     send(msg);
 }
@@ -606,15 +605,12 @@ void ProtocolGame::sendCloseNpcChannel()
     send(msg);
 }
 
-void ProtocolGame::sendChangeFightModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode, bool safeFight, Otc::PVPModes pvpMode)
+void ProtocolGame::sendChangeFightModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode)
 {
     const auto& msg = std::make_shared<OutputMessage>();
     msg->addU8(Proto::ClientChangeFightModes);
     msg->addU8(fightMode);
     msg->addU8(chaseMode);
-    msg->addU8(safeFight ? 0x01 : 0x00);
-    if (g_game.getFeature(Otc::GamePVPMode))
-        msg->addU8(pvpMode);
     send(msg);
 }
 

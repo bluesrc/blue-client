@@ -9,8 +9,6 @@ function init()
         onHealthChange = onHealthChange,
         onManaChange = onManaChange,
         onSoulChange = onSoulChange,
-        onFreeCapacityChange = onFreeCapacityChange,
-        onTotalCapacityChange = onTotalCapacityChange,
         onStaminaChange = onStaminaChange,
         onOfflineTrainingChange = onOfflineTrainingChange,
         onRegenerationChange = onRegenerationChange,
@@ -51,8 +49,6 @@ function terminate()
         onHealthChange = onHealthChange,
         onManaChange = onManaChange,
         onSoulChange = onSoulChange,
-        onFreeCapacityChange = onFreeCapacityChange,
-        onTotalCapacityChange = onTotalCapacityChange,
         onStaminaChange = onStaminaChange,
         onOfflineTrainingChange = onOfflineTrainingChange,
         onRegenerationChange = onRegenerationChange,
@@ -238,7 +234,6 @@ function refresh()
     onHealthChange(player, player:getHealth(), player:getMaxHealth())
     onManaChange(player, player:getMana(), player:getMaxMana())
     onSoulChange(player, player:getSoul())
-    onFreeCapacityChange(player, player:getFreeCapacity())
     onStaminaChange(player, player:getStamina())
     onMagicLevelChange(player, player:getMagicLevel(), player:getMagicLevelPercent())
     onOfflineTrainingChange(player, player:getOfflineTrainingTime())
@@ -397,15 +392,6 @@ end
 
 function onSoulChange(localPlayer, soul)
     setSkillValue('soul', soul)
-end
-
-function onFreeCapacityChange(localPlayer, freeCapacity)
-    setSkillValue('capacity', freeCapacity)
-    checkAlert('capacity', freeCapacity, localPlayer:getTotalCapacity(), 20)
-end
-
-function onTotalCapacityChange(localPlayer, totalCapacity)
-    checkAlert('capacity', localPlayer:getFreeCapacity(), totalCapacity, 20)
 end
 
 function onStaminaChange(localPlayer, stamina)

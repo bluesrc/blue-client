@@ -570,14 +570,6 @@ void ProtocolGame::parseLogin(const InputMessagePtr& msg) const
         canReportBugs = msg->getU8() > 0;
     }
 
-    if (g_game.getClientVersion() >= 1054)
-        msg->getU8(); // can change pvp frame option
-
-    if (g_game.getClientVersion() >= 1058) {
-        const uint8_t expertModeEnabled = msg->getU8();
-        g_game.setExpertPvpMode(expertModeEnabled);
-    }
-
     if (g_game.getFeature(Otc::GameIngameStore)) {
         // URL to ingame store images
         msg->getString();
@@ -1156,7 +1148,7 @@ void ProtocolGame::parseRemoveInventoryItem(const InputMessagePtr& msg)
 
 void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
 {
-    std::vector<std::tuple<ItemPtr, std::string, int, int, int>> items;
+    std::vector<std::tuple<ItemPtr, std::string, int, int>> items;
 
     if (g_game.getFeature(Otc::GameNameOnNpcTrade))
         msg->getString(); // npcName
@@ -1181,10 +1173,9 @@ void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
         item->setCountOrSubType(count);
 
         const auto& name = msg->getString();
-        uint32_t weight = msg->getU32();
         uint32_t buyPrice = msg->getU32();
         uint32_t sellPrice = msg->getU32();
-        items.emplace_back(item, name, weight, buyPrice, sellPrice);
+        items.emplace_back(item, name, buyPrice, sellPrice);
     }
 
     Game::processOpenNpcTrade(items);
@@ -1641,19 +1632,6 @@ void ProtocolGame::parsePlayerStats(const InputMessagePtr& msg) const
         maxHealth = msg->getU16();
     }
 
-    uint32_t freeCapacity = 0;
-    uint32_t totalCapacity = 0;
-
-    if (g_game.getFeature(Otc::GameDoubleFreeCapacity))
-        freeCapacity = msg->getU32() / 100.f;
-    else
-        freeCapacity = msg->getU16() / 100.f;
-
-    if (g_game.getClientVersion() < 1281) {
-        if (g_game.getFeature(Otc::GameTotalCapacity))
-            totalCapacity = msg->getU32() / 100.f;
-    }
-
     uint64_t experience;
     if (g_game.getFeature(Otc::GameDoubleExperience))
         experience = msg->getU64();
@@ -1745,8 +1723,6 @@ void ProtocolGame::parsePlayerStats(const InputMessagePtr& msg) const
     }
 
     m_localPlayer->setHealth(health, maxHealth);
-    m_localPlayer->setFreeCapacity(freeCapacity);
-    m_localPlayer->setTotalCapacity(totalCapacity);
     m_localPlayer->setExperience(experience);
     m_localPlayer->setLevel(level, levelPercent);
     m_localPlayer->setMana(mana, maxMana);
@@ -1804,13 +1780,6 @@ void ProtocolGame::parsePlayerSkills(const InputMessagePtr& msg) const
         msg->getU8();
     }
 
-    if (g_game.getClientVersion() >= 1281) {
-        // bonus cap
-        const uint32_t capacity = msg->getU32(); // base + bonus capacity
-        msg->getU32(); // base capacity
-
-        m_localPlayer->setTotalCapacity(capacity);
-    }
 }
 
 void ProtocolGame::parsePlayerState(const InputMessagePtr& msg) const
@@ -1844,13 +1813,7 @@ void ProtocolGame::parsePlayerModes(const InputMessagePtr& msg)
 {
     const uint8_t fightMode = msg->getU8();
     const uint8_t chaseMode = msg->getU8();
-    const bool safeMode = msg->getU8();
-
-    uint8_t pvpMode = 0;
-    if (g_game.getFeature(Otc::GamePVPMode))
-        pvpMode = msg->getU8();
-
-    g_game.processPlayerModes(static_cast<Otc::FightModes>(fightMode), static_cast<Otc::ChaseModes>(chaseMode), safeMode, static_cast<Otc::PVPModes>(pvpMode));
+    g_game.processPlayerModes(static_cast<Otc::FightModes>(fightMode), static_cast<Otc::ChaseModes>(chaseMode));
 }
 
 void ProtocolGame::parseMultiUseCooldown(const InputMessagePtr& msg)
@@ -3229,7 +3192,7 @@ namespace {
             for (uint8_t listIndex = 0; listIndex < itemListSize; ++listIndex) {
                 msg->getU16(); // Item ID
                 msg->getString(); // Item name
-                msg->getU32(); // Item weight
+                msg->getU32(); // reserved item metadata
             }
         } else if (redeemMode == 2) {
             // no choice, click to redeem all
@@ -3353,7 +3316,7 @@ void ProtocolGame::parseMarketDetail(const InputMessagePtr& msg)
     }
 
     std::unordered_map<int, std::string> descriptions;
-    Otc::MarketItemDescription lastAttribute = Otc::ITEM_DESC_WEIGHT;
+    Otc::MarketItemDescription lastAttribute = Otc::ITEM_DESC_RESERVED_15;
     if (g_game.getClientVersion() >= 1270)
         lastAttribute = Otc::ITEM_DESC_UPGRADECLASS;
     if (g_game.getClientVersion() >= 1282)

@@ -119,7 +119,6 @@ namespace Otc
     {
         Health = 0,
         MaxHealth,
-        FreeCapacity,
         Experience,
         Level,
         LevelPercent,
@@ -202,14 +201,6 @@ namespace Otc
     {
         DontChase = 0,
         ChaseOpponent = 1
-    };
-
-    enum PVPModes : uint8_t
-    {
-        WhiteDove = 0,
-        WhiteHand = 1,
-        YellowHand = 2,
-        RedFist = 3
     };
 
     enum PlayerShields : uint8_t
@@ -343,9 +334,9 @@ namespace Otc
         GameChallengeOnLogin = 3,
         GamePenalityOnDeath = 4,
         GameNameOnNpcTrade = 5,
-        GameDoubleFreeCapacity = 6,
+        GameReserved6 = 6,
         GameDoubleExperience = 7,
-        GameTotalCapacity = 8,
+        GameReserved8 = 8,
         GameSkillsBase = 9,
         GamePlayerRegenerationTime = 10,
         GameChannelPlayerList = 11,
@@ -384,7 +375,7 @@ namespace Otc
         GameNewFluids = 47,
         GamePlayerStateU16 = 48,
         GameNewOutfitProtocol = 49,
-        GamePVPMode = 50,
+        GameReserved50 = 50,
         GameWritableDate = 51,
         GameAdditionalVipInfo = 52,
         GameBaseSkillU16 = 53,
@@ -580,7 +571,7 @@ namespace Otc
         ITEM_DESC_ABILITY = 12,
         ITEM_DESC_CHARGES = 13,
 		ITEM_DESC_RESERVED_14 = 14,
-        ITEM_DESC_WEIGHT = 15,
+        ITEM_DESC_RESERVED_15 = 15,
         ITEM_DESC_AUGMENT = 16,
         ITEM_DESC_MAGICSHIELD = 18,
         ITEM_DESC_CLEAVE = 19,

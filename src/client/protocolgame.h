@@ -56,7 +56,7 @@ public:
     void sendEquipItem(int itemId, int countOrSubType);
     void sendMove(const Position& fromPos, int thingId, int stackpos, const Position& toPos, int count);
     void sendInspectNpcTrade(int itemId, int count);
-    void sendBuyItem(int itemId, int subType, int amount, bool ignoreCapacity, bool buyWithBackpack);
+    void sendBuyItem(int itemId, int subType, int amount, bool buyWithBackpack);
     void sendSellItem(int itemId, int subType, int amount, bool ignoreEquipped);
     void sendCloseNpcTrade();
     void sendRequestTrade(const Position& pos, int thingId, int stackpos, uint32_t creatureId);
@@ -83,7 +83,7 @@ public:
     void sendCloseRuleViolation(const std::string_view reporter);
     void sendCancelRuleViolation();
     void sendCloseNpcChannel();
-    void sendChangeFightModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode, bool safeFight, Otc::PVPModes pvpMode);
+    void sendChangeFightModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode);
     void sendAttack(uint32_t creatureId, uint32_t seq);
     void sendFollow(uint32_t creatureId, uint32_t seq);
     void sendInviteToParty(uint32_t creatureId);

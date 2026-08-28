@@ -273,12 +273,8 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_game", "editVip", &Game::editVip, &g_game);
     g_lua.bindSingletonFunction("g_game", "setChaseMode", &Game::setChaseMode, &g_game);
     g_lua.bindSingletonFunction("g_game", "setFightMode", &Game::setFightMode, &g_game);
-    g_lua.bindSingletonFunction("g_game", "setPVPMode", &Game::setPVPMode, &g_game);
-    g_lua.bindSingletonFunction("g_game", "setSafeFight", &Game::setSafeFight, &g_game);
     g_lua.bindSingletonFunction("g_game", "getChaseMode", &Game::getChaseMode, &g_game);
     g_lua.bindSingletonFunction("g_game", "getFightMode", &Game::getFightMode, &g_game);
-    g_lua.bindSingletonFunction("g_game", "getPVPMode", &Game::getPVPMode, &g_game);
-    g_lua.bindSingletonFunction("g_game", "isSafeFight", &Game::isSafeFight, &g_game);
     g_lua.bindSingletonFunction("g_game", "inspectNpcTrade", &Game::inspectNpcTrade, &g_game);
     g_lua.bindSingletonFunction("g_game", "buyItem", &Game::buyItem, &g_game);
     g_lua.bindSingletonFunction("g_game", "sellItem", &Game::sellItem, &g_game);
@@ -777,8 +773,6 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<LocalPlayer>("setStates", &LocalPlayer::setStates);
     g_lua.bindClassMemberFunction<LocalPlayer>("setSkill", &LocalPlayer::setSkill);
     g_lua.bindClassMemberFunction<LocalPlayer>("setHealth", &LocalPlayer::setHealth);
-    g_lua.bindClassMemberFunction<LocalPlayer>("setTotalCapacity", &LocalPlayer::setTotalCapacity);
-    g_lua.bindClassMemberFunction<LocalPlayer>("setFreeCapacity", &LocalPlayer::setFreeCapacity);
     g_lua.bindClassMemberFunction<LocalPlayer>("setExperience", &LocalPlayer::setExperience);
     g_lua.bindClassMemberFunction<LocalPlayer>("setLevel", &LocalPlayer::setLevel);
     g_lua.bindClassMemberFunction<LocalPlayer>("setMana", &LocalPlayer::setMana);
@@ -793,7 +787,6 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<LocalPlayer>("getSkillLevelPercent", &LocalPlayer::getSkillLevelPercent);
     g_lua.bindClassMemberFunction<LocalPlayer>("getHealth", &LocalPlayer::getHealth);
     g_lua.bindClassMemberFunction<LocalPlayer>("getMaxHealth", &LocalPlayer::getMaxHealth);
-    g_lua.bindClassMemberFunction<LocalPlayer>("getFreeCapacity", &LocalPlayer::getFreeCapacity);
     g_lua.bindClassMemberFunction<LocalPlayer>("getExperience", &LocalPlayer::getExperience);
     g_lua.bindClassMemberFunction<LocalPlayer>("getLevel", &LocalPlayer::getLevel);
     g_lua.bindClassMemberFunction<LocalPlayer>("getLevelPercent", &LocalPlayer::getLevelPercent);
@@ -806,7 +799,6 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<LocalPlayer>("getOfflineTrainingTime", &LocalPlayer::getOfflineTrainingTime);
     g_lua.bindClassMemberFunction<LocalPlayer>("getRegenerationTime", &LocalPlayer::getRegenerationTime);
     g_lua.bindClassMemberFunction<LocalPlayer>("getBaseMagicLevel", &LocalPlayer::getBaseMagicLevel);
-    g_lua.bindClassMemberFunction<LocalPlayer>("getTotalCapacity", &LocalPlayer::getTotalCapacity);
     g_lua.bindClassMemberFunction<LocalPlayer>("getInventoryItem", &LocalPlayer::getInventoryItem);
     g_lua.bindClassMemberFunction<LocalPlayer>("getVocation", &LocalPlayer::getVocation);
     g_lua.bindClassMemberFunction<LocalPlayer>("getBlessings", &LocalPlayer::getBlessings);
