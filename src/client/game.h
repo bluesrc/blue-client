@@ -32,27 +32,6 @@
 #include "outfit.h"
 #include "protocolgame.h"
 
-struct UnjustifiedPoints
-{
-    bool operator==(const UnjustifiedPoints& other) const
-    {
-        return killsDay == other.killsDay &&
-            killsDayRemaining == other.killsDayRemaining &&
-            killsWeek == other.killsWeek &&
-            killsWeekRemaining == other.killsWeekRemaining &&
-            killsMonth == other.killsMonth &&
-            killsMonthRemaining == other.killsMonthRemaining &&
-            skullTime == other.skullTime;
-    }
-    uint8_t killsDay;
-    uint8_t killsDayRemaining;
-    uint8_t killsWeek;
-    uint8_t killsWeekRemaining;
-    uint8_t killsMonth;
-    uint8_t killsMonthRemaining;
-    uint8_t skullTime;
-};
-
 using Vip = std::tuple<std::string, uint32_t, std::string, int, bool>;
 
 //@bindsingleton g_game
@@ -239,12 +218,6 @@ public:
     bool isSafeFight() { return m_safeFight; }
     Otc::PVPModes getPVPMode() { return m_pvpMode; }
 
-    // pvp related
-    void setUnjustifiedPoints(UnjustifiedPoints unjustifiedPoints);
-    UnjustifiedPoints getUnjustifiedPoints() { return m_unjustifiedPoints; };
-    void setOpenPvpSituations(int openPvpSituations);
-    int getOpenPvpSituations() { return m_openPvpSituations; }
-
     // npc trade related
     void inspectNpcTrade(const ItemPtr& item);
     void buyItem(const ItemPtr& item, int amount, bool ignoreCapacity, bool buyWithBackpack);
@@ -368,15 +341,6 @@ public:
     void cancelMarketOffer(uint32_t timestamp, uint16_t counter);
     void acceptMarketOffer(uint32_t timestamp, uint16_t counter, uint16_t amount);
 
-    // prey related
-    void preyAction(uint8_t slot, uint8_t actionType, uint16_t index);
-    void preyRequest();
-
-    // imbuing related
-    void applyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm);
-    void clearImbuement(uint8_t slot);
-    void closeImbuingWindow();
-
     void enableTileThingLuaCallback(bool value) { m_tileThingsLuaCallback = value; }
     bool isTileThingLuaCallbackEnabled() { return m_tileThingsLuaCallback; }
 
@@ -417,7 +381,6 @@ private:
     Otc::Direction m_lastWalkDir;
     Otc::Direction m_nextScheduledDir;
     bool m_scheduleLastWalk{ false };
-    UnjustifiedPoints m_unjustifiedPoints;
     bool m_safeFight{ true };
     bool m_canReportBugs{ false };
     std::vector<uint8_t > m_gmActions;
@@ -430,7 +393,6 @@ private:
     bool m_connectionFailWarned;
     uint16_t m_protocolVersion{ 0 };
     uint16_t m_clientVersion{ 0 };
-    uint8_t m_openPvpSituations{ 0 };
     std::string m_clientSignature;
     Otc::OperatingSystem_t m_clientCustomOs{ Otc::CLIENTOS_NONE };
 };

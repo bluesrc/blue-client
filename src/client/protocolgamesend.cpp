@@ -1077,52 +1077,6 @@ void ProtocolGame::sendMarketAcceptOffer(uint32_t timestamp, uint16_t counter, u
     send(msg);
 }
 
-void ProtocolGame::sendPreyAction(uint8_t slot, uint8_t actionType, uint16_t index)
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientPreyAction);
-    msg->addU8(slot);
-    msg->addU8(actionType);
-    if (actionType == 2 || actionType == 5) {
-        msg->addU8(index);
-    } else if (actionType == 4) {
-        msg->addU16(index); // raceid
-        send(msg);
-    }
-}
-
-void ProtocolGame::sendPreyRequest()
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientPreyRequest);
-    send(msg);
-}
-
-void ProtocolGame::sendApplyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm)
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientApplyImbuement);
-    msg->addU8(slot);
-    msg->addU32(imbuementId);
-    msg->addU8(protectionCharm ? 1 : 0);
-    send(msg);
-}
-
-void ProtocolGame::sendClearImbuement(uint8_t slot)
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientClearImbuement);
-    msg->addU8(slot);
-    send(msg);
-}
-
-void ProtocolGame::sendCloseImbuingWindow()
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientCloseImbuingWindow);
-    send(msg);
-}
-
 void ProtocolGame::sendStashWithdraw(uint16_t itemId, uint32_t count, uint8_t stackpos)
 {
     const auto& msg = std::make_shared<OutputMessage>();

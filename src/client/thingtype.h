@@ -220,21 +220,6 @@ enum SpriteMask :uint8_t
     SpriteMaskYellow
 };
 
-struct Imbuement
-{
-    uint32_t id;
-    std::string name;
-    std::string description;
-    std::string group;
-    uint16_t imageId;
-    uint32_t duration;
-    bool premiumOnly;
-    std::vector<std::pair<ItemPtr, std::string>> sources;
-    uint32_t cost;
-    uint8_t successRate;
-    uint32_t protectionCost;
-};
-
 struct MarketData
 {
     std::string name;

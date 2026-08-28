@@ -30,13 +30,6 @@
 #include "thing.h"
 #include "const.h"
 
-struct PreyPokemon
-{
-public:
-    std::string name;
-    Outfit outfit;
-};
-
 // @bindclass
 class Creature : public Thing
 {

@@ -278,8 +278,6 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_game", "getChaseMode", &Game::getChaseMode, &g_game);
     g_lua.bindSingletonFunction("g_game", "getFightMode", &Game::getFightMode, &g_game);
     g_lua.bindSingletonFunction("g_game", "getPVPMode", &Game::getPVPMode, &g_game);
-    g_lua.bindSingletonFunction("g_game", "getUnjustifiedPoints", &Game::getUnjustifiedPoints, &g_game);
-    g_lua.bindSingletonFunction("g_game", "getOpenPvpSituations", &Game::getOpenPvpSituations, &g_game);
     g_lua.bindSingletonFunction("g_game", "isSafeFight", &Game::isSafeFight, &g_game);
     g_lua.bindSingletonFunction("g_game", "inspectNpcTrade", &Game::inspectNpcTrade, &g_game);
     g_lua.bindSingletonFunction("g_game", "buyItem", &Game::buyItem, &g_game);
@@ -350,11 +348,6 @@ void Client::registerLuaFunctions()
     g_lua.bindSingletonFunction("g_game", "createMarketOffer", &Game::createMarketOffer, &g_game);
     g_lua.bindSingletonFunction("g_game", "cancelMarketOffer", &Game::cancelMarketOffer, &g_game);
     g_lua.bindSingletonFunction("g_game", "acceptMarketOffer", &Game::acceptMarketOffer, &g_game);
-    g_lua.bindSingletonFunction("g_game", "preyAction", &Game::preyAction, &g_game);
-    g_lua.bindSingletonFunction("g_game", "preyRequest", &Game::preyRequest, &g_game);
-    g_lua.bindSingletonFunction("g_game", "applyImbuement", &Game::applyImbuement, &g_game);
-    g_lua.bindSingletonFunction("g_game", "clearImbuement", &Game::clearImbuement, &g_game);
-    g_lua.bindSingletonFunction("g_game", "closeImbuingWindow", &Game::closeImbuingWindow, &g_game);
     g_lua.bindSingletonFunction("g_game", "isUsingProtobuf", &Game::isUsingProtobuf, &g_game);
     g_lua.bindSingletonFunction("g_game", "enableTileThingLuaCallback", &Game::enableTileThingLuaCallback, &g_game);
     g_lua.bindSingletonFunction("g_game", "isTileThingLuaCallbackEnabled", &Game::isTileThingLuaCallbackEnabled, &g_game);

@@ -134,7 +134,6 @@ controller:registerEvents(g_game, {
         end
 
         if version >= 1053 then
-            g_game.enableFeature(GameUnjustifiedPoints);
         end
 
         if version >= 1054 then
@@ -183,7 +182,6 @@ controller:registerEvents(g_game, {
         end
 
         if version >= 1200 then
-            g_game.enableFeature(GamePrey);
             g_game.enableFeature(GameThingQuickLoot);
             g_game.enableFeature(GameTournamentPackets);
             g_game.enableFeature(GameVipGroups);

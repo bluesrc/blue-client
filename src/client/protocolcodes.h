@@ -85,7 +85,6 @@ namespace Proto
         GameServerPlayerCooldown = 60,
 
         // original tibia ONLY
-        GameServerImbuementDurations = 93,
         GameServerPassiveCooldown = 94,
         GameServerBosstiaryData = 97,
         GameServerBosstiarySlots = 98,
@@ -160,11 +159,7 @@ namespace Proto
         GameServerTextMessage = 180,
         GameServerCancelWalk = 181,
         GameServerWalkWait = 182,
-        GameServerUnjustifiedStats = 183,
-        GameServerPvpSituations = 184,
         GameServerRefreshBestiaryTracker = 185,
-        GameServerTaskHuntingBasicData = 186,
-        GameServerTaskHuntingData = 187,
         GameServerBosstiaryCooldownTimer = 189,
         GameServerFloorChangeUp = 190,
         GameServerFloorChangeDown = 191,
@@ -188,14 +183,8 @@ namespace Proto
         GameServerSendOpenRewardWall = 226,
         GameServerSendDailyReward = 228,
         GameServerSendRewardHistory = 229,
-        GameServerSendPreyFreeRerolls = 230,
         GameServerSendBosstiaryEntryChanged = 230,
-        GameServerSendPreyTimeLeft = 231,
-        GameServerSendPreyData = 232,
-        GameServerSendPreyRerollPrice = 233,
         GameServerSendShowDescription = 234,
-        GameServerSendImbuementWindow = 235,
-        GameServerSendCloseImbuementWindow = 236,
         GameServerSendError = 237,
         GameServerResourceBalance = 238, // 1281
         GameServerWorldTime = 239, // 1281
@@ -302,17 +291,12 @@ namespace Proto
         ClientRequestOutfit = 210,
         ClientChangeOutfit = 211,
         ClientMount = 212, // 870
-        ClientApplyImbuement = 213,
-        ClientClearImbuement = 214,
-        ClientCloseImbuingWindow = 215,
         ClientAddVip = 220,
         ClientRemoveVip = 221,
         ClientEditVip = 222,
         ClientBugReport = 230,
         ClientRuleViolation = 231,
         ClientDebugReport = 232,
-        ClientPreyAction = 235,
-        ClientPreyRequest = 237,
         ClientTransferCoins = 239, // 1080
         ClientRequestQuestLog = 240,
         ClientRequestQuestLine = 241,

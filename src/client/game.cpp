@@ -65,7 +65,6 @@ void Game::resetGameStates()
     m_localPlayer = nullptr;
     m_pingSent = 0;
     m_pingReceived = 0;
-    m_unjustifiedPoints = UnjustifiedPoints();
     m_nextScheduledDir = Otc::InvalidDirection;
 
     for (const auto& it : m_containers) {
@@ -1215,33 +1214,6 @@ void Game::setPVPMode(Otc::PVPModes pvpMode)
     g_lua.callGlobalField("g_game", "onPVPModeChange", pvpMode);
 }
 
-void Game::setUnjustifiedPoints(UnjustifiedPoints unjustifiedPoints)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (!getFeature(Otc::GameUnjustifiedPoints))
-        return;
-
-    if (m_unjustifiedPoints == unjustifiedPoints)
-        return;
-
-    m_unjustifiedPoints = unjustifiedPoints;
-    g_lua.callGlobalField("g_game", "onUnjustifiedPointsChange", unjustifiedPoints);
-}
-
-void Game::setOpenPvpSituations(int openPvpSituations)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (m_openPvpSituations == openPvpSituations)
-        return;
-
-    m_openPvpSituations = openPvpSituations;
-    g_lua.callGlobalField("g_game", "onOpenPvpSituationsChange", openPvpSituations);
-}
-
 void Game::inspectNpcTrade(const ItemPtr& item)
 {
     if (!canPerformGameAction() || !item)
@@ -1652,43 +1624,6 @@ void Game::cancelMarketOffer(uint32_t timestamp, uint16_t counter)
 void Game::acceptMarketOffer(uint32_t timestamp, uint16_t counter, uint16_t amount)
 {
     m_protocolGame->sendMarketAcceptOffer(timestamp, counter, amount);
-}
-
-void Game::preyAction(uint8_t slot, uint8_t actionType, uint16_t index)
-{
-    if (!canPerformGameAction())
-        return;
-
-    m_protocolGame->sendPreyAction(slot, actionType, index);
-}
-
-void Game::preyRequest()
-{
-    if (!canPerformGameAction())
-        return;
-
-    m_protocolGame->sendPreyRequest();
-}
-
-void Game::applyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm)
-{
-    if (!canPerformGameAction())
-        return;
-    m_protocolGame->sendApplyImbuement(slot, imbuementId, protectionCharm);
-}
-
-void Game::clearImbuement(uint8_t slot)
-{
-    if (!canPerformGameAction())
-        return;
-    m_protocolGame->sendClearImbuement(slot);
-}
-
-void Game::closeImbuingWindow()
-{
-    if (!canPerformGameAction())
-        return;
-    m_protocolGame->sendCloseImbuingWindow();
 }
 
 void Game::stashWithdraw(uint16_t itemId, uint32_t count, uint8_t stackpos)

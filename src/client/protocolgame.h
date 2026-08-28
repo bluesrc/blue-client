@@ -125,11 +125,6 @@ public:
     void sendMarketCreateOffer(uint8_t type, uint16_t itemId, uint8_t itemTier, uint16_t amount, uint64_t price, uint8_t anonymous);
     void sendMarketCancelOffer(uint32_t timestamp, uint16_t counter);
     void sendMarketAcceptOffer(uint32_t timestamp, uint16_t counter, uint16_t amount);
-    void sendPreyAction(uint8_t slot, uint8_t actionType, uint16_t index);
-    void sendPreyRequest();
-    void sendApplyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm);
-    void sendClearImbuement(uint8_t slot);
-    void sendCloseImbuingWindow();
     void sendStashWithdraw(uint16_t itemId, uint32_t count, uint8_t stackpos);
 
     // blue-client only
@@ -165,8 +160,6 @@ private:
     void parseCoinBalance(const InputMessagePtr& msg) const;
     void parseCoinBalanceUpdating(const InputMessagePtr& msg);
     void parseBlessings(const InputMessagePtr& msg) const;
-    void parseUnjustifiedStats(const InputMessagePtr& msg);
-    void parsePvpSituations(const InputMessagePtr& msg);
     void parsePreset(const InputMessagePtr& msg);
     void parseCreatureType(const InputMessagePtr& msg);
     void parsePlayerHelpers(const InputMessagePtr& msg) const;
@@ -271,14 +264,11 @@ private:
     // 12x
     void parseShowDescription(const InputMessagePtr& msg);
     void parseBestiaryTracker(const InputMessagePtr& msg);
-    void parseTaskHuntingBasicData(const InputMessagePtr& msg);
-    void parseTaskHuntingData(const InputMessagePtr& msg);
     void parseExperienceTracker(const InputMessagePtr& msg);
     void parseLootContainers(const InputMessagePtr& msg);
     void parseSupplyStash(const InputMessagePtr& msg);
     void parseSpecialContainer(const InputMessagePtr& msg);
     void parsePartyAnalyzer(const InputMessagePtr& msg);
-    void parseImbuementDurations(const InputMessagePtr& msg);
     void parsePassiveCooldown(const InputMessagePtr& msg);
     void parseClientCheck(const InputMessagePtr& msg);
     void parseGameNews(const InputMessagePtr& msg);
@@ -293,12 +283,6 @@ private:
     void parseOpenRewardWall(const InputMessagePtr& msg);
     void parseDailyReward(const InputMessagePtr& msg);
     void parseRewardHistory(const InputMessagePtr& msg);
-    void parsePreyFreeRerolls(const InputMessagePtr& msg);
-    void parsePreyTimeLeft(const InputMessagePtr& msg);
-    void parsePreyData(const InputMessagePtr& msg);
-    void parsePreyRerollPrice(const InputMessagePtr& msg);
-    void parseImbuementWindow(const InputMessagePtr& msg);
-    void parseCloseImbuementWindow(const InputMessagePtr& msg);
     void parseError(const InputMessagePtr& msg);
     void parseMarketEnter(const InputMessagePtr& msg);
     void parseMarketEnterOld(const InputMessagePtr& msg);
@@ -317,10 +301,6 @@ private:
     void parseMapShader(const InputMessagePtr& msg);
 
     MarketOffer readMarketOffer(const InputMessagePtr& msg, uint8_t action, uint16_t var);
-
-    Imbuement getImbuementInfo(const InputMessagePtr& msg);
-    PreyPokemon getPreyPokemon(const InputMessagePtr& msg) const;
-    std::vector<PreyPokemon> getPreyPokemons(const InputMessagePtr& msg);
 
 public:
     void setMapDescription(const InputMessagePtr& msg, int x, int y, int z, int width, int height);
