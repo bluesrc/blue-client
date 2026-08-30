@@ -288,7 +288,6 @@ locale = {
     ["Open in new window"] = "�ppna i nytt f�nster",
     ["Open new channel"] = "�ppna ny kanal",
     ["Open purse"] = false,
-    ["Open PvP"] = false,
     ["Open"] = "�ppna",
     ["Options"] = "Inst�llningar",
     ["Overview"] = false,

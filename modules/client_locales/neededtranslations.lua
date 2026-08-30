@@ -64,7 +64,7 @@ neededTranslations = {'1a) Offensive Name', '1b) Invalid Name Format', '1c) Unsu
                       'Notify-Login', 'NPC Trade', 'Offer History', 'Offers', 'Offer Type', 'Ok',
                       'on %s.\n', 'Open', 'Open a private message channel',
                       'Open charlist automatically when starting client', 'Open in new window', 'Open new channel',
-                      'Open purse', 'Open PvP', 'Options', 'Overview',
+					  'Open purse', 'Options', 'Overview',
                       'Pass Leadership to %s', 'Password', 'Piece Price', 'Please enter a character name',
                       'Please, press the key you wish to add onto your hotkeys manager', 'Please Select',
                       'Please state the rule violation in one clear sentence and wait for a reply from a gamemaster. Please note that your message will disappear if you close the channel.',

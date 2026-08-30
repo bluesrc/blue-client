@@ -2918,10 +2918,10 @@ void ProtocolGame::parseBlessDialog(const InputMessagePtr& msg)
     // parse general info
     msg->getU8(); // premium
     msg->getU8(); // promotion
-    msg->getU8(); // pvp min xp loss
-    msg->getU8(); // pvp max xp loss
-    msg->getU8(); // pve exp loss
-    msg->getU8(); // equip pvp loss
+	msg->getU8(); // reserved legacy loss byte
+	msg->getU8(); // reserved legacy loss byte
+	msg->getU8(); // pve exp loss
+	msg->getU8(); // reserved legacy equipment byte
     msg->getU8(); // equip pve loss
     msg->getU8(); // reserved alignment byte
     msg->getU8(); // aol

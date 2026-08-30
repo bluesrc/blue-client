@@ -45,13 +45,7 @@ end
 
 function getEmblemImagePath(emblemId)
     local path
-    if emblemId == EmblemGreen then
-        path = '/images/game/emblems/emblem_green'
-    elseif emblemId == EmblemRed then
-        path = '/images/game/emblems/emblem_red'
-    elseif emblemId == EmblemBlue then
-        path = '/images/game/emblems/emblem_blue'
-    elseif emblemId == EmblemMember then
+	if emblemId == EmblemMember then
         path = '/images/game/emblems/emblem_member'
     elseif emblemId == EmblemOther then
         path = '/images/game/emblems/emblem_other'

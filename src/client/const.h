@@ -209,12 +209,9 @@ namespace Otc
 
     enum PlayerEmblems : uint8_t
     {
-        EmblemNone = 0,
-        EmblemGreen,
-        EmblemRed,
-        EmblemBlue,
-        EmblemMember,
-        EmblemOther
+		EmblemNone = 0,
+		EmblemMember = 4,
+		EmblemOther = 5
     };
 
     enum CreatureIcons : uint8_t

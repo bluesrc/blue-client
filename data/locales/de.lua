@@ -287,7 +287,6 @@ locale = {
     ["Open in new window"] = "Im neuen Fenster �ffnen",
     ["Open new channel"] = "Neuen Channel �ffnen",
     ["Open purse"] = false,
-    ["Open PvP"] = false,
     ["Open"] = "�ffnen",
     ["Options"] = "Optionen",
     ["Overview"] = false,

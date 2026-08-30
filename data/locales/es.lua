@@ -291,7 +291,6 @@ locale = {
     ["Open in new window"] = "Abrir en nueva ventana",
     ["Open new channel"] = "Abrir nuevo canal",
     ["Open purse"] = false,
-    ["Open PvP"] = false,
     ["Open"] = "Abrir",
     ["Options"] = "Opciones",
     ["Overview"] = "Descripci�n",
