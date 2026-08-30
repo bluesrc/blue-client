@@ -1,0 +1,81 @@
+MainWindow
+  id: accountCreationWindow
+  !text: tr('Account creation')
+  size: 300 222
+  visible: false
+  @onEnter: AccountCreation.doCreate()
+  @onEscape: AccountCreation.hide(true)
+
+  MenuLabel
+    !text: tr('Account name')
+    anchors.left: parent.left
+    anchors.top: parent.top
+    text-auto-resize: true
+
+  TextEdit
+    id: accountName
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    max-length: 32
+
+  MenuLabel
+    !text: tr('Password')
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-auto-resize: true
+
+  PasswordTextEdit
+    id: password
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    max-length: 29
+
+  MenuLabel
+    !text: tr('Confirm password')
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-auto-resize: true
+
+  PasswordTextEdit
+    id: passwordConfirmation
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    max-length: 29
+
+  Label
+    !text: tr('Use 4-32 letters or numbers for the account name.')
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 8
+    color: #a0a0a0
+    text-wrap: true
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: next.top
+    margin-bottom: 10
+
+  SuccessButton
+    !text: tr('Create')
+    width: 80
+    anchors.right: next.left
+    anchors.bottom: parent.bottom
+    margin-right: 10
+    @onClick: AccountCreation.doCreate()
+
+  DangerButton
+    !text: tr('Cancel')
+    width: 80
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: AccountCreation.hide(true)

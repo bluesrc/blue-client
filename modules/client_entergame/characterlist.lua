@@ -409,7 +409,7 @@ function CharacterList.hide(showLogin)
 end
 
 function CharacterList.showAgain()
-    if characterList and characterList:hasChildren() then
+    if characterList then
         CharacterList.show()
     end
 end

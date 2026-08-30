@@ -285,6 +285,38 @@ function EnterGame.clearAccountFields()
   g_settings.remove('password')
 end
 
+function EnterGame.getConnectionInfo()
+  return enterGame:getChildById('serverHostTextEdit'):getText(),
+         tonumber(enterGame:getChildById('serverPortTextEdit'):getText()),
+         tonumber(clientBox:getText())
+end
+
+function EnterGame.prepareConnection()
+  local host, port, clientVersion = EnterGame.getConnectionInfo()
+  if not host or #host == 0 or not port or port == 0 then
+    return nil, nil, tr('You must enter a valid server address and port.')
+  end
+
+  g_game.setClientVersion(clientVersion)
+  g_game.setProtocolVersion(g_game.getClientProtocolVersion(clientVersion))
+  g_game.chooseRsa(host)
+  if not modules.game_things.isLoaded() then
+    return nil, nil, tr('Your client needs updating, try redownloading it.')
+  end
+  return host, port, nil
+end
+
+function EnterGame.setCredentials(account, password, authenticatorToken)
+  enterGame:getChildById('accountNameTextEdit'):setText(account or '')
+  enterGame:getChildById('accountPasswordTextEdit'):setText(password or '')
+  enterGame:getChildById('authenticatorTokenTextEdit'):setText(authenticatorToken or '')
+end
+
+function EnterGame.loginWithCredentials(account, password, authenticatorToken)
+  EnterGame.setCredentials(account, password, authenticatorToken)
+  EnterGame.doLogin()
+end
+
 function EnterGame.toggleAuthenticatorToken(clientVersion, init)
   local enabled = (clientVersion >= 1072)
   if enabled == enterGame.authenticatorEnabled then

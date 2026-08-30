@@ -10,6 +10,12 @@ LoginServerUpdateNeeded = 30
 LoginServerSessionKey = 40
 LoginServerCharacterList = 100
 LoginServerExtendedCharacterList = 101
+LoginServerCreationResult = 102
+
+LoginActionAuthenticate = 0
+LoginActionCreateAccount = 1
+LoginActionCreateCharacter = 2
+LoginCustomActionMagic = 0x42524347
 
 -- Since 10.76
 LoginServerRetry = 10
@@ -25,8 +31,31 @@ function ProtocolLogin:login(host, port, accountName, accountPassword, authentic
     self.accountPassword = accountPassword
     self.authenticatorToken = authenticatorToken
     self.stayLogged = stayLogged
+    self.loginAction = LoginActionAuthenticate
     self.connectCallback = self.sendLoginPacket
 
+    self:connect(host, port)
+end
+
+function ProtocolLogin:createAccount(host, port, accountName, accountPassword)
+    self.accountName = accountName
+    self.accountPassword = accountPassword
+    self.authenticatorToken = ''
+    self.stayLogged = false
+    self.loginAction = LoginActionCreateAccount
+    self.connectCallback = self.sendLoginPacket
+    self:connect(host, port)
+end
+
+function ProtocolLogin:createCharacter(host, port, accountName, accountPassword, authenticatorToken, characterName, sex)
+    self.accountName = accountName
+    self.accountPassword = accountPassword
+    self.authenticatorToken = authenticatorToken or ''
+    self.stayLogged = false
+    self.loginAction = LoginActionCreateCharacter
+    self.characterName = characterName
+    self.characterSex = sex
+    self.connectCallback = self.sendLoginPacket
     self:connect(host, port)
 end
 
@@ -79,6 +108,16 @@ function ProtocolLogin:sendLoginPacket()
     end
 
     msg:addString(self.accountPassword)
+
+    -- Blue's account management extension lives inside the RSA encrypted
+    -- login block. Old clients remain compatible because the server only
+    -- interprets the extension when this magic value is present.
+    msg:addU32(LoginCustomActionMagic)
+    msg:addU8(self.loginAction or LoginActionAuthenticate)
+    if self.loginAction == LoginActionCreateCharacter then
+        msg:addString(self.characterName)
+        msg:addU8(self.characterSex)
+    end
 
     if self.getLoginExtendedData then
         local data = self:getLoginExtendedData()
@@ -174,6 +213,8 @@ function ProtocolLogin:onRecv(msg)
             self:parseCharacterList(msg)
         elseif opcode == LoginServerExtendedCharacterList then
             self:parseExtendedCharacterList(msg)
+        elseif opcode == LoginServerCreationResult then
+            self:parseCreationResult(msg)
         elseif opcode == LoginServerUpdate then
             local signature = msg:getString()
             signalcall(self.onUpdateNeeded, self, signature)
@@ -184,6 +225,13 @@ function ProtocolLogin:onRecv(msg)
         end
     end
     self:disconnect()
+end
+
+function ProtocolLogin:parseCreationResult(msg)
+    local action = msg:getU8()
+    local success = msg:getU8() ~= 0
+    local message = msg:getString()
+    signalcall(self.onCreationResult, self, action, success, message)
 end
 
 function ProtocolLogin:parseError(msg)

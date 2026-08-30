@@ -326,6 +326,14 @@ MainWindow
   //  margin-right: 18
 
   SuccessButton
+    id: buttonCreateCharacter
+    !text: tr('Create character')
+    width: 110
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    @onClick: CharacterCreation.show()
+
+  SuccessButton
     id: buttonOk
     !text: tr('Ok')
     width: 64
