@@ -133,30 +133,6 @@ MainWindow
     NPCOfferLabel
       id: money
 
-    Label
-      id: weightDesc
-      !text: tr('Weight') .. ':'
-      anchors.left: parent.left
-      anchors.top: prev.bottom
-      margin-top: 5
-      margin-left: 5
-      width: 85
-
-    NPCOfferLabel
-      id: weight
-
-    Label
-      id: capacityDesc
-      !text: tr('Your Capacity') .. ':'
-      anchors.left: parent.left
-      anchors.top: prev.bottom
-      margin-top: 5
-      margin-left: 5
-      width: 85
-
-    NPCOfferLabel
-      id: capacity
-
     HorizontalScrollBar
       id: quantityScroll
       anchors.left: parent.left
@@ -208,16 +184,6 @@ MainWindow
       margin-left: 5
       margin-top: 5
       @onCheckChange: modules.game_npctrade.onBuyWithBackpackChange()
-
-    CheckBox
-      id: ignoreCapacity
-      !text: tr('Ignore capacity')
-      anchors.top: prev.bottom
-      anchors.left: parent.left
-      anchors.right: parent.right
-      margin-left: 5
-      margin-top: 5
-      @onCheckChange: modules.game_npctrade.onIgnoreCapacityChange()
 
     CheckBox
       id: ignoreEquipped

@@ -45,9 +45,8 @@ namespace Otc
         DrawLights = 1 << 1,
         DrawBars = 1 << 2,
         DrawNames = 1 << 3,
-        DrawManaBar = 1 << 4,
         DrawThingsAndLights = DrawThings | DrawLights,
-        DrawCreatureInfo = DrawBars | DrawNames | DrawManaBar,
+        DrawCreatureInfo = DrawBars | DrawNames,
     };
 
     enum DatOpts : uint8_t
@@ -100,7 +99,7 @@ namespace Otc
         InventorySlotLegs,
         InventorySlotFeet,
         InventorySlotRing,
-        InventorySlotAmmo,
+        InventorySlotUtility,
         InventorySlotPokeball1,
         InventorySlotPokeball2,
         InventorySlotPokeball3,
@@ -119,37 +118,16 @@ namespace Otc
     {
         Health = 0,
         MaxHealth,
-        FreeCapacity,
         Experience,
         Level,
         LevelPercent,
-        Mana,
-        MaxMana,
-        MagicLevel,
-        MagicLevelPercent,
-        Soul,
-        Stamina,
+		Stamina,
         LastStatistic
     };
 
     enum Skill : uint8_t
     {
-        Fist = 0,
-        Club,
-        Sword,
-        Axe,
-        Distance,
-        Shielding,
-        Fishing,
-        CriticalChance,
-        CriticalDamage,
-        LifeLeechChance,
-        LifeLeechAmount,
-        ManaLeechChance,
-        ManaLeechAmount,
-        Fatal,
-        Dodge,
-        Momentum,
+        Fishing = 0,
         LastSkill
     };
 
@@ -182,7 +160,7 @@ namespace Otc
     {
         FluidNone = 0,
         FluidWater,
-        FluidMana,
+        FluidViolet,
         FluidBeer,
         FluidOil,
         FluidBlood,
@@ -213,25 +191,6 @@ namespace Otc
         ChaseOpponent = 1
     };
 
-    enum PVPModes : uint8_t
-    {
-        WhiteDove = 0,
-        WhiteHand = 1,
-        YellowHand = 2,
-        RedFist = 3
-    };
-
-    enum PlayerSkulls : uint8_t
-    {
-        SkullNone = 0,
-        SkullYellow,
-        SkullGreen,
-        SkullWhite,
-        SkullRed,
-        SkullBlack,
-        SkullOrange
-    };
-
     enum PlayerShields : uint8_t
     {
         ShieldNone = 0,
@@ -250,12 +209,9 @@ namespace Otc
 
     enum PlayerEmblems : uint8_t
     {
-        EmblemNone = 0,
-        EmblemGreen,
-        EmblemRed,
-        EmblemBlue,
-        EmblemMember,
-        EmblemOther
+		EmblemNone = 0,
+		EmblemMember = 4,
+		EmblemOther = 5
     };
 
     enum CreatureIcons : uint8_t
@@ -274,7 +230,7 @@ namespace Otc
         IconBurn = 2,
         IconEnergy = 4,
         IconDrunk = 8,
-        IconManaShield = 16,
+        IconReserved16 = 16,
         IconParalyze = 32,
         IconHaste = 64,
         IconSwords = 128,
@@ -332,7 +288,7 @@ namespace Otc
         MessageTutorialHint = 38,
         MessageThankyou = 39,
         MessageMarket = 40,
-        MessageMana = 41,
+        MessageReserved41 = 41,
         MessageBeyondLast = 42,
 
         // deprecated
@@ -349,89 +305,11 @@ namespace Otc
         // 12x
         MessageAttention = 52,
         MessageBoostedCreature = 53,
-        MessageOfflineTrainning = 54,
+        MessageReserved54 = 54,
         MessageTransaction = 55,
         MessagePotion = 56,
         LastMessage = 57,
         MessageInvalid = 255
-    };
-
-    enum PreySlotNum_t : uint8_t
-    {
-        PREY_SLOTNUM_FIRST = 0,
-        PREY_SLOTNUM_SECOND = 1,
-        PREY_SLOTNUM_THIRD = 2,
-        PREY_SLOTNUM_LAST = PREY_SLOTNUM_THIRD
-    };
-
-    enum PreyState_t : uint8_t
-    {
-        PREY_STATE_LOCKED = 0,
-        PREY_STATE_INACTIVE = 1,
-        PREY_STATE_ACTIVE = 2,
-        PREY_STATE_SELECTION = 3,
-        PREY_STATE_SELECTION_CHANGE_POKEMON = 4,
-        PREY_STATE_LIST_SELECTION = 5,
-        PREY_STATE_WILDCARD_SELECTION = 6,
-    };
-
-    enum PreyTaskstate_t : uint8_t
-    {
-        PREY_TASK_STATE_LOCKED = 0,
-        PREY_TASK_STATE_INACTIVE = 1,
-        PREY_TASK_STATE_SELECTION = 2,
-        PREY_TASK_STATE_LIST_SELECTION = 3,
-        PREY_TASK_STATE_ACTIVE = 4,
-        PREY_TASK_STATE_COMPLETED = 5
-    };
-
-    enum PreyMessageDialog_t : uint8_t
-    {
-        //PREY_MESSAGEDIALOG_IMBUEMENT_SUCCESS = 0,
-        //PREY_MESSAGEDIALOG_IMBUEMENT_ERROR = 1,
-        //PREY_MESSAGEDIALOG_IMBUEMENT_ROLL_FAILED = 2,
-        //PREY_MESSAGEDIALOG_IMBUEMENT_STATION_NOT_FOUND = 3,
-        //PREY_MESSAGEDIALOG_IMBUEMENT_CHARM_SUCCESS = 10,
-        //PREY_MESSAGEDIALOG_IMBUEMENT_CHARM_ERROR = 11,
-        PREY_MESSAGEDIALOG_PREY_MESSAGE = 20,
-        PREY_MESSAGEDIALOG_PREY_ERROR = 21,
-    };
-    enum PreyResourceType_t : uint8_t
-    {
-        PREY_RESOURCETYPE_BANK_GOLD = 0,
-        PREY_RESOURCETYPE_INVENTORY_GOLD = 1,
-        PREY_RESOURCETYPE_PREY_BONUS_REROLLS = 10
-    };
-    enum PreyBonusType_t : uint8_t
-    {
-        PREY_BONUS_DAMAGE_BOOST = 0,
-        PREY_BONUS_DAMAGE_REDUCTION = 1,
-        PREY_BONUS_XP_BONUS = 2,
-        PREY_BONUS_IMPROVED_LOOT = 3,
-        PREY_BONUS_NONE = 4, // internal usage but still added to client;
-        PREY_BONUS_FIRST = PREY_BONUS_DAMAGE_BOOST,
-        PREY_BONUS_LAST = PREY_BONUS_IMPROVED_LOOT,
-    };
-    enum PreyAction_t : uint8_t
-    {
-        PREY_ACTION_LISTREROLL = 0,
-        PREY_ACTION_BONUSREROLL = 1,
-        PREY_ACTION_POKEMONSELECTION = 2,
-        PREY_ACTION_REQUEST_ALL_POKEMONS = 3,
-        PREY_ACTION_CHANGE_FROM_ALL = 4,
-        PREY_ACTION_LOCK_PREY = 5,
-    };
-    enum PreyConfigState : uint8_t
-    {
-        PREY_CONFIG_STATE_FREE,
-        PREY_CONFIG_STATE_PREMIUM,
-        PREY_CONFIG_STATE_TIBIACOINS
-    };
-    enum PreyUnlockState_t : uint8_t
-    {
-        PREY_UNLOCK_STORE_AND_PREMIUM = 0,
-        PREY_UNLOCK_STORE = 1,
-        PREY_UNLOCK_NONE = 2,
     };
 
     enum GameFeature : uint8_t
@@ -441,11 +319,11 @@ namespace Otc
         GameChallengeOnLogin = 3,
         GamePenalityOnDeath = 4,
         GameNameOnNpcTrade = 5,
-        GameDoubleFreeCapacity = 6,
+        GameReserved6 = 6,
         GameDoubleExperience = 7,
-        GameTotalCapacity = 8,
+        GameReserved8 = 8,
         GameSkillsBase = 9,
-        GamePlayerRegenerationTime = 10,
+        GameReserved10 = 10,
         GameChannelPlayerList = 11,
         GamePlayerMounts = 12,
         GameEnvironmentEffect = 13,
@@ -455,10 +333,9 @@ namespace Otc
         GamePlayerMarket = 17,
         GameSpritesU32 = 18,
         // 19 unused
-        GameOfflineTrainingTime = 20,
+        GameReserved20 = 20,
         GamePurseSlot = 21,
         GameFormatCreatureName = 22,
-        GameMoveList = 23,
         GameClientPing = 24,
         GameExtendedClientPing = 25,
         GameDoubleHealth = 28,
@@ -483,7 +360,7 @@ namespace Otc
         GameNewFluids = 47,
         GamePlayerStateU16 = 48,
         GameNewOutfitProtocol = 49,
-        GamePVPMode = 50,
+        GameReserved50 = 50,
         GameWritableDate = 51,
         GameAdditionalVipInfo = 52,
         GameBaseSkillU16 = 53,
@@ -501,7 +378,6 @@ namespace Otc
         GameContentRevision = 65,
         GameExperienceBonus = 66,
         GameAuthenticator = 67,
-        GameUnjustifiedPoints = 68,
         GameSessionKey = 69,
         GameDeathType = 70,
         GameIdleAnimations = 71,
@@ -509,22 +385,18 @@ namespace Otc
         GameIngameStore = 73,
         GameIngameStoreHighlights = 74,
         GameIngameStoreServiceType = 75,
-        GameAdditionalSkills = 76,
         GameDistanceEffectU16 = 77,
         GameLevelU16 = 78,
-        GameSoul = 79,
+        GameReserved79 = 79,
         GameMapOldEffectRendering = 80,
         GameMapDontCorrectCorpse = 81,
-        GamePrey = 82,
         GameThingQuickLoot = 83,
-        GameThingQuiver = 84,
         GameThingPodium = 85,
         GameThingUpgradeClassification = 86,
         GameThingCounter = 87,
         GameThingClock = 88,
         GameThingPodiumItemType = 89,
         GameSequencedPackets = 90,
-        GameUshortMove = 91,
         GameTournamentPackets = 92,
         GameDynamicForgeVariables = 93,
         GameConcotions = 94,
@@ -542,7 +414,6 @@ namespace Otc
         GameContainerTypes = 106,
         GameBosstiaryTracker = 107,
         GamePlayerStateCounter = 108,
-        GameLeechAmount = 109,
         GameItemAugment = 110,
         GameDynamicBugReporter = 111,
         GameWrapKit = 112,
@@ -661,10 +532,8 @@ namespace Otc
     {
         RESOURCE_BANK_BALANCE = 0,
         RESOURCE_GOLD_EQUIPPED = 1,
-        RESOURCE_PREY_WILDCARDS = 10,
         RESOURCE_DAILYREWARD_STREAK = 20,
         RESOURCE_DAILYREWARD_JOKERS = 21,
-        RESOURCE_TASK_HUNTING = 50,
         RESOURE_COIN_NORMAL = 90,
         RESOURE_COIN_TRANSFERRABLE = 91,
         RESOURE_COIN_AUCTION = 92,
@@ -681,16 +550,15 @@ namespace Otc
         ITEM_DESC_DECAY_TIME = 6,
         ITEM_DESC_COMBAT = 7,
         ITEM_DESC_MINLEVEL = 8,
-        ITEM_DESC_MINMAGICLEVEL = 9,
-        ITEM_DESC_VOCATION = 10,
-        ITEM_DESC_RUNE = 11,
+		ITEM_DESC_RESERVED_9 = 9,
+		ITEM_DESC_RESERVED_10 = 10,
+		ITEM_DESC_RESERVED_11 = 11,
         ITEM_DESC_ABILITY = 12,
         ITEM_DESC_CHARGES = 13,
-        ITEM_DESC_WEAPONTYPE = 14,
-        ITEM_DESC_WEIGHT = 15,
+		ITEM_DESC_RESERVED_14 = 14,
+        ITEM_DESC_RESERVED_15 = 15,
         ITEM_DESC_AUGMENT = 16,
-        ITEM_DESC_IMBUINGSLOTS = 17,
-        ITEM_DESC_MAGICSHIELD = 18,
+		ITEM_DESC_RESERVED_18 = 18,
         ITEM_DESC_CLEAVE = 19,
         ITEM_DESC_REFLECTION = 20,
         ITEM_DESC_PERFECT = 21,

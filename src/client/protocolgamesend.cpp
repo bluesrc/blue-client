@@ -333,7 +333,7 @@ void ProtocolGame::sendInspectNpcTrade(int itemId, int count)
     send(msg);
 }
 
-void ProtocolGame::sendBuyItem(int itemId, int subType, int amount, bool ignoreCapacity, bool buyWithBackpack)
+void ProtocolGame::sendBuyItem(int itemId, int subType, int amount, bool buyWithBackpack)
 {
     const auto& msg = std::make_shared<OutputMessage>();
     msg->addU8(Proto::ClientBuyItem);
@@ -343,7 +343,6 @@ void ProtocolGame::sendBuyItem(int itemId, int subType, int amount, bool ignoreC
         msg->addU16(amount);
     else
         msg->addU8(amount);
-    msg->addU8(ignoreCapacity ? 0x01 : 0x00);
     msg->addU8(buyWithBackpack ? 0x01 : 0x00);
     send(msg);
 }
@@ -606,15 +605,12 @@ void ProtocolGame::sendCloseNpcChannel()
     send(msg);
 }
 
-void ProtocolGame::sendChangeFightModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode, bool safeFight, Otc::PVPModes pvpMode)
+void ProtocolGame::sendChangeFightModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode)
 {
     const auto& msg = std::make_shared<OutputMessage>();
     msg->addU8(Proto::ClientChangeFightModes);
     msg->addU8(fightMode);
     msg->addU8(chaseMode);
-    msg->addU8(safeFight ? 0x01 : 0x00);
-    if (g_game.getFeature(Otc::GamePVPMode))
-        msg->addU8(pvpMode);
     send(msg);
 }
 
@@ -1074,52 +1070,6 @@ void ProtocolGame::sendMarketAcceptOffer(uint32_t timestamp, uint16_t counter, u
     msg->addU32(timestamp);
     msg->addU16(counter);
     msg->addU16(amount);
-    send(msg);
-}
-
-void ProtocolGame::sendPreyAction(uint8_t slot, uint8_t actionType, uint16_t index)
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientPreyAction);
-    msg->addU8(slot);
-    msg->addU8(actionType);
-    if (actionType == 2 || actionType == 5) {
-        msg->addU8(index);
-    } else if (actionType == 4) {
-        msg->addU16(index); // raceid
-        send(msg);
-    }
-}
-
-void ProtocolGame::sendPreyRequest()
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientPreyRequest);
-    send(msg);
-}
-
-void ProtocolGame::sendApplyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm)
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientApplyImbuement);
-    msg->addU8(slot);
-    msg->addU32(imbuementId);
-    msg->addU8(protectionCharm ? 1 : 0);
-    send(msg);
-}
-
-void ProtocolGame::sendClearImbuement(uint8_t slot)
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientClearImbuement);
-    msg->addU8(slot);
-    send(msg);
-}
-
-void ProtocolGame::sendCloseImbuingWindow()
-{
-    const auto& msg = std::make_shared<OutputMessage>();
-    msg->addU8(Proto::ClientCloseImbuingWindow);
     send(msg);
 }
 

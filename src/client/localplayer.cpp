@@ -293,28 +293,6 @@ void LocalPlayer::setHealth(uint32_t health, uint32_t maxHealth)
     }
 }
 
-void LocalPlayer::setFreeCapacity(uint32_t freeCapacity)
-{
-    if (m_freeCapacity == freeCapacity)
-        return;
-
-    const uint32_t oldFreeCapacity = m_freeCapacity;
-    m_freeCapacity = freeCapacity;
-
-    callLuaField("onFreeCapacityChange", freeCapacity, oldFreeCapacity);
-}
-
-void LocalPlayer::setTotalCapacity(uint32_t totalCapacity)
-{
-    if (m_totalCapacity == totalCapacity)
-        return;
-
-    const uint32_t oldTotalCapacity = m_totalCapacity;
-    m_totalCapacity = totalCapacity;
-
-    callLuaField("onTotalCapacityChange", totalCapacity, oldTotalCapacity);
-}
-
 void LocalPlayer::setExperience(uint64_t experience)
 {
     if (m_experience == experience)
@@ -338,55 +316,6 @@ void LocalPlayer::setLevel(uint16_t level, uint8_t levelPercent)
     m_levelPercent = levelPercent;
 
     callLuaField("onLevelChange", level, levelPercent, oldLevel, oldLevelPercent);
-}
-
-void LocalPlayer::setMana(uint32_t mana, uint32_t maxMana)
-{
-    if (m_mana == mana && m_maxMana == maxMana)
-        return;
-
-    const uint32_t oldMana = m_mana;
-    const uint32_t oldMaxMana = m_maxMana;
-    m_mana = mana;
-    m_maxMana = maxMana;
-
-    callLuaField("onManaChange", mana, maxMana, oldMana, oldMaxMana);
-}
-
-void LocalPlayer::setMagicLevel(uint8_t magicLevel, uint8_t magicLevelPercent)
-{
-    if (m_magicLevel == magicLevel && m_magicLevelPercent == magicLevelPercent)
-        return;
-
-    const uint8_t oldMagicLevel = m_magicLevel;
-    const uint8_t oldMagicLevelPercent = m_magicLevelPercent;
-
-    m_magicLevel = magicLevel;
-    m_magicLevelPercent = magicLevelPercent;
-
-    callLuaField("onMagicLevelChange", magicLevel, magicLevelPercent, oldMagicLevel, oldMagicLevelPercent);
-}
-
-void LocalPlayer::setBaseMagicLevel(uint8_t baseMagicLevel)
-{
-    if (m_baseMagicLevel == baseMagicLevel)
-        return;
-
-    const uint8_t oldBaseMagicLevel = m_baseMagicLevel;
-    m_baseMagicLevel = baseMagicLevel;
-
-    callLuaField("onBaseMagicLevelChange", baseMagicLevel, oldBaseMagicLevel);
-}
-
-void LocalPlayer::setSoul(uint8_t soul)
-{
-    if (m_soul == soul)
-        return;
-
-    const uint8_t oldSoul = m_soul;
-    m_soul = soul;
-
-    callLuaField("onSoulChange", soul, oldSoul);
 }
 
 void LocalPlayer::setStamina(uint16_t stamina)
@@ -416,17 +345,6 @@ void LocalPlayer::setInventoryItem(Otc::InventorySlot inventory, const ItemPtr& 
     callLuaField("onInventoryChange", inventory, item, oldItem);
 }
 
-void LocalPlayer::setVocation(uint8_t vocation)
-{
-    if (m_vocation == vocation)
-        return;
-
-    const uint8_t oldVocation = m_vocation;
-    m_vocation = vocation;
-
-    callLuaField("onVocationChange", vocation, oldVocation);
-}
-
 void LocalPlayer::setPremium(bool premium)
 {
     if (m_premium == premium)
@@ -435,39 +353,6 @@ void LocalPlayer::setPremium(bool premium)
     m_premium = premium;
 
     callLuaField("onPremiumChange", premium);
-}
-
-void LocalPlayer::setRegenerationTime(uint16_t regenerationTime)
-{
-    if (m_regenerationTime == regenerationTime)
-        return;
-
-    const uint16_t oldRegenerationTime = m_regenerationTime;
-    m_regenerationTime = regenerationTime;
-
-    callLuaField("onRegenerationChange", regenerationTime, oldRegenerationTime);
-}
-
-void LocalPlayer::setOfflineTrainingTime(uint16_t offlineTrainingTime)
-{
-    if (m_offlineTrainingTime == offlineTrainingTime)
-        return;
-
-    const uint16_t oldOfflineTrainingTime = m_offlineTrainingTime;
-    m_offlineTrainingTime = offlineTrainingTime;
-
-    callLuaField("onOfflineTrainingChange", offlineTrainingTime, oldOfflineTrainingTime);
-}
-
-void LocalPlayer::setMoves(const std::vector<uint16_t>& moves)
-{
-    if (m_moves == moves)
-        return;
-
-    const std::vector<uint16_t> oldMoves = m_moves;
-    m_moves = moves;
-
-    callLuaField("onMovesChange", moves, oldMoves);
 }
 
 void LocalPlayer::setBlessings(uint16_t blessings)

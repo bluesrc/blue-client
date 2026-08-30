@@ -32,27 +32,6 @@
 #include "outfit.h"
 #include "protocolgame.h"
 
-struct UnjustifiedPoints
-{
-    bool operator==(const UnjustifiedPoints& other) const
-    {
-        return killsDay == other.killsDay &&
-            killsDayRemaining == other.killsDayRemaining &&
-            killsWeek == other.killsWeek &&
-            killsWeekRemaining == other.killsWeekRemaining &&
-            killsMonth == other.killsMonth &&
-            killsMonthRemaining == other.killsMonthRemaining &&
-            skullTime == other.skullTime;
-    }
-    uint8_t killsDay;
-    uint8_t killsDayRemaining;
-    uint8_t killsWeek;
-    uint8_t killsWeekRemaining;
-    uint8_t killsMonth;
-    uint8_t killsMonthRemaining;
-    uint8_t skullTime;
-};
-
 using Vip = std::tuple<std::string, uint32_t, std::string, int, bool>;
 
 //@bindsingleton g_game
@@ -90,7 +69,7 @@ protected:
     void processWalkCancel(Otc::Direction direction);
 
     static void processPlayerHelpers(int helpers);
-    void processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode, bool safeMode, Otc::PVPModes pvpMode);
+    void processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode);
 
     // message related
     static void processTextMessage(Otc::MessageMode mode, const std::string_view text);
@@ -130,7 +109,7 @@ protected:
                                  const std::vector<std::tuple<int, std::string> >& mountList);
 
     // npc trade
-    static void processOpenNpcTrade(const std::vector<std::tuple<ItemPtr, std::string, int, int, int> >& items);
+    static void processOpenNpcTrade(const std::vector<std::tuple<ItemPtr, std::string, int, int> >& items);
     static void processPlayerGoods(int money, const std::vector<std::tuple<ItemPtr, int> >& goods);
     static void processCloseNpcTrade();
 
@@ -232,22 +211,12 @@ public:
     // fight modes related
     void setChaseMode(Otc::ChaseModes chaseMode);
     void setFightMode(Otc::FightModes fightMode);
-    void setSafeFight(bool on);
-    void setPVPMode(Otc::PVPModes pvpMode);
     Otc::ChaseModes getChaseMode() { return m_chaseMode; }
     Otc::FightModes getFightMode() { return m_fightMode; }
-    bool isSafeFight() { return m_safeFight; }
-    Otc::PVPModes getPVPMode() { return m_pvpMode; }
-
-    // pvp related
-    void setUnjustifiedPoints(UnjustifiedPoints unjustifiedPoints);
-    UnjustifiedPoints getUnjustifiedPoints() { return m_unjustifiedPoints; };
-    void setOpenPvpSituations(int openPvpSituations);
-    int getOpenPvpSituations() { return m_openPvpSituations; }
 
     // npc trade related
     void inspectNpcTrade(const ItemPtr& item);
-    void buyItem(const ItemPtr& item, int amount, bool ignoreCapacity, bool buyWithBackpack);
+    void buyItem(const ItemPtr& item, int amount, bool buyWithBackpack);
     void sellItem(const ItemPtr& item, int amount, bool ignoreEquipped);
     void closeNpcTrade();
 
@@ -348,8 +317,6 @@ public:
     int getServerBeat() { return m_serverBeat; }
     void setCanReportBugs(bool enable) { m_canReportBugs = enable; }
     bool canReportBugs() { return m_canReportBugs; }
-    void setExpertPvpMode(bool enable) { m_expertPvpMode = enable; }
-    bool getExpertPvpMode() { return m_expertPvpMode; }
     LocalPlayerPtr getLocalPlayer() { return m_localPlayer; }
     ProtocolGamePtr getProtocolGame() { return m_protocolGame; }
     std::string getCharacterName() { return m_characterName; }
@@ -367,15 +334,6 @@ public:
     void createMarketOffer(uint8_t type, uint16_t itemId, uint8_t itemTier, uint16_t amount, uint64_t price, uint8_t anonymous);
     void cancelMarketOffer(uint32_t timestamp, uint16_t counter);
     void acceptMarketOffer(uint32_t timestamp, uint16_t counter, uint16_t amount);
-
-    // prey related
-    void preyAction(uint8_t slot, uint8_t actionType, uint16_t index);
-    void preyRequest();
-
-    // imbuing related
-    void applyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm);
-    void clearImbuement(uint8_t slot);
-    void closeImbuingWindow();
 
     void enableTileThingLuaCallback(bool value) { m_tileThingsLuaCallback = value; }
     bool isTileThingLuaCallbackEnabled() { return m_tileThingsLuaCallback; }
@@ -401,7 +359,6 @@ private:
     bool m_online{ false };
     bool m_denyBotCall{ false };
     bool m_dead{ false };
-    bool m_expertPvpMode;
     uint16_t m_serverBeat{ 50 };
     ticks_t m_ping{ -1 };
     uint32_t m_pingSent{ 0 };
@@ -413,12 +370,9 @@ private:
     uint16_t m_pingDelay{ 1000 };
     Otc::FightModes m_fightMode{ Otc::FightBalanced };
     Otc::ChaseModes m_chaseMode{ Otc::DontChase };
-    Otc::PVPModes m_pvpMode{ Otc::WhiteDove };
     Otc::Direction m_lastWalkDir;
     Otc::Direction m_nextScheduledDir;
     bool m_scheduleLastWalk{ false };
-    UnjustifiedPoints m_unjustifiedPoints;
-    bool m_safeFight{ true };
     bool m_canReportBugs{ false };
     std::vector<uint8_t > m_gmActions;
     std::string m_characterName;
@@ -430,7 +384,6 @@ private:
     bool m_connectionFailWarned;
     uint16_t m_protocolVersion{ 0 };
     uint16_t m_clientVersion{ 0 };
-    uint8_t m_openPvpSituations{ 0 };
     std::string m_clientSignature;
     Otc::OperatingSystem_t m_clientCustomOs{ Otc::CLIENTOS_NONE };
 };

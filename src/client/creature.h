@@ -30,13 +30,6 @@
 #include "thing.h"
 #include "const.h"
 
-struct PreyPokemon
-{
-public:
-    std::string name;
-    Outfit outfit;
-};
-
 // @bindclass
 class Creature : public Thing
 {
@@ -72,12 +65,10 @@ public:
     void setLight(const Light& light) { m_light = light; }
     void setSpeed(uint16_t speed);
     void setBaseSpeed(uint16_t baseSpeed);
-    void setSkull(uint8_t skull);
     void setShield(uint8_t shield);
     void setEmblem(uint8_t emblem);
     void setType(uint8_t type);
     void setIcon(uint8_t icon);
-    void setSkullTexture(const std::string& filename);
     void setShieldTexture(const std::string& filename, bool blink);
     void setEmblemTexture(const std::string& filename);
     void setTypeTexture(const std::string& filename);
@@ -112,7 +103,6 @@ public:
     float getStepProgress() { return m_walkTimer.ticksElapsed() / m_stepCache.duration; }
     float getStepTicksLeft() { return static_cast<float>(m_stepCache.getDuration(m_lastStepDirection)) - m_walkTimer.ticksElapsed(); }
 
-    uint8_t getSkull() { return m_skull; }
     uint8_t getShield() { return m_shield; }
     uint8_t getEmblem() { return m_emblem; }
     uint8_t getType() { return m_type; }
@@ -224,7 +214,6 @@ private:
 
     uint8_t m_type;
     uint8_t m_healthPercent{ 101 };
-    uint8_t m_skull{ Otc::SkullNone };
     uint8_t m_icon{ Otc::NpcIconNone };
     uint8_t m_shield{ Otc::ShieldNone };
     uint8_t m_emblem{ Otc::EmblemNone };
@@ -243,7 +232,6 @@ private:
     uint32_t m_id{ 0 };
     uint32_t m_masterId{ 0 };
 
-    TexturePtr m_skullTexture;
     TexturePtr m_shieldTexture;
     TexturePtr m_emblemTexture;
     TexturePtr m_typeTexture;

@@ -58,14 +58,11 @@ void Game::resetGameStates()
     m_canReportBugs = false;
     m_fightMode = Otc::FightBalanced;
     m_chaseMode = Otc::DontChase;
-    m_pvpMode = Otc::WhiteDove;
-    m_safeFight = true;
     m_followingCreature = nullptr;
     m_attackingCreature = nullptr;
     m_localPlayer = nullptr;
     m_pingSent = 0;
     m_pingReceived = 0;
-    m_unjustifiedPoints = UnjustifiedPoints();
     m_nextScheduledDir = Otc::InvalidDirection;
 
     for (const auto& it : m_containers) {
@@ -167,7 +164,7 @@ void Game::processGameStart()
     g_app.resetTargetFps();
 
     // synchronize fight modes with the server
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
+    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode);
 
     // NOTE: the entire map description and local player information is not known yet (bot call is allowed here)
     enableBotCall();
@@ -231,17 +228,13 @@ void Game::processPlayerHelpers(int helpers)
     g_lua.callGlobalField("g_game", "onPlayerHelpersUpdate", helpers);
 }
 
-void Game::processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode, bool safeMode, Otc::PVPModes pvpMode)
+void Game::processPlayerModes(Otc::FightModes fightMode, Otc::ChaseModes chaseMode)
 {
     m_fightMode = fightMode;
     m_chaseMode = chaseMode;
-    m_safeFight = safeMode;
-    m_pvpMode = pvpMode;
 
     g_lua.callGlobalField("g_game", "onFightModeChange", fightMode);
     g_lua.callGlobalField("g_game", "onChaseModeChange", chaseMode);
-    g_lua.callGlobalField("g_game", "onSafeFightChange", safeMode);
-    g_lua.callGlobalField("g_game", "onPVPModeChange", pvpMode);
 }
 
 void Game::processPing()
@@ -427,7 +420,7 @@ void Game::processOpenOutfitWindow(const Outfit& currentOutfit, const std::vecto
     g_lua.callGlobalField("g_game", "onOpenOutfitWindow", virtualOutfitCreature, outfitList, virtualMountCreature, mountList);
 }
 
-void Game::processOpenNpcTrade(const std::vector<std::tuple<ItemPtr, std::string, int, int, int> >& items)
+void Game::processOpenNpcTrade(const std::vector<std::tuple<ItemPtr, std::string, int, int> >& items)
 {
     g_lua.callGlobalField("g_game", "onOpenNpcTrade", items);
 }
@@ -1169,7 +1162,7 @@ void Game::setChaseMode(Otc::ChaseModes chaseMode)
         return;
 
     m_chaseMode = chaseMode;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
+    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode);
     g_lua.callGlobalField("g_game", "onChaseModeChange", chaseMode);
 }
 
@@ -1182,64 +1175,8 @@ void Game::setFightMode(Otc::FightModes fightMode)
         return;
 
     m_fightMode = fightMode;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
+    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode);
     g_lua.callGlobalField("g_game", "onFightModeChange", fightMode);
-}
-
-void Game::setSafeFight(bool on)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (m_safeFight == on)
-        return;
-
-    m_safeFight = on;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
-    g_lua.callGlobalField("g_game", "onSafeFightChange", on);
-}
-
-void Game::setPVPMode(Otc::PVPModes pvpMode)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (!getFeature(Otc::GamePVPMode))
-        return;
-
-    if (m_pvpMode == pvpMode)
-        return;
-
-    m_pvpMode = pvpMode;
-    m_protocolGame->sendChangeFightModes(m_fightMode, m_chaseMode, m_safeFight, m_pvpMode);
-    g_lua.callGlobalField("g_game", "onPVPModeChange", pvpMode);
-}
-
-void Game::setUnjustifiedPoints(UnjustifiedPoints unjustifiedPoints)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (!getFeature(Otc::GameUnjustifiedPoints))
-        return;
-
-    if (m_unjustifiedPoints == unjustifiedPoints)
-        return;
-
-    m_unjustifiedPoints = unjustifiedPoints;
-    g_lua.callGlobalField("g_game", "onUnjustifiedPointsChange", unjustifiedPoints);
-}
-
-void Game::setOpenPvpSituations(int openPvpSituations)
-{
-    if (!canPerformGameAction())
-        return;
-
-    if (m_openPvpSituations == openPvpSituations)
-        return;
-
-    m_openPvpSituations = openPvpSituations;
-    g_lua.callGlobalField("g_game", "onOpenPvpSituationsChange", openPvpSituations);
 }
 
 void Game::inspectNpcTrade(const ItemPtr& item)
@@ -1250,12 +1187,12 @@ void Game::inspectNpcTrade(const ItemPtr& item)
     m_protocolGame->sendInspectNpcTrade(item->getId(), item->getCount());
 }
 
-void Game::buyItem(const ItemPtr& item, int amount, bool ignoreCapacity, bool buyWithBackpack)
+void Game::buyItem(const ItemPtr& item, int amount, bool buyWithBackpack)
 {
     if (!canPerformGameAction() || !item)
         return;
 
-    m_protocolGame->sendBuyItem(item->getId(), item->getCountOrSubType(), amount, ignoreCapacity, buyWithBackpack);
+    m_protocolGame->sendBuyItem(item->getId(), item->getCountOrSubType(), amount, buyWithBackpack);
 }
 
 void Game::sellItem(const ItemPtr& item, int amount, bool ignoreEquipped)
@@ -1652,43 +1589,6 @@ void Game::cancelMarketOffer(uint32_t timestamp, uint16_t counter)
 void Game::acceptMarketOffer(uint32_t timestamp, uint16_t counter, uint16_t amount)
 {
     m_protocolGame->sendMarketAcceptOffer(timestamp, counter, amount);
-}
-
-void Game::preyAction(uint8_t slot, uint8_t actionType, uint16_t index)
-{
-    if (!canPerformGameAction())
-        return;
-
-    m_protocolGame->sendPreyAction(slot, actionType, index);
-}
-
-void Game::preyRequest()
-{
-    if (!canPerformGameAction())
-        return;
-
-    m_protocolGame->sendPreyRequest();
-}
-
-void Game::applyImbuement(uint8_t slot, uint32_t imbuementId, bool protectionCharm)
-{
-    if (!canPerformGameAction())
-        return;
-    m_protocolGame->sendApplyImbuement(slot, imbuementId, protectionCharm);
-}
-
-void Game::clearImbuement(uint8_t slot)
-{
-    if (!canPerformGameAction())
-        return;
-    m_protocolGame->sendClearImbuement(slot);
-}
-
-void Game::closeImbuingWindow()
-{
-    if (!canPerformGameAction())
-        return;
-    m_protocolGame->sendCloseImbuingWindow();
 }
 
 void Game::stashWithdraw(uint16_t itemId, uint32_t count, uint8_t stackpos)

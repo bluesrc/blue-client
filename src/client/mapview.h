@@ -137,8 +137,6 @@ public:
     void setLimitVisibleDimension(bool v) { m_limitVisibleDimension = v; }
     bool isLimitedVisibleDimension() const { return m_limitVisibleDimension; }
 
-    void setDrawManaBar(bool enable) { m_drawManaBar = enable; }
-    bool isDrawingManaBar() const { return m_drawManaBar; }
 
     void move(int32_t x, int32_t y);
 
@@ -307,7 +305,6 @@ private:
     bool m_resetCoveredCache{ true };
     bool m_shaderSwitchDone{ true };
     bool m_drawHealthBars{ true };
-    bool m_drawManaBar{ true };
     bool m_drawNames{ true };
     bool m_smooth{ true };
     bool m_follow{ true };

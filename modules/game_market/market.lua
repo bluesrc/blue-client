@@ -105,7 +105,6 @@ local function isItemValid(item, category, searchFilter)
     end
     local marketData = item.marketData
 
-    local filterVocation = filterButtons[MarketFilters.Vocation]:isChecked()
     local filterLevel = filterButtons[MarketFilters.Level]:isChecked()
     local filterDepot = filterButtons[MarketFilters.Depot]:isChecked()
 
@@ -117,12 +116,6 @@ local function isItemValid(item, category, searchFilter)
     local player = g_game.getLocalPlayer()
     if filterLevel and marketData.requiredLevel and player:getLevel() < marketData.requiredLevel then
         return false
-    end
-    if filterVocation and marketData.restrictVocation > 0 then
-        local voc = Bit.bit(information.vocation)
-        if not Bit.hasBit(marketData.restrictVocation, voc) then
-            return false
-        end
     end
     if filterDepot and Market.getDepotCount(item.marketData.tradeAs) <= 0 then
         return false
@@ -729,31 +722,9 @@ end
 
 local function onChangeCategory(combobox, option)
     local id = getMarketCategoryId(option)
-    if id == MarketCategory.MetaWeapons then
-        -- enable and load weapons filter/items
-        subCategoryList:setEnabled(true)
-        slotFilterList:setEnabled(true)
-        local subId = getMarketCategoryId(subCategoryList:getCurrentOption().text)
-        Market.loadMarketItems(subId)
-    else
-        subCategoryList:setEnabled(false)
-        slotFilterList:setEnabled(false)
-        Market.loadMarketItems(id) -- load standard filter
-    end
-end
-
-local function onChangeSubCategory(combobox, option)
-    Market.loadMarketItems(getMarketCategoryId(option))
-    slotFilterList:clearOptions()
-
-    local subId = getMarketCategoryId(subCategoryList:getCurrentOption().text)
-    local slots = MarketCategoryWeapons[subId].slots
-    for _, slot in pairs(slots) do
-        if table.haskey(MarketSlotFilters, slot) then
-            slotFilterList:addOption(MarketSlotFilters[slot])
-        end
-    end
-    slotFilterList:setEnabled(true)
+	subCategoryList:setEnabled(false)
+	slotFilterList:setEnabled(false)
+	Market.loadMarketItems(id)
 end
 
 local function onChangeSlotFilter(combobox, option)
@@ -990,7 +961,6 @@ local function initInterface()
     Market.enableCreateOffer(false)
 
     -- setup filters
-    filterButtons[MarketFilters.Vocation] = browsePanel:getChildById('filterVocation')
     filterButtons[MarketFilters.Level] = browsePanel:getChildById('filterLevel')
     filterButtons[MarketFilters.Depot] = browsePanel:getChildById('filterDepot')
     filterButtons[MarketFilters.SearchAll] = browsePanel:getChildById('filterSearchAll')
@@ -1011,20 +981,14 @@ local function initInterface()
     slotFilterList:addOption(MarketSlotFilters[255])
     slotFilterList:setEnabled(false)
 
-    for i = MarketCategory.First, MarketCategory.Last do
-        if i >= MarketCategory.Ammunition and i <= MarketCategory.WandsRods then
-            subCategoryList:addOption(getMarketCategoryName(i))
-        else
-            categoryList:addOption(getMarketCategoryName(i))
-        end
+    for _, id in ipairs(MarketVisibleCategories) do
+        categoryList:addOption(getMarketCategoryName(id))
     end
-    categoryList:addOption(getMarketCategoryName(255)) -- meta weapons
-    categoryList:setCurrentOption(getMarketCategoryName(MarketCategory.First))
+    categoryList:setCurrentOption(getMarketCategoryName(MarketVisibleCategories[1]))
     subCategoryList:setEnabled(false)
 
     -- hook item filters
     categoryList.onOptionChange = onChangeCategory
-    subCategoryList.onOptionChange = onChangeSubCategory
     slotFilterList.onOptionChange = onChangeSlotFilter
 
     -- setup tables
@@ -1222,9 +1186,6 @@ end
 
 function Market.updateCurrentItems()
     local id = getMarketCategoryId(categoryList:getCurrentOption().text)
-    if id == MarketCategory.MetaWeapons then
-        id = getMarketCategoryId(subCategoryList:getCurrentOption().text)
-    end
     Market.loadMarketItems(id)
 end
 
@@ -1427,7 +1388,7 @@ end
 
 -- protocol callback functions
 
-function Market.onMarketEnter(depotItems, offers, balance, vocation)
+function Market.onMarketEnter(depotItems, offers, balance)
     if not loaded then
         initMarketItems()
         loaded = true
@@ -1446,14 +1407,6 @@ function Market.onMarketEnter(depotItems, offers, balance, vocation)
     local player = g_game.getLocalPlayer()
     if player then
         information.player = player
-    end
-    if vocation == -1 then
-        if player then
-            information.vocation = player:getVocation()
-        end
-    else
-        -- vocation must be compatible with < 950
-        information.vocation = vocation
     end
     local depotItemsLua = {}
     if type(depotItems) == 'table' and #depotItems >= 1 then

@@ -26,18 +26,6 @@ UIWidget
     anchors.left: parent.left
     anchors.HorizontalCenter: parent.HorizontalCenter
 
-  ProgressBar
-    id: manaBar
-    visible: false
-    background-color: blue
-    width: 40
-    height: 4
-    margin-top: 2
-    image-draw-order: 2
-    anchors.top: prev.bottom
-    anchors.left: parent.left
-    anchors.HorizontalCenter: parent.HorizontalCenter
-
   UIWidget
     id: icons
     size: 128 32

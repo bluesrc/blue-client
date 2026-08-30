@@ -1,9 +1,0 @@
-Module
-  name: game_movelist
-  description: View available moves
-  author: Summ, Edubart
-  website: https://github.com/edubart/otclient
-  sandboxed: true
-  scripts: [ movelist ]
-  @onLoad: init()
-  @onUnload: terminate()

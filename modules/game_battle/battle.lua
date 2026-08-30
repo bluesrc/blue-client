@@ -6,7 +6,7 @@ local battleButtons = {} -- map of creature id
 local battleWindow, battleButton, battlePanel, mouseWidget, filterPanel, toggleFilterButton
 local lastBattleButtonSwitched, lastCreatureSelected
 
--- Hide Buttons ("hidePlayers", "hideNPCs", "hidePokemons", "hideSkulls", "hideParty")
+-- Hide Buttons ("hidePlayers", "hideNPCs", "hidePokemons", "hideParty")
 local hideButtons = {}
 
 local eventOnCheckCreature = nil
@@ -19,7 +19,6 @@ local function connecting()
     })
 
     connect(Creature, {
-        onSkullChange = updateCreatureSkull,
         onEmblemChange = updateCreatureEmblem,
         onOutfitChange = onCreatureOutfitChange,
         onHealthPercentChange = onCreatureHealthPercentChange,
@@ -45,7 +44,6 @@ local function disconnecting(gameEvent)
     })
 
     disconnect(Creature, {
-        onSkullChange = updateCreatureSkull,
         onEmblemChange = updateCreatureEmblem,
         onOutfitChange = onCreatureOutfitChange,
         onHealthPercentChange = onCreatureHealthPercentChange,
@@ -87,7 +85,7 @@ function init() -- Initiating the module (load)
     end
 
     -- Adding Filter options
-    local options = { 'hidePlayers', 'hideNPCs', 'hidePokemons', 'hideSkulls', 'hideParty' }
+    local options = { 'hidePlayers', 'hideNPCs', 'hidePokemons', 'hideParty' }
     for i, v in ipairs(options) do
         hideButtons[v] = battleWindow:recursiveGetChildById(v)
     end
@@ -454,7 +452,6 @@ function doCreatureFitFilters(creature) -- Check if creature fit current applied
         if v:isChecked() then
             if (i == 'hidePlayers' and creature:isPlayer()) or (i == 'hideNPCs' and creature:isNpc()) or
                 (i == 'hidePokemons' and creature:isPokemon()) or
-                (i == 'hideSkulls' and (creature:isPlayer() and creature:getSkull() == SkullNone)) or
                 (i == 'hideParty' and creature:getShield() > ShieldWhiteBlue) then
                 return false
             end
@@ -774,14 +771,6 @@ function onCreatureOutfitChange(creature, outfit, oldOutfit) -- Insert/Remove cr
         removeCreature(creature)
     elseif battleButton == nil and fit then
         addCreature(creature, getSortType())
-    end
-end
-
-function updateCreatureSkull(creature, skullId) -- Update skull
-    local battleButton = battleButtons[creature:getId()]
-
-    if battleButton then
-        battleButton:updateSkull(skullId)
     end
 end
 

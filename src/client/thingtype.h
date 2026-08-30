@@ -197,14 +197,14 @@ enum ITEM_CATEGORY : uint8_t
     ITEM_CATEGORY_OTHERS = 9,
     ITEM_CATEGORY_POTIONS = 10,
     ITEM_CATEGORY_RINGS = 11,
-    ITEM_CATEGORY_RUNES = 12,
+	ITEM_CATEGORY_RESERVED_12 = 12,
     ITEM_CATEGORY_SHIELDS = 13,
     ITEM_CATEGORY_TOOLS = 14,
     ITEM_CATEGORY_VALUABLES = 15,
-    ITEM_CATEGORY_AMMUNITION = 16,
+	ITEM_CATEGORY_RESERVED_16 = 16,
     ITEM_CATEGORY_AXES = 17,
     ITEM_CATEGORY_CLUBS = 18,
-    ITEM_CATEGORY_DISTANCE_WEAPONS = 19,
+	ITEM_CATEGORY_RESERVED_19 = 19,
     ITEM_CATEGORY_SWORDS = 20,
     ITEM_CATEGORY_WANDS_RODS = 21,
     ITEM_CATEGORY_PREMIUM_SCROLLS = 22,
@@ -220,27 +220,11 @@ enum SpriteMask :uint8_t
     SpriteMaskYellow
 };
 
-struct Imbuement
-{
-    uint32_t id;
-    std::string name;
-    std::string description;
-    std::string group;
-    uint16_t imageId;
-    uint32_t duration;
-    bool premiumOnly;
-    std::vector<std::pair<ItemPtr, std::string>> sources;
-    uint32_t cost;
-    uint8_t successRate;
-    uint32_t protectionCost;
-};
-
 struct MarketData
 {
     std::string name;
     ITEM_CATEGORY category;
     uint16_t requiredLevel;
-    uint16_t restrictVocation;
     uint16_t showAs;
     uint16_t tradeAs;
 };

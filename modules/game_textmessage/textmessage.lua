@@ -90,7 +90,6 @@ MessageTypes = {
     [MessageModes.HotkeyUse] = MessageSettings.centerGreen,
     [MessageModes.Attention] = MessageSettings.bottomWhite,
     [MessageModes.BoostedCreature] = MessageSettings.centerWhite,
-    [MessageModes.OfflineTrainning] = MessageSettings.centerWhite,
     [MessageModes.Transaction] = MessageSettings.centerWhite,
 
     [254] = MessageSettings.private

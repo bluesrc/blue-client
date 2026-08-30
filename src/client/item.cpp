@@ -194,7 +194,7 @@ void Item::updatePatterns()
                 case Otc::FluidWater:
                     color = Otc::FluidBlue;
                     break;
-                case Otc::FluidMana:
+                case Otc::FluidViolet:
                     color = Otc::FluidPurple;
                     break;
                 case Otc::FluidBeer:
@@ -343,9 +343,8 @@ void Item::unserializeItem(const BinaryTreePtr& in)
                 break;
 
             switch (attrib) {
-                case ATTR_COUNT:
-                case ATTR_RUNE_CHARGES:
-                    setCount(in->getU8());
+			case ATTR_COUNT:
+					setCount(in->getU8());
                     break;
                 case ATTR_CHARGES:
                     setCount(in->getU16());

@@ -19,7 +19,6 @@ rvreasons[17] = tr('4a) Threatening Gamemaster')
 rvreasons[18] = tr('4b) Pretending to Have Influence on Rule Enforcement')
 rvreasons[19] = tr('4c) False Report to Gamemaster')
 rvreasons[20] = tr('Destructive Behaviour')
-rvreasons[21] = tr('Excessive Unjustified Player Killing')
 
 rvactions = {}
 rvactions[0] = tr('Notation')

@@ -834,7 +834,7 @@ bool Tile::canRender(uint32_t& flags, const Position& cameraPosition, const Awar
         if (!hasLight())
             flags &= ~Otc::DrawLights;
         if (!hasCreature())
-            flags &= ~(Otc::DrawManaBar | Otc::DrawNames | Otc::DrawBars);
+            flags &= ~(Otc::DrawNames | Otc::DrawBars);
     }
 
     return flags > 0;

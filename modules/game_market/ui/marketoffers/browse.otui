@@ -63,18 +63,6 @@ Panel
     width: 40
     height: 20
 
-  MarketButtonBox
-    id: filterVocation
-    &default: false
-    !text: tr('Voc.')
-    !tooltip: tr('Filter list to match your vocation')
-    anchors.top: prev.top
-    anchors.left: prev.right
-    margin-right: 3
-    margin-left: 3
-    width: 34
-    height: 20
-
   MarketComboBox
     id: slotComboBox
     anchors.top: prev.top

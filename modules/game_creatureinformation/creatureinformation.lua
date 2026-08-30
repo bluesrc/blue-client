@@ -22,8 +22,6 @@ local function onCreate(creature)
         widget.icons:setBorderWidth(2)
     end
 
-    widget.manaBar:setVisible(creature:isLocalPlayer())
-
     creature:setWidgetInformation(widget)
 end
 
@@ -50,19 +48,6 @@ local function onHealthPercentChange(creature, healthPercent, oldHealthPercent)
     widget.lifeBar:setPercent(healthPercent)
     widget.lifeBar:setBackgroundColor(color)
     widget.lifeBar:setVisible(gameMapPanel:isDrawingHealthBars())
-end
-
-local function onManaChange(player, mana, maxMana, oldMana, oldMaxMana)
-    local gameMapPanel = modules.game_interface.getMapPanel()
-    local widget = player:getWidgetInformation()
-
-    if player:getMaxMana() > 1 then
-        widget.manaBar:setPercent((mana / maxMana) * 100)
-    else
-        widget.manaBar:setPercent(1)
-    end
-
-    widget.manaBar:setVisible(gameMapPanel:isDrawingManaBar())
 end
 
 local function onChangeName(creature, name, oldName)
@@ -160,7 +145,6 @@ local creatureEvents = {
     onChangeName = onChangeName,
     onTypeChange = function(creature, id) setIcon(creature, id, getTypeImagePath, 'type') end,
     onIconChange = function(creature, id) setIcon(creature, id, getIconImagePath, 'icon') end,
-    onSkullChange = function(creature, id) setIcon(creature, id, getSkullImagePath, 'skull') end,
     onShieldChange = function(creature, id) setIcon(creature, id, getShieldImagePathAndBlink, 'shield') end,
     onEmblemChange = function(creature, id) setIcon(creature, id, getEmblemImagePath, 'emblem') end,
 };
@@ -171,8 +155,6 @@ function toggleInformation()
 
     local gameMapPanel = modules.game_interface.getMapPanel()
 
-    localPlayer:getWidgetInformation().manaBar:setVisible(gameMapPanel:isDrawingManaBar())
-
     local spectators = modules.game_interface.getMapPanel():getSpectators()
     for _, creature in ipairs(spectators) do
         creature:getWidgetInformation().name:setVisible(gameMapPanel:isDrawingNames())
@@ -182,18 +164,12 @@ end
 
 controller = Controller:new()
 controller:addEvent(Creature, creatureEvents)
-controller:addEvent(LocalPlayer, { onManaChange = onManaChange })
 
 if devMode then
     function controller:onGameStart()
         local spectators = modules.game_interface.getMapPanel():getSpectators()
         for _, creature in ipairs(spectators) do
             onCreate(creature)
-
-            if creature:isLocalPlayer() then
-                onManaChange(creature, creature:getMana(), creature:getMaxMana(), creature:getMana(),
-                    creature:getMaxMana())
-            end
 
             onOutfitChange(creature, creature:getOutfit())
             onCovered(creature, creature:isCovered())
@@ -202,7 +178,6 @@ if devMode then
 
             creatureEvents.onTypeChange(creature, creature:getType())
             creatureEvents.onIconChange(creature, creature:getIcon())
-            creatureEvents.onSkullChange(creature, creature:getSkull())
             creatureEvents.onShieldChange(creature, creature:getShield())
             creatureEvents.onEmblemChange(creature, creature:getEmblem())
         end

@@ -7,8 +7,8 @@ function init()
         onSizeChange = onContainerChangeSize,
         onUpdateItem = onContainerUpdateItem
     })
-    connect(Game, {
-        onGameEnd = clean()
+    connect(g_game, {
+        onGameEnd = clean
     })
 
     reloadContainers()
@@ -21,8 +21,8 @@ function terminate()
         onSizeChange = onContainerChangeSize,
         onUpdateItem = onContainerUpdateItem
     })
-    disconnect(Game, {
-        onGameEnd = clean()
+    disconnect(g_game, {
+        onGameEnd = clean
     })
 end
 

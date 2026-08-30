@@ -105,8 +105,7 @@ local function resendWait()
                     torsocolor = selected.torsocolor,
                     legscolor = selected.legscolor,
                     detailcolor = selected.detailcolor,
-                    addonsflags = selected.addonsflags,
-                    characterVocation = selected.characterVocation
+                    addonsflags = selected.addonsflags
                 }
                 tryLogin(charInfo)
             end

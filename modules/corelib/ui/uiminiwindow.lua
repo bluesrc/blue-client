@@ -128,6 +128,16 @@ function UIMiniWindow:setupOnStart()
                 if parent:getClassName() == 'UIMiniWindowContainer' and selfSettings.index and parent:isOn() then
                     self.miniIndex = selfSettings.index
                     parent:scheduleInsert(self, selfSettings.index)
+                    -- A saved index can point past the current child count after a
+                    -- mini-window module is removed. In that case scheduleInsert
+                    -- keeps the widget pending, but the missing index may never be
+                    -- filled and the window remains detached from the game panel.
+                    -- Attach it at the end now; order() will still use miniIndex to
+                    -- restore the intended relative order after module loading.
+                    if self:getParent() ~= parent then
+                        parent:addChild(self)
+                        parent.scheduledWidgets[selfSettings.index] = nil
+                    end
                     newParentSet = true
                 elseif selfSettings.position then
                     self:setParent(parent, true)

@@ -310,13 +310,7 @@ void ThingTypeManager::parseItemType(uint16_t serverId, pugi::xml_node node)
         stdext::tolower(key);
         if (key == "description")
             itemType->setDesc(attrib.attribute("value").as_string());
-        else if (key == "weapontype")
-            itemType->setCategory(ItemCategoryWeapon);
-        else if (key == "ammotype")
-            itemType->setCategory(ItemCategoryAmmunition);
-        else if (key == "armor")
-            itemType->setCategory(ItemCategoryArmor);
-        else if (key == "charges")
+		else if (key == "charges")
             itemType->setCategory(ItemCategoryCharges);
         else if (key == "type") {
             std::string value = attrib.attribute("value").as_string();

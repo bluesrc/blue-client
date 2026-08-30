@@ -110,24 +110,6 @@ CharacterWidget < UIWidget
       color: #ffffff
 
   Label
-    id: vocation
-    color: #bbbbbb
-    anchors.top: parent.top
-    anchors.left: parent.left
-    margin-left: 410
-    font: verdana-11px-monochrome
-    text-auto-resize: true
-    background-color: alpha
-    text-offset: 2 0
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-    $on:
-      color: #ffffff
-
-  Label
     id: worldName
     color: #bbbbbb
     anchors.top: parent.top
@@ -215,17 +197,6 @@ MainWindow
     anchors.top: characters.top
     margin-left: 350
     !text: tr('Level') .. ''
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  FlatLabel
-    width: 150
-    anchors.left: parent.left
-    anchors.top: characters.top
-    margin-left: 410
-    !text: tr('Vocation') .. ''
     @onSetup: |
       if not(g_game.getFeature(GameEnterGameShowAppearance)) then
         self:hide()

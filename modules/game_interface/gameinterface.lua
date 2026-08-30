@@ -112,8 +112,6 @@ function bindTurnKey(key, dir)
     local function callback(widget, code, repeatTicks)
         if g_clock.millis() - lastDirTime >= modules.client_options.getOption('turnDelay') then
             g_game.turn(dir)
-            changeWalkDir(dir)
-
             lastDirTime = g_clock.millis()
         end
     end
@@ -626,12 +624,6 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
             menu:addOption(tr('Set Outfit'), function()
                 g_game.requestOutfit()
             end)
-
-            if g_game.getFeature(GamePrey) then
-                menu:addOption(tr('Prey Dialog'), function()
-                    modules.game_prey.show()
-                end)
-            end
 
             if g_game.getFeature(GamePlayerMounts) then
                 if not localPlayer:isMounted() then

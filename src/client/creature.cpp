@@ -246,19 +246,6 @@ void Creature::drawInformation(const MapPosInfo& mapRect, const Point& dest, int
             levelText.draw(textAreaRect, levelTextColor);
         }
 
-        if (drawFlags & Otc::DrawManaBar && isLocalPlayer()) {
-            if (const auto& player = g_game.getLocalPlayer()) {
-                backgroundRect.moveTop(backgroundRect.bottom());
-
-                g_drawPool.addFilledRect(backgroundRect, Color::black);
-
-                Rect manaRect = backgroundRect.expanded(-1);
-                const double maxMana = player->getMaxMana();
-                manaRect.setWidth((maxMana ? player->getMana() / maxMana : 1) * 25);
-
-                g_drawPool.addFilledRect(manaRect, Color::blue);
-            }
-        }
     }
 
     if (drawFlags & Otc::DrawNames) {
@@ -285,9 +272,6 @@ void Creature::drawInformation(const MapPosInfo& mapRect, const Point& dest, int
         }
 #endif
     }
-
-    if (m_skull != Otc::SkullNone && m_skullTexture)
-        g_drawPool.addTexturedPos(m_skullTexture, backgroundRect.x() + 13.5 + 12, backgroundRect.y() + 5);
 
     if (m_shield != Otc::ShieldNone && m_shieldTexture && m_showShieldTexture)
         g_drawPool.addTexturedPos(m_shieldTexture, backgroundRect.x() + 13.5, backgroundRect.y() + 5);
@@ -873,7 +857,6 @@ void Creature::setBaseSpeed(uint16_t baseSpeed)
 
 void Creature::setType(uint8_t v) { if (m_type != v) callLuaField("onTypeChange", m_type = v); }
 void Creature::setIcon(uint8_t v) { if (m_icon != v) callLuaField("onIconChange", m_icon = v); }
-void Creature::setSkull(uint8_t v) { if (m_skull != v) callLuaField("onSkullChange", m_skull = v); }
 void Creature::setShield(uint8_t v) { if (m_shield != v) callLuaField("onShieldChange", m_shield = v); }
 void Creature::setEmblem(uint8_t v) { if (m_emblem != v) callLuaField("onEmblemChange", m_emblem = v); }
 void Pokemon::setGender(Otc::PokemonGenders_t v) { if (v > Otc::PokemonGenders_t::GENDER_NONE && v <= Otc::PokemonGenders_t::GENDER_UNDEFINED) callLuaField("onSetGender", v); }
@@ -881,7 +864,6 @@ void Pokemon::setShiny(bool v) { callLuaField("onSetShiny"); }
 
 void Creature::setTypeTexture(const std::string& filename) { m_typeTexture = g_textures.getTexture(filename); }
 void Creature::setIconTexture(const std::string& filename) { m_iconTexture = g_textures.getTexture(filename); }
-void Creature::setSkullTexture(const std::string& filename) { m_skullTexture = g_textures.getTexture(filename); }
 void Creature::setEmblemTexture(const std::string& filename) { m_emblemTexture = g_textures.getTexture(filename); }
 void Pokemon::setGenderTexture(const std::string& filename) { m_genderTexture = g_textures.getTexture(filename); }
 void Pokemon::setShinyTexture(const std::string& filename) { m_shinyTexture = g_textures.getTexture(filename); }

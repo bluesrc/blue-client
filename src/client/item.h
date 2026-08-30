@@ -40,7 +40,6 @@ enum ItemAttr : uint8_t
     ATTR_ITEM = 9,
     ATTR_DEPOT_ID = 10,
     //ATTR_EXT_SPAWN_FILE = 11,
-    ATTR_RUNE_CHARGES = 12,
     //ATTR_EXT_HOUSE_FILE = 13,
     ATTR_HOUSEDOORID = 14,
     ATTR_COUNT = 15,

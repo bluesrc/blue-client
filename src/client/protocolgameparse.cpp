@@ -212,9 +212,6 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 case Proto::GameServerCreatureSpeed:
                     parseCreatureSpeed(msg);
                     break;
-                case Proto::GameServerCreatureSkull:
-                    parseCreatureSkulls(msg);
-                    break;
                 case Proto::GameServerCreatureParty:
                     parseCreatureShields(msg);
                     break;
@@ -322,12 +319,6 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                     parseQuestLine(msg);
                     break;
                     // PROTOCOL>=870
-                case Proto::GameServerMoveDelay:
-                    parseMoveCooldown(msg);
-                    break;
-                case Proto::GameServerMoveGroupDelay:
-                    parseMoveGroupCooldown(msg);
-                    break;
                 case Proto::GameServerMultiUseDelay:
                     parseMultiUseCooldown(msg);
                     break;
@@ -369,12 +360,6 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                     // PROTOCOL>=1055
                 case Proto::GameServerBlessings:
                     parseBlessings(msg);
-                    break;
-                case Proto::GameServerUnjustifiedStats:
-                    parseUnjustifiedStats(msg);
-                    break;
-                case Proto::GameServerPvpSituations:
-                    parsePvpSituations(msg);
                     break;
                 case Proto::GameServerPreset:
                     parsePreset(msg);
@@ -440,17 +425,8 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                 case Proto::GameServerRefreshBestiaryTracker:
                     parseBestiaryTracker(msg);
                     break;
-                case Proto::GameServerTaskHuntingBasicData:
-                    parseTaskHuntingBasicData(msg);
-                    break;
-                case Proto::GameServerTaskHuntingData:
-                    parseTaskHuntingData(msg);
-                    break;
                 case Proto::GameServerSendShowDescription:
                     parseShowDescription(msg);
-                    break;
-                case Proto::GameServerImbuementDurations:
-                    parseImbuementDurations(msg);
                     break;
                 case Proto::GameServerPassiveCooldown:
                     parsePassiveCooldown(msg);
@@ -495,26 +471,8 @@ void ProtocolGame::parseMessage(const InputMessagePtr& msg)
                     parseRewardHistory(msg);
                     break;
 
-                case Proto::GameServerSendPreyFreeRerolls: // || Proto::GameServerSendBosstiaryEntryChanged
-                    if (g_game.getFeature(Otc::GameBosstiary))
-                        parseBosstiaryEntryChanged(msg);
-                    else parsePreyFreeRerolls(msg);
-                    break;
-
-                case Proto::GameServerSendPreyTimeLeft:
-                    parsePreyTimeLeft(msg);
-                    break;
-                case Proto::GameServerSendPreyData:
-                    parsePreyData(msg);
-                    break;
-                case Proto::GameServerSendPreyRerollPrice:
-                    parsePreyRerollPrice(msg);
-                    break;
-                case Proto::GameServerSendImbuementWindow:
-                    parseImbuementWindow(msg);
-                    break;
-                case Proto::GameServerSendCloseImbuementWindow:
-                    parseCloseImbuementWindow(msg);
+                case Proto::GameServerSendBosstiaryEntryChanged:
+                    parseBosstiaryEntryChanged(msg);
                     break;
                 case Proto::GameServerSendError:
                     parseError(msg);
@@ -610,14 +568,6 @@ void ProtocolGame::parseLogin(const InputMessagePtr& msg) const
     bool canReportBugs = false;
     if (!g_game.getFeature(Otc::GameDynamicBugReporter)) {
         canReportBugs = msg->getU8() > 0;
-    }
-
-    if (g_game.getClientVersion() >= 1054)
-        msg->getU8(); // can change pvp frame option
-
-    if (g_game.getClientVersion() >= 1058) {
-        const uint8_t expertModeEnabled = msg->getU8();
-        g_game.setExpertPvpMode(expertModeEnabled);
     }
 
     if (g_game.getFeature(Otc::GameIngameStore)) {
@@ -844,26 +794,6 @@ void ProtocolGame::parseStoreError(const InputMessagePtr& msg) const
     const uint8_t errorType = msg->getU8();
     const auto& message = msg->getString();
     g_logger.error(stdext::format("Store Error: %s [%i]", message, errorType));
-}
-
-void ProtocolGame::parseUnjustifiedStats(const InputMessagePtr& msg)
-{
-    const uint8_t killsDay = msg->getU8();
-    const uint8_t killsDayRemaining = msg->getU8();
-    const uint8_t killsWeek = msg->getU8();
-    const uint8_t killsWeekRemaining = msg->getU8();
-    const uint8_t killsMonth = msg->getU8();
-    const uint8_t killsMonthRemaining = msg->getU8();
-    const uint8_t skullTime = msg->getU8();
-
-    g_game.setUnjustifiedPoints({ killsDay, killsDayRemaining, killsWeek, killsWeekRemaining, killsMonth, killsMonthRemaining, skullTime });
-}
-
-void ProtocolGame::parsePvpSituations(const InputMessagePtr& msg)
-{
-    const uint8_t openPvpSituations = msg->getU8();
-
-    g_game.setOpenPvpSituations(openPvpSituations);
 }
 
 void ProtocolGame::parsePlayerHelpers(const InputMessagePtr& msg) const
@@ -1218,7 +1148,7 @@ void ProtocolGame::parseRemoveInventoryItem(const InputMessagePtr& msg)
 
 void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
 {
-    std::vector<std::tuple<ItemPtr, std::string, int, int, int>> items;
+    std::vector<std::tuple<ItemPtr, std::string, int, int>> items;
 
     if (g_game.getFeature(Otc::GameNameOnNpcTrade))
         msg->getString(); // npcName
@@ -1243,10 +1173,9 @@ void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
         item->setCountOrSubType(count);
 
         const auto& name = msg->getString();
-        uint32_t weight = msg->getU32();
         uint32_t buyPrice = msg->getU32();
         uint32_t sellPrice = msg->getU32();
-        items.emplace_back(item, name, weight, buyPrice, sellPrice);
+        items.emplace_back(item, name, buyPrice, sellPrice);
     }
 
     Game::processOpenNpcTrade(items);
@@ -1587,20 +1516,6 @@ void ProtocolGame::parseCreatureSpeed(const InputMessagePtr& msg)
         creature->setBaseSpeed(baseSpeed);
 }
 
-void ProtocolGame::parseCreatureSkulls(const InputMessagePtr& msg)
-{
-    const uint32_t id = msg->getU32();
-    const uint8_t skull = msg->getU8();
-
-    const auto& creature = g_map.getCreatureById(id);
-    if (!creature) {
-        g_logger.traceError("could not get creature");
-        return;
-    }
-
-    creature->setSkull(skull);
-}
-
 void ProtocolGame::parseCreatureShields(const InputMessagePtr& msg)
 {
     const uint32_t id = msg->getU32();
@@ -1685,232 +1600,40 @@ void ProtocolGame::parsePlayerInfo(const InputMessagePtr& msg) const
     const bool premium = msg->getU8(); // premium
     if (g_game.getFeature(Otc::GamePremiumExpiration))
         msg->getU32(); // premium expiration used for premium advertisement
-    const uint8_t vocation = msg->getU8(); // vocation
-
-    if (g_game.getClientVersion() >= 1281) {
-        msg->getU8(); // prey enabled
-    }
-
-    const uint16_t moveCount = msg->getU16();
-    std::vector<uint16_t> moves;
-    for (int_fast32_t i = 0; i < moveCount; ++i) {
-        if (g_game.getFeature(Otc::GameUshortMove)) {
-            moves.push_back(msg->getU16()); // move id
-        } else {
-            moves.push_back(static_cast<uint16_t>(msg->getU8())); // move id
-        }
-    }
-
-    if (g_game.getClientVersion() >= 1281) {
-        msg->getU8(); // is magic shield active (bool)
+    const uint16_t reservedActionCount = msg->getU16();
+    for (int_fast32_t i = 0; i < reservedActionCount; ++i) {
+        msg->getU8();
     }
 
     m_localPlayer->setPremium(premium);
-    m_localPlayer->setVocation(vocation);
-    m_localPlayer->setMoves(moves);
 }
 
 void ProtocolGame::parsePlayerStats(const InputMessagePtr& msg) const
 {
-    uint32_t health;
-    uint32_t maxHealth;
-
-    if (g_game.getFeature(Otc::GameDoubleHealth)) {
-        health = msg->getU32();
-        maxHealth = msg->getU32();
-    } else {
-        health = msg->getU16();
-        maxHealth = msg->getU16();
-    }
-
-    uint32_t freeCapacity = 0;
-    uint32_t totalCapacity = 0;
-
-    if (g_game.getFeature(Otc::GameDoubleFreeCapacity))
-        freeCapacity = msg->getU32() / 100.f;
-    else
-        freeCapacity = msg->getU16() / 100.f;
-
-    if (g_game.getClientVersion() < 1281) {
-        if (g_game.getFeature(Otc::GameTotalCapacity))
-            totalCapacity = msg->getU32() / 100.f;
-    }
-
-    uint64_t experience;
-    if (g_game.getFeature(Otc::GameDoubleExperience))
-        experience = msg->getU64();
-    else
-        experience = msg->getU32();
-
-    uint16_t level;
-    if (g_game.getFeature(Otc::GameLevelU16))
-        level = msg->getU16();
-    else
-        level = msg->getU8();
-
+    const uint32_t health = msg->getU32();
+    const uint32_t maxHealth = msg->getU32();
+    const uint64_t experience = msg->getU64();
+    const uint16_t level = msg->getU16();
     const uint8_t levelPercent = msg->getU8();
-
-    if (g_game.getFeature(Otc::GameExperienceBonus)) {
-        if (g_game.getClientVersion() <= 1096) {
-            msg->getDouble(); // experienceBonus
-        } else {
-            msg->getU16(); // baseXpGain
-            if (g_game.getClientVersion() < 1281) {
-                msg->getU16(); // voucherAddend
-            }
-            msg->getU16(); // grindingAddend
-            msg->getU16(); // storeBoostAddend
-            msg->getU16(); // huntingBoostFactor
-        }
-    }
-
-    uint32_t mana;
-    uint32_t maxMana;
-
-    if (g_game.getFeature(Otc::GameDoubleHealth)) {
-        mana = msg->getU32();
-        maxMana = msg->getU32();
-    } else {
-        mana = msg->getU16();
-        maxMana = msg->getU16();
-    }
-
-    if (g_game.getClientVersion() < 1281) {
-        const uint8_t magicLevel = msg->getU8();
-
-        uint8_t baseMagicLevel = 0;
-        if (g_game.getFeature(Otc::GameSkillsBase))
-            baseMagicLevel = msg->getU8();
-        else
-            baseMagicLevel = magicLevel;
-
-        const uint8_t magicLevelPercent = msg->getU8();
-
-        m_localPlayer->setMagicLevel(magicLevel, magicLevelPercent);
-        m_localPlayer->setBaseMagicLevel(baseMagicLevel);
-    }
-
-    uint8_t soul = 0;
-    if (g_game.getFeature(Otc::GameSoul))
-        soul = msg->getU8();
-
-    uint16_t stamina = 0;
-    if (g_game.getFeature(Otc::GamePlayerStamina))
-        stamina = msg->getU16();
-
-    uint16_t baseSpeed = 0;
-    if (g_game.getFeature(Otc::GameSkillsBase))
-        baseSpeed = msg->getU16();
-
-    uint16_t regeneration = 0;
-    if (g_game.getFeature(Otc::GamePlayerRegenerationTime))
-        regeneration = msg->getU16();
-
-    uint16_t training = 0;
-    if (g_game.getFeature(Otc::GameOfflineTrainingTime)) {
-        training = msg->getU16();
-    }
-
-    if (g_game.getClientVersion() >= 1097) {
-        msg->getU16(); // xp boost time (seconds)
-        msg->getU8(); // enables exp boost in the store
-    }
-
-    if (g_game.getClientVersion() >= 1281) {
-        if (g_game.getFeature(Otc::GameDoubleHealth)) {
-            msg->getU32();  // remaining mana shield
-            msg->getU32();  // total mana shield
-        } else {
-            msg->getU16();  // remaining mana shield
-            msg->getU16();  // total mana shield
-        }
-    }
+    const uint16_t stamina = msg->getU16();
+    const uint16_t speed = msg->getU16();
+    const uint16_t baseSpeed = msg->getU16();
 
     m_localPlayer->setHealth(health, maxHealth);
-    m_localPlayer->setFreeCapacity(freeCapacity);
-    m_localPlayer->setTotalCapacity(totalCapacity);
     m_localPlayer->setExperience(experience);
     m_localPlayer->setLevel(level, levelPercent);
-    m_localPlayer->setMana(mana, maxMana);
     m_localPlayer->setStamina(stamina);
-    m_localPlayer->setSoul(soul);
+    m_localPlayer->setSpeed(speed);
     m_localPlayer->setBaseSpeed(baseSpeed);
-    m_localPlayer->setRegenerationTime(regeneration);
-    m_localPlayer->setOfflineTrainingTime(training);
 }
 
 void ProtocolGame::parsePlayerSkills(const InputMessagePtr& msg) const
 {
-    if (g_game.getClientVersion() >= 1281) {
-        // magic level
-        const uint16_t magicLevel = msg->getU16();
-        const uint16_t baseMagicLevel = msg->getU16();
-        msg->getU16(); // base + loyalty bonus(?)
-        const uint8_t percent = msg->getU16() / 100;
-
-        m_localPlayer->setMagicLevel(magicLevel, percent);
-        m_localPlayer->setBaseMagicLevel(baseMagicLevel);
-    }
-
-    for (int_fast32_t skill = Otc::Fist; skill <= Otc::Fishing; ++skill) {
-        uint16_t level;
-
-        if (g_game.getFeature(Otc::GameDoubleSkills))
-            level = msg->getU16();
-        else
-            level = msg->getU8();
-
-        uint16_t baseLevel;
-        if (g_game.getFeature(Otc::GameSkillsBase))
-            if (g_game.getFeature(Otc::GameBaseSkillU16))
-                baseLevel = msg->getU16();
-            else
-                baseLevel = msg->getU8();
-        else
-            baseLevel = level;
-
-        uint16_t levelPercent = 0;
-
-        if (g_game.getClientVersion() >= 1281) {
-            msg->getU16(); // base + loyalty bonus(?)
-            levelPercent = msg->getU16() / 100;
-        } else {
-            levelPercent = msg->getU8();
-        }
-
-        m_localPlayer->setSkill(static_cast<Otc::Skill>(skill), level, levelPercent);
-        m_localPlayer->setBaseSkill(static_cast<Otc::Skill>(skill), baseLevel);
-    }
-
-    if (g_game.getFeature(Otc::GameConcotions)) {
-        msg->getU8();
-    }
-
-    if (g_game.getFeature(Otc::GameAdditionalSkills)) {
-        // Critical, Life Leech, Mana Leech, Dodge, Fatal, Momentum have no level percent, nor loyalty bonus
-
-        const uint8_t lastSkill = g_game.getClientVersion() >= 1281 ? Otc::LastSkill : Otc::ManaLeechAmount + 1;
-        for (int_fast32_t skill = Otc::CriticalChance; skill < lastSkill; ++skill) {
-            if (!g_game.getFeature(Otc::GameLeechAmount)) {
-                if (skill == Otc::LifeLeechAmount || skill == Otc::ManaLeechAmount) {
-                    continue;
-                }
-            }
-
-            const uint16_t level = msg->getU16();
-            const uint16_t baseLevel = msg->getU16();
-            m_localPlayer->setSkill(static_cast<Otc::Skill>(skill), level, 0);
-            m_localPlayer->setBaseSkill(static_cast<Otc::Skill>(skill), baseLevel);
-        }
-    }
-
-    if (g_game.getClientVersion() >= 1281) {
-        // bonus cap
-        const uint32_t capacity = msg->getU32(); // base + bonus capacity
-        msg->getU32(); // base capacity
-
-        m_localPlayer->setTotalCapacity(capacity);
-    }
+    const uint16_t level = msg->getU16();
+    const uint16_t baseLevel = msg->getU16();
+    const uint8_t levelPercent = msg->getU8();
+    m_localPlayer->setSkill(Otc::Fishing, level, levelPercent);
+    m_localPlayer->setBaseSkill(Otc::Fishing, baseLevel);
 }
 
 void ProtocolGame::parsePlayerState(const InputMessagePtr& msg) const
@@ -1944,34 +1667,7 @@ void ProtocolGame::parsePlayerModes(const InputMessagePtr& msg)
 {
     const uint8_t fightMode = msg->getU8();
     const uint8_t chaseMode = msg->getU8();
-    const bool safeMode = msg->getU8();
-
-    uint8_t pvpMode = 0;
-    if (g_game.getFeature(Otc::GamePVPMode))
-        pvpMode = msg->getU8();
-
-    g_game.processPlayerModes(static_cast<Otc::FightModes>(fightMode), static_cast<Otc::ChaseModes>(chaseMode), safeMode, static_cast<Otc::PVPModes>(pvpMode));
-}
-
-void ProtocolGame::parseMoveCooldown(const InputMessagePtr& msg)
-{
-    uint16_t moveId;
-    if (g_game.getFeature(Otc::GameUshortMove)) {
-        moveId = msg->getU16();
-    } else {
-        moveId = msg->getU8();
-    }
-    const uint32_t delay = msg->getU32();
-
-    g_lua.callGlobalField("g_game", "onMoveCooldown", moveId, delay);
-}
-
-void ProtocolGame::parseMoveGroupCooldown(const InputMessagePtr& msg)
-{
-    const uint8_t groupId = msg->getU8();
-    const uint32_t delay = msg->getU32();
-
-    g_lua.callGlobalField("g_game", "onMoveGroupCooldown", groupId, delay);
+    g_game.processPlayerModes(static_cast<Otc::FightModes>(fightMode), static_cast<Otc::ChaseModes>(chaseMode));
 }
 
 void ProtocolGame::parseMultiUseCooldown(const InputMessagePtr& msg)
@@ -2155,7 +1851,6 @@ void ProtocolGame::parseTextMessage(const InputMessagePtr& msg)
             break;
         }
         case Otc::MessageHeal:
-        case Otc::MessageMana:
         case Otc::MessageExp:
         case Otc::MessageHealOthers:
         case Otc::MessageExpOthers:
@@ -2831,7 +2526,7 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
             }
         }
 
-        const uint8_t skull = msg->getU8();
+        msg->getU8(); // reserved alignment byte
         const uint8_t shield = msg->getU8();
 
         // emblem is sent only when the creature is not known
@@ -2901,7 +2596,6 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type) cons
             creature->turn(direction);
             creature->setOutfit(outfit);
             creature->setSpeed(speed);
-            creature->setSkull(skull);
             creature->setShield(shield);
             creature->setPassable(!unpass);
             creature->setLight(light);
@@ -2987,7 +2681,7 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id)
                 msg->getU32();
             }
 
-            // quiver ammo count
+            // reserved container metadata
             if ((containerFlags & 2) != 0) {
                 msg->getU32();
             }
@@ -3007,12 +2701,6 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id)
                 }
             }
 
-            if (g_game.getFeature(Otc::GameThingQuiver)) {
-                const uint8_t hasQuiverAmmoCount = msg->getU8();
-                if (hasQuiverAmmoCount) {
-                    msg->getU32(); // ammoTotal
-                }
-            }
         }
     }
 
@@ -3130,77 +2818,6 @@ void ProtocolGame::parseBestiaryTracker(const InputMessagePtr& msg)
     }
 }
 
-void ProtocolGame::parseTaskHuntingBasicData(const InputMessagePtr& msg)
-{
-    const uint16_t preys = msg->getU16();
-    for (uint16_t i = 0; i < preys; i++) {
-        msg->getU16(); // RaceID
-        msg->getU8(); // Difficult
-    }
-
-    const uint8_t options = msg->getU8();
-    for (uint8_t j = 0; j < options; j++) {
-        msg->getU8(); // Difficult
-        msg->getU8(); // Stars
-        msg->getU16(); // First kill
-        msg->getU16(); // First reward
-        msg->getU16(); // Second kill
-        msg->getU16(); // Second reward
-    }
-}
-void ProtocolGame::parseTaskHuntingData(const InputMessagePtr& msg)
-{
-    msg->getU8(); // slot
-    const auto state = static_cast<Otc::PreyTaskstate_t>(msg->getU8()); // slot state
-
-    switch (state) {
-        case Otc::PREY_TASK_STATE_LOCKED:
-        {
-            msg->getU8(); // task slot unlocked
-            break;
-        }
-        case Otc::PREY_TASK_STATE_INACTIVE:
-            break;
-        case Otc::PREY_TASK_STATE_SELECTION:
-        {
-            const uint16_t creatures = msg->getU16();
-            for (uint16_t i = 0; i < creatures; i++) {
-                msg->getU16(); // RaceID
-                msg->getU8(); // Is unlocked
-            }
-        }
-        break;
-        case Otc::PREY_TASK_STATE_LIST_SELECTION:
-        {
-            const uint16_t creatures = msg->getU16();
-            for (uint16_t i = 0; i < creatures; i++) {
-                msg->getU16(); // RaceID
-                msg->getU8(); // Is unlocked
-            }
-            break;
-        }
-        case Otc::PREY_TASK_STATE_ACTIVE:
-        {
-            msg->getU16(); // RaceID
-            msg->getU8(); // Upgraded
-            msg->getU16(); // Required kills
-            msg->getU16(); // Current kills
-            msg->getU8(); // Stars
-            break;
-        }
-        case Otc::PREY_TASK_STATE_COMPLETED:
-        {
-            msg->getU16(); // RaceID
-            msg->getU8(); // Upgraded
-            msg->getU16(); // Required kills
-            msg->getU16(); // Current kills
-            break;
-        }
-    }
-
-    msg->getU32(); // next free roll
-}
-
 void ProtocolGame::parseExperienceTracker(const InputMessagePtr& msg)
 {
     msg->get64(); // Raw exp
@@ -3263,28 +2880,6 @@ void ProtocolGame::parsePartyAnalyzer(const InputMessagePtr& msg)
     }
 }
 
-void ProtocolGame::parseImbuementDurations(const InputMessagePtr& msg)
-{
-    uint8_t itemListSize = msg->getU8(); // amount of items to display
-
-    for (uint8_t itemIndex = 0; itemIndex < itemListSize; ++itemIndex) {
-        msg->getU8(); // item slot id
-        getItem(msg); // imbued item
-        uint8_t imbuingSlotCount = msg->getU8(); // total amount of imbuing slots on item
-
-        for (uint8_t imbuIndex = 0; imbuIndex < imbuingSlotCount; ++imbuIndex) {
-            bool slotImbued = msg->getU8(); // 0 - empty, 1 - imbued
-
-            if (slotImbued) {
-                msg->getString(); // imbuement name
-                msg->getU16(); // imbuement icon id
-                msg->getU32(); // imbuement duration (NOTE: this is a SIGNED 32-bit variable)
-                msg->getU8(); // decaystate: 0 - paused, 1 - decaying
-            }
-        }
-    }
-}
-
 void ProtocolGame::parsePassiveCooldown(const InputMessagePtr& msg)
 {
     msg->getU8(); // Passive id
@@ -3323,12 +2918,12 @@ void ProtocolGame::parseBlessDialog(const InputMessagePtr& msg)
     // parse general info
     msg->getU8(); // premium
     msg->getU8(); // promotion
-    msg->getU8(); // pvp min xp loss
-    msg->getU8(); // pvp max xp loss
-    msg->getU8(); // pve exp loss
-    msg->getU8(); // equip pvp loss
+	msg->getU8(); // reserved legacy loss byte
+	msg->getU8(); // reserved legacy loss byte
+	msg->getU8(); // pve exp loss
+	msg->getU8(); // reserved legacy equipment byte
     msg->getU8(); // equip pve loss
-    msg->getU8(); // skull
+    msg->getU8(); // reserved alignment byte
     msg->getU8(); // aol
 
     // parse log
@@ -3450,7 +3045,7 @@ namespace {
             for (uint8_t listIndex = 0; listIndex < itemListSize; ++listIndex) {
                 msg->getU16(); // Item ID
                 msg->getString(); // Item name
-                msg->getU32(); // Item weight
+                msg->getU32(); // reserved item metadata
             }
         } else if (redeemMode == 2) {
             // no choice, click to redeem all
@@ -3467,8 +3062,7 @@ namespace {
                         break;
                     }
                     case 2: {
-                        // Prey Wildcards
-                        msg->getU8(); // Prey Wildcards Count
+                        msg->getU8(); // reserved legacy resource count
                         break;
                     }
                     case 3: {
@@ -3516,217 +3110,6 @@ void ProtocolGame::parseRewardHistory(const InputMessagePtr& msg)
     // TODO: implement reward history usage
 }
 
-void ProtocolGame::parsePreyFreeRerolls(const InputMessagePtr& msg)
-{
-    const uint8_t slot = msg->getU8();
-    const uint16_t timeLeft = msg->getU16();
-
-    g_lua.callGlobalField("g_game", "onPreyFreeRerolls", slot, timeLeft);
-}
-
-void ProtocolGame::parsePreyTimeLeft(const InputMessagePtr& msg)
-{
-    const uint8_t slot = msg->getU8();
-    const uint16_t timeLeft = msg->getU16();
-
-    g_lua.callGlobalField("g_game", "onPreyTimeLeft", slot, timeLeft);
-}
-
-PreyPokemon ProtocolGame::getPreyPokemon(const InputMessagePtr& msg) const
-{
-    const auto& name = msg->getString();
-    const auto& outfit = getOutfit(msg, false);
-    return { name , outfit };
-}
-
-std::vector<PreyPokemon> ProtocolGame::getPreyPokemons(const InputMessagePtr& msg)
-{
-    std::vector<PreyPokemon> pokemons;
-    const uint8_t pokemonsSize = msg->getU8(); // pokemon list size
-    for (uint8_t i = 0; i < pokemonsSize; i++)
-        pokemons.emplace_back(getPreyPokemon(msg));
-
-    return pokemons;
-}
-
-void ProtocolGame::parsePreyData(const InputMessagePtr& msg)
-{
-    const uint8_t slot = msg->getU8(); // slot
-    const auto state = static_cast<Otc::PreyState_t>(msg->getU8()); // slot state
-
-    switch (state) {
-        case Otc::PREY_STATE_LOCKED:
-        {
-            const Otc::PreyUnlockState_t unlockState = static_cast<Otc::PreyUnlockState_t>(msg->getU8()); // prey slot unlocked
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreyLocked", slot, unlockState, nextFreeReroll, wildcards);
-        }
-        case Otc::PREY_STATE_INACTIVE:
-        {
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreyInactive", slot, nextFreeReroll, wildcards);
-        }
-        case Otc::PREY_STATE_ACTIVE:
-        {
-            PreyPokemon pokemon = getPreyPokemon(msg);
-            const uint8_t bonusType = msg->getU8(); // bonus type
-            const uint16_t bonusValue = msg->getU16(); // bonus value
-            const uint8_t bonusGrade = msg->getU8(); // bonus grade
-            const uint16_t timeLeft = msg->getU16(); // time left
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreyActive", slot, pokemon.name, pokemon.outfit, bonusType, bonusValue, bonusGrade, timeLeft, nextFreeReroll, wildcards);
-        }
-        case Otc::PREY_STATE_SELECTION:
-        {
-            std::vector<PreyPokemon> pokemons = getPreyPokemons(msg);
-            std::vector<std::string> names;
-            std::vector<Outfit> outfits;
-            for (const auto& pokemon : pokemons) {
-                names.push_back(pokemon.name);
-                outfits.push_back(pokemon.outfit);
-            }
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreySelection", slot, names, outfits, nextFreeReroll, wildcards);
-        }
-        case Otc::PREY_STATE_SELECTION_CHANGE_POKEMON:
-        {
-            const uint8_t bonusType = msg->getU8(); // bonus type
-            const uint16_t bonusValue = msg->getU16(); // bonus value
-            const uint8_t bonusGrade = msg->getU8(); // bonus grade
-            std::vector<PreyPokemon> pokemons = getPreyPokemons(msg);
-            std::vector<std::string> names;
-            std::vector<Outfit> outfits;
-            for (const auto& pokemon : pokemons) {
-                names.push_back(pokemon.name);
-                outfits.push_back(pokemon.outfit);
-            }
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreySelectionChangePokemon", slot, names, outfits, bonusType, bonusValue, bonusGrade, nextFreeReroll, wildcards);
-        }
-        case Otc::PREY_STATE_LIST_SELECTION:
-        {
-            std::vector<uint16_t> races;
-            const uint16_t creatures = msg->getU16();
-            for (uint16_t i = 0; i < creatures; i++) {
-                races.push_back(msg->getU16()); // RaceID
-            }
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreyListSelection", slot, races, nextFreeReroll, wildcards);
-        }
-        case Otc::PREY_STATE_WILDCARD_SELECTION:
-        {
-            msg->getU8(); // bonus type
-            msg->getU16(); // bonus value
-            msg->getU8(); // bonus grade
-
-            std::vector<uint16_t> races;
-            const uint16_t creatures = msg->getU16();
-            for (uint16_t i = 0; i < creatures; i++) {
-                races.push_back(msg->getU16()); // RaceID
-            }
-            const uint32_t nextFreeReroll = msg->getU32(); // next free roll
-            const uint8_t wildcards = msg->getU8(); // wildcards
-            return g_lua.callGlobalField("g_game", "onPreyWildcardSelection", slot, races, nextFreeReroll, wildcards);
-        }
-    }
-}
-
-void ProtocolGame::parsePreyRerollPrice(const InputMessagePtr& msg)
-{
-    const uint32_t price = msg->getU32(); //reroll price
-    const uint8_t wildcard = msg->getU8(); // wildcard
-    const uint8_t directly = msg->getU8(); // selectCreatureDirectly price (5 in tibia)
-    if (g_game.getProtocolVersion() >= 1230) { // prey task
-        msg->getU32();
-        msg->getU32();
-        msg->getU8();
-        msg->getU8();
-    }
-    g_lua.callGlobalField("g_game", "onPreyRerollPrice", price, wildcard, directly);
-}
-
-Imbuement ProtocolGame::getImbuementInfo(const InputMessagePtr& msg)
-{
-    Imbuement imbuement;
-    imbuement.id = msg->getU32(); // imbuid
-    imbuement.name = msg->getString(); // name
-    imbuement.description = msg->getString(); // description
-    imbuement.group = msg->getString(); // subgroup
-
-    imbuement.imageId = msg->getU16(); // iconId
-    imbuement.duration = msg->getU32(); // duration
-
-    imbuement.premiumOnly = msg->getU8(); // is premium
-
-    const uint8_t itemsSize = msg->getU8(); // items size
-    for (uint8_t i = 0; i < itemsSize; i++) {
-        const uint16_t id = msg->getU16(); // item client ID
-        const auto& description = msg->getString(); // item name
-        const uint16_t count = msg->getU16(); // count
-        const ItemPtr& item = Item::create(id);
-        item->setCount(count);
-        imbuement.sources.emplace_back(item, description);
-    }
-
-    imbuement.cost = msg->getU32(); // base price
-    imbuement.successRate = msg->getU8(); // base percent
-    imbuement.protectionCost = msg->getU32(); // base protection
-    return imbuement;
-}
-
-void ProtocolGame::parseImbuementWindow(const InputMessagePtr& msg)
-{
-    const uint16_t itemId = msg->getU16(); // item client ID
-    const ItemPtr& item = Item::create(itemId);
-    if (item->getId() == 0)
-        throw Exception("unable to create item with invalid id %d", itemId);
-
-    if (item->getClassification() > 0) {
-        msg->getU8();  // upgradeClass
-    }
-
-    const uint8_t slot = msg->getU8(); // slot id
-    std::unordered_map<int, std::tuple<Imbuement, int, int>> activeSlots;
-    for (uint8_t i = 0; i < slot; i++) {
-        const uint8_t firstByte = msg->getU8();
-        if (firstByte == 0x01) {
-            Imbuement imbuement = getImbuementInfo(msg);
-            const uint32_t duration = msg->getU32(); // duration
-            const uint32_t removalCost = msg->getU32(); // removecost
-            activeSlots[i] = std::make_tuple(imbuement, duration, removalCost);
-        }
-    }
-
-    const uint16_t imbSize = msg->getU16(); // imbuement size
-    std::vector<Imbuement> imbuements;
-    for (uint16_t i = 0; i < imbSize; i++) {
-        imbuements.push_back(getImbuementInfo(msg));
-    }
-
-    const uint32_t neededItemsSize = msg->getU32(); // needed items size
-    std::vector<ItemPtr> needItems;
-    for (uint32_t i = 0; i < neededItemsSize; i++) {
-        const uint16_t needItemId = msg->getU16();
-        const uint16_t count = msg->getU16();
-        const ItemPtr& item = Item::create(needItemId);
-        item->setCount(count);
-        needItems.push_back(item);
-    }
-
-    g_lua.callGlobalField("g_game", "onImbuementWindow", itemId, slot, activeSlots, imbuements, needItems);
-}
-
-void ProtocolGame::parseCloseImbuementWindow(const InputMessagePtr& /*msg*/)
-{
-    g_lua.callGlobalField("g_game", "onCloseImbuementWindow");
-}
-
 void ProtocolGame::parseError(const InputMessagePtr& msg)
 {
     msg->getU8(); // error code
@@ -3754,13 +3137,14 @@ void ProtocolGame::parseMarketEnter(const InputMessagePtr& msg)
         depotItems.push_back({ itemId, count, itemClass });
     }
 
-    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, -1, -1);
+    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, -1);
 }
 
 void ProtocolGame::parseMarketEnterOld(const InputMessagePtr& msg)
 {
     const uint64_t balance = g_game.getClientVersion() >= 981 ? msg->getU64() : msg->getU32();
-    const uint8_t vocation = g_game.getClientVersion() < 950 ? msg->getU8() : g_game.getLocalPlayer()->getVocation();
+    if (g_game.getClientVersion() < 950)
+        msg->getU8(); // retired profession restriction byte
 
     const uint8_t offers = msg->getU8();
     const uint16_t itemsSent = msg->getU16();
@@ -3772,7 +3156,7 @@ void ProtocolGame::parseMarketEnterOld(const InputMessagePtr& msg)
         depotItems.emplace(itemId, count);
     }
 
-    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, balance, vocation);
+    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, balance);
 }
 
 void ProtocolGame::parseMarketDetail(const InputMessagePtr& msg)
@@ -3786,9 +3170,7 @@ void ProtocolGame::parseMarketDetail(const InputMessagePtr& msg)
     }
 
     std::unordered_map<int, std::string> descriptions;
-    Otc::MarketItemDescription lastAttribute = Otc::ITEM_DESC_WEIGHT;
-    if (g_game.getClientVersion() >= 1200)
-        lastAttribute = Otc::ITEM_DESC_IMBUINGSLOTS;
+    Otc::MarketItemDescription lastAttribute = Otc::ITEM_DESC_RESERVED_15;
     if (g_game.getClientVersion() >= 1270)
         lastAttribute = Otc::ITEM_DESC_UPGRADECLASS;
     if (g_game.getClientVersion() >= 1282)

@@ -45,43 +45,18 @@ MarketCategory = {
     Others = 9,
     Potions = 10,
     Rings = 11,
-    Runes = 12,
-    Shields = 13,
     Tools = 14,
     Valuables = 15,
-    Ammunition = 16,
-    Axes = 17,
-    Clubs = 18,
-    DistanceWeapons = 19,
-    Swords = 20,
-    WandsRods = 21,
     PremiumScrolls = 22,
-    TibiaCoins = 23,
-    MetaWeapons = 255
+    TibiaCoins = 23
 }
 
-MarketCategory.First = MarketCategory.Armors
-MarketCategory.Last = MarketCategory.TibiaCoins
-
-MarketCategoryWeapons = {
-    [MarketCategory.Ammunition] = {
-        slots = {255}
-    },
-    [MarketCategory.Axes] = {
-        slots = {255, InventorySlotOther, InventorySlotLeft}
-    },
-    [MarketCategory.Clubs] = {
-        slots = {255, InventorySlotOther, InventorySlotLeft}
-    },
-    [MarketCategory.DistanceWeapons] = {
-        slots = {255, InventorySlotOther, InventorySlotLeft}
-    },
-    [MarketCategory.Swords] = {
-        slots = {255, InventorySlotOther, InventorySlotLeft}
-    },
-    [MarketCategory.WandsRods] = {
-        slots = {255, InventorySlotOther, InventorySlotLeft}
-    }
+MarketVisibleCategories = {
+    MarketCategory.Armors, MarketCategory.Amulets, MarketCategory.Boots,
+    MarketCategory.Containers, MarketCategory.Decoration, MarketCategory.Food,
+    MarketCategory.HelmetsHats, MarketCategory.Legs, MarketCategory.Others,
+    MarketCategory.Potions, MarketCategory.Rings, MarketCategory.Tools,
+    MarketCategory.Valuables, MarketCategory.PremiumScrolls, MarketCategory.TibiaCoins
 }
 
 MarketCategoryStrings = {
@@ -97,19 +72,10 @@ MarketCategoryStrings = {
     [9] = 'Others',
     [10] = 'Potions',
     [11] = 'Rings',
-    [12] = 'Runes',
-    [13] = 'Shields',
     [14] = 'Tools',
     [15] = 'Valuables',
-    [16] = 'Ammunition',
-    [17] = 'Axes',
-    [18] = 'Clubs',
-    [19] = 'Distance Weapons',
-    [20] = 'Swords',
-    [21] = 'Wands and Rods',
     [22] = 'Premium Scrolls',
-    [23] = 'Tibia Coins',
-    [255] = 'Weapons'
+    [23] = 'Tibia Coins'
 }
 
 function getMarketCategoryName(id)
@@ -134,16 +100,9 @@ MarketItemDescription = {
     DecayTime = 6,
     Combat = 7,
     MinLevel = 8,
-    MinMagicLevel = 9,
-    Vocation = 10,
-    Rune = 11,
     Ability = 12,
     Charges = 13,
-    WeaponName = 14,
-    Weight = 15,
     Augment = 16,
-    ImbuingSlots = 17,
-    MagicShield = 18,
     Cleave = 19,
     Reflection = 20,
     Perfect = 21,
@@ -163,16 +122,9 @@ MarketItemDescriptionStrings = {
     [6] = 'Use Time',
     [7] = 'Combat',
     [8] = 'Min Level',
-    [9] = 'Min Magic Level',
-    [10] = 'Vocation',
-    [11] = 'Rune',
     [12] = 'Ability',
     [13] = 'Charges',
-    [14] = 'Weapon Type',
-    [15] = 'Weight',
     [16] = 'Augment',
-    [17] = 'Imbuing Slots',
-    [18] = 'Magic Shield',
     [19] = 'Cleave',
     [20] = 'Reflection',
     [21] = 'Perfect Show',
@@ -200,13 +152,12 @@ MarketSlotFilters = {
 }
 
 MarketFilters = {
-    Vocation = 1,
     Level = 2,
     Depot = 3,
     SearchAll = 4
 }
 
-MarketFilters.First = MarketFilters.Vocation
+MarketFilters.First = MarketFilters.Level
 MarketFilters.Last = MarketFilters.Depot
 
 function getMarketSlotFilterId(name)

@@ -200,10 +200,6 @@ void ThingType::unserializeAppearance(uint16_t clientId, ThingCategory category,
         m_market.showAs = flags.market().show_as_object_id();
         m_market.name = m_name;
 
-        for (const int32_t voc : flags.market().restrict_to_profession()) {
-            m_market.restrictVocation |= voc;
-        }
-
         m_market.requiredLevel = flags.market().minimum_level();
         m_flags |= ThingFlagAttrMarket;
     }
@@ -229,7 +225,6 @@ void ThingType::unserializeAppearance(uint16_t clientId, ThingCategory category,
     // corpse
     // player_corpse
     // cyclopediaitem
-    // ammo
 
     if (flags.has_show_off_socket() && flags.show_off_socket()) {
         m_flags |= ThingFlagAttrPodium;
@@ -477,7 +472,7 @@ void ThingType::unserialize(uint16_t clientId, ThingCategory category, const Fil
                 m_market.tradeAs = fin->getU16();
                 m_market.showAs = fin->getU16();
                 m_market.name = fin->getString();
-                m_market.restrictVocation = fin->getU16();
+                fin->getU16(); // retired profession restriction field
                 m_market.requiredLevel = fin->getU16();
                 break;
             }
@@ -997,7 +992,7 @@ void ThingType::serialize(const FileStreamPtr& fin)
                 fin->addU16(m_market.tradeAs);
                 fin->addU16(m_market.showAs);
                 fin->addString(m_market.name);
-                fin->addU16(m_market.restrictVocation);
+                fin->addU16(0);
                 fin->addU16(m_market.requiredLevel);
                 break;
             }
