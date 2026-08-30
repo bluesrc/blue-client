@@ -246,19 +246,6 @@ void Creature::drawInformation(const MapPosInfo& mapRect, const Point& dest, int
             levelText.draw(textAreaRect, levelTextColor);
         }
 
-        if (drawFlags & Otc::DrawManaBar && isLocalPlayer()) {
-            if (const auto& player = g_game.getLocalPlayer()) {
-                backgroundRect.moveTop(backgroundRect.bottom());
-
-                g_drawPool.addFilledRect(backgroundRect, Color::black);
-
-                Rect manaRect = backgroundRect.expanded(-1);
-                const double maxMana = player->getMaxMana();
-                manaRect.setWidth((maxMana ? player->getMana() / maxMana : 1) * 25);
-
-                g_drawPool.addFilledRect(manaRect, Color::blue);
-            }
-        }
     }
 
     if (drawFlags & Otc::DrawNames) {

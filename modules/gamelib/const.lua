@@ -37,13 +37,7 @@ Directions = {
 }
 
 Skill = {
-    Fist = 0,
-    Club = 1,
-    Sword = 2,
-    Axe = 3,
-    Distance = 4,
-    Shielding = 5,
-    Fishing = 6
+    Fishing = 0
 }
 
 North = Directions.North
@@ -71,7 +65,7 @@ GameReserved6 = 6
 GameDoubleExperience = 7
 GameReserved8 = 8
 GameSkillsBase = 9
-GamePlayerRegenerationTime = 10
+GameReserved10 = 10
 GameChannelPlayerList = 11
 GamePlayerMounts = 12
 GameEnvironmentEffect = 13
@@ -81,7 +75,7 @@ GameMagicEffectU16 = 16
 GamePlayerMarket = 17
 GameSpritesU32 = 18
 GameChargeableItems = 19
-GameOfflineTrainingTime = 20
+GameReserved20 = 20
 GamePurseSlot = 21
 GameFormatCreatureName = 22
 GameClientPing = 24
@@ -135,7 +129,7 @@ GameIngameStoreHighlights = 74
 GameIngameStoreServiceType = 75
 GameDistanceEffectU16 = 77
 GameLevelU16 = 78
-GameSoul = 79
+GameReserved79 = 79
 GameMapOldEffectRendering = 80
 GameMapDontCorrectCorpse = 81
 GameThingQuickLoot = 83
@@ -225,7 +219,7 @@ MessageModes = {
     TutorialHint = 38,
     Thankyou = 39,
     Market = 40,
-    Mana = 41,
+    Reserved41 = 41,
     BeyondLast = 42,
     PokemonYell = 43,
     PokemonSay = 44,
@@ -240,7 +234,7 @@ MessageModes = {
     -- 12x
     Attention = 52,
     BoostedCreature = 53,
-    OfflineTrainning = 54,
+    Reserved54 = 54,
     Transaction = 55,
     Potion = 56,
 

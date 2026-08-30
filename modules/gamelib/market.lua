@@ -100,12 +100,9 @@ MarketItemDescription = {
     DecayTime = 6,
     Combat = 7,
     MinLevel = 8,
-    MinMagicLevel = 9,
-    Vocation = 10,
     Ability = 12,
     Charges = 13,
     Augment = 16,
-    MagicShield = 18,
     Cleave = 19,
     Reflection = 20,
     Perfect = 21,
@@ -125,12 +122,9 @@ MarketItemDescriptionStrings = {
     [6] = 'Use Time',
     [7] = 'Combat',
     [8] = 'Min Level',
-    [9] = 'Min Magic Level',
-    [10] = 'Vocation',
     [12] = 'Ability',
     [13] = 'Charges',
     [16] = 'Augment',
-    [18] = 'Magic Shield',
     [19] = 'Cleave',
     [20] = 'Reflection',
     [21] = 'Perfect Show',
@@ -158,13 +152,12 @@ MarketSlotFilters = {
 }
 
 MarketFilters = {
-    Vocation = 1,
     Level = 2,
     Depot = 3,
     SearchAll = 4
 }
 
-MarketFilters.First = MarketFilters.Vocation
+MarketFilters.First = MarketFilters.Level
 MarketFilters.Last = MarketFilters.Depot
 
 function getMarketSlotFilterId(name)

@@ -27,7 +27,6 @@ local defaultOptions = {
     ambientLight = 0,
     displayNames = true,
     displayHealth = true,
-    displayMana = true,
     displayText = true,
     dontStretchShrink = false,
     turnDelay = 50,
@@ -177,18 +176,16 @@ function hide()
 end
 
 function toggleDisplays()
-    if options['displayNames'] and options['displayHealth'] and options['displayMana'] then
-        setOption('displayNames', false)
-    elseif options['displayHealth'] then
-        setOption('displayHealth', false)
-        setOption('displayMana', false)
-    else
+	if options['displayNames'] and options['displayHealth'] then
+		setOption('displayNames', false)
+	elseif options['displayHealth'] then
+		setOption('displayHealth', false)
+	else
         if not options['displayNames'] and not options['displayHealth'] then
             setOption('displayNames', true)
-        else
-            setOption('displayHealth', true)
-            setOption('displayMana', true)
-        end
+		else
+			setOption('displayHealth', true)
+		end
     end
 end
 
@@ -311,12 +308,6 @@ function setOption(key, value, force)
         end
     elseif key == 'displayHealth' then
         gameMapPanel:setDrawHealthBars(value)
-
-        if g_gameConfig.isDrawingInformationByWidget() then
-            modules.game_creatureinformation.toggleInformation()
-        end
-    elseif key == 'displayMana' then
-        gameMapPanel:setDrawManaBar(value)
 
         if g_gameConfig.isDrawingInformationByWidget() then
             modules.game_creatureinformation.toggleInformation()

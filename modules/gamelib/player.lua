@@ -5,7 +5,6 @@ PlayerStates = {
     Burn = 2,
     Energy = 4,
     Drunk = 8,
-    ManaShield = 16,
     Paralyze = 32,
     Haste = 64,
     Swords = 128,

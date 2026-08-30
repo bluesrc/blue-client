@@ -12,7 +12,6 @@ controller:registerEvents(g_game, {
         end
 
         if version >= 750 then
-            g_game.enableFeature(GameSoul);
         end
 
         if version >= 760 then
@@ -68,7 +67,6 @@ controller:registerEvents(g_game, {
         if version >= 910 then
             g_game.enableFeature(GameNameOnNpcTrade);
             g_game.enableFeature(GameSkillsBase);
-            g_game.enableFeature(GamePlayerRegenerationTime);
             g_game.enableFeature(GameChannelPlayerList);
             g_game.enableFeature(GameEnvironmentEffect);
             g_game.enableFeature(GameItemAnimationPhase);
@@ -85,7 +83,6 @@ controller:registerEvents(g_game, {
 
         if version >= 960 then
             g_game.enableFeature(GameSpritesU32);
-            g_game.enableFeature(GameOfflineTrainingTime);
         end
 
         if version >= 963 then

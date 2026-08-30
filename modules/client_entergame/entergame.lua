@@ -437,7 +437,6 @@ function EnterGame.loginSuccess(requestId, jsonSession, jsonWorlds, jsonCharacte
       main = character.ismaincharacter,
       dailyreward = character.dailyrewardstate,
       hidden = character.ishidden,
-      vocation = character.vocation,
       outfitid = character.outfitid,
       headcolor = character.headcolor,
       torsocolor = character.torsocolor,

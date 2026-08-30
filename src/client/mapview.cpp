@@ -206,7 +206,6 @@ void MapView::drawCreatureInformation() {
     uint32_t flags = Otc::DrawThings;
     if (m_drawNames) { flags |= Otc::DrawNames; }
     if (m_drawHealthBars) { flags |= Otc::DrawBars; }
-    if (m_drawManaBar) { flags |= Otc::DrawManaBar; }
 
     Position _camera = m_posInfo.camera;
     const bool alwaysTransparent = m_floorViewMode == ALWAYS_WITH_TRANSPARENCY && _camera.coveredUp(m_posInfo.camera.z - m_floorMin);

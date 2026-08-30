@@ -105,7 +105,6 @@ local function isItemValid(item, category, searchFilter)
     end
     local marketData = item.marketData
 
-    local filterVocation = filterButtons[MarketFilters.Vocation]:isChecked()
     local filterLevel = filterButtons[MarketFilters.Level]:isChecked()
     local filterDepot = filterButtons[MarketFilters.Depot]:isChecked()
 
@@ -117,12 +116,6 @@ local function isItemValid(item, category, searchFilter)
     local player = g_game.getLocalPlayer()
     if filterLevel and marketData.requiredLevel and player:getLevel() < marketData.requiredLevel then
         return false
-    end
-    if filterVocation and marketData.restrictVocation > 0 then
-        local voc = Bit.bit(information.vocation)
-        if not Bit.hasBit(marketData.restrictVocation, voc) then
-            return false
-        end
     end
     if filterDepot and Market.getDepotCount(item.marketData.tradeAs) <= 0 then
         return false
@@ -968,7 +961,6 @@ local function initInterface()
     Market.enableCreateOffer(false)
 
     -- setup filters
-    filterButtons[MarketFilters.Vocation] = browsePanel:getChildById('filterVocation')
     filterButtons[MarketFilters.Level] = browsePanel:getChildById('filterLevel')
     filterButtons[MarketFilters.Depot] = browsePanel:getChildById('filterDepot')
     filterButtons[MarketFilters.SearchAll] = browsePanel:getChildById('filterSearchAll')
@@ -1396,7 +1388,7 @@ end
 
 -- protocol callback functions
 
-function Market.onMarketEnter(depotItems, offers, balance, vocation)
+function Market.onMarketEnter(depotItems, offers, balance)
     if not loaded then
         initMarketItems()
         loaded = true
@@ -1415,14 +1407,6 @@ function Market.onMarketEnter(depotItems, offers, balance, vocation)
     local player = g_game.getLocalPlayer()
     if player then
         information.player = player
-    end
-    if vocation == -1 then
-        if player then
-            information.vocation = player:getVocation()
-        end
-    else
-        -- vocation must be compatible with < 950
-        information.vocation = vocation
     end
     local depotItemsLua = {}
     if type(depotItems) == 'table' and #depotItems >= 1 then

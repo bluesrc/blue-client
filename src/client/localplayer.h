@@ -42,28 +42,16 @@ public:
     void setHealth(uint32_t health, uint32_t maxHealth);
     void setExperience(uint64_t experience);
     void setLevel(uint16_t level, uint8_t levelPercent);
-    void setMana(uint32_t mana, uint32_t maxMana);
-    void setMagicLevel(uint8_t magicLevel, uint8_t magicLevelPercent);
-    void setBaseMagicLevel(uint8_t baseMagicLevel);
-    void setSoul(uint8_t soul);
     void setStamina(uint16_t stamina);
     void setKnown(bool known) { m_known = known; }
     void setPendingGame(bool pending) { m_pending = pending; }
     void setInventoryItem(Otc::InventorySlot inventory, const ItemPtr& item);
-    void setVocation(uint8_t vocation);
     void setPremium(bool premium);
-    void setRegenerationTime(uint16_t regenerationTime);
-    void setOfflineTrainingTime(uint16_t offlineTrainingTime);
     void setBlessings(uint16_t blessings);
     void setResourceBalance(Otc::ResourceTypes_t type, uint64_t value);
     void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild,
                         uint32_t pokedexCount, uint64_t totalCaught);
 
-    uint8_t getVocation() { return m_vocation; }
-    uint8_t getMagicLevel() { return m_magicLevel; }
-    uint8_t getMagicLevelPercent() { return m_magicLevelPercent; }
-    uint8_t getBaseMagicLevel() { return m_baseMagicLevel; }
-    uint8_t getSoul() { return m_soul; }
     uint8_t getLevelPercent() { return m_levelPercent; }
 
     uint16_t getLevel() { return m_level; }
@@ -72,12 +60,8 @@ public:
     uint16_t getSkillLevelPercent(Otc::Skill skill) { return m_skills[skill].levelPercent; }
     uint16_t getStamina() { return m_stamina; }
     uint16_t getBlessings() { return m_blessings; }
-    uint16_t getRegenerationTime() { return m_regenerationTime; }
-    uint16_t getOfflineTrainingTime() { return m_offlineTrainingTime; }
 
     uint32_t getStates() { return m_states; }
-    uint32_t getMana() { return m_mana; }
-    uint32_t getMaxMana() { return m_maxMana; }
     uint32_t getHealth() { return m_health; }
     uint32_t getMaxHealth() { return m_maxHealth; }
     uint64_t getExperience() { return m_experience; }
@@ -166,7 +150,6 @@ private:
     uint8_t m_autoWalkRetries{ 0 };
 
     uint32_t m_states{ 0 };
-    uint8_t m_vocation{ 0 };
     uint16_t m_blessings{ Otc::BlessingNone };
 
     uint32_t m_health{ 0 };
@@ -174,15 +157,7 @@ private:
     uint64_t m_experience{ 0 };
     uint16_t m_level{ 0 };
     uint8_t m_levelPercent{ 0 };
-    uint32_t m_mana{ 0 };
-    uint32_t m_maxMana{ 0 };
-    uint8_t m_magicLevel{ 0 };
-    uint8_t m_magicLevelPercent{ 0 };
-    uint8_t m_baseMagicLevel{ 0 };
-    uint8_t m_soul{ 0 };
     uint16_t m_stamina{ 0 };
-    uint16_t m_regenerationTime{ 0 };
-    uint16_t m_offlineTrainingTime{ 0 };
     std::string m_hometown;
     uint8_t m_trainerGender{ 0 };
     uint64_t m_trainerMoney{ 0 };

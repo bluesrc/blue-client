@@ -45,9 +45,8 @@ namespace Otc
         DrawLights = 1 << 1,
         DrawBars = 1 << 2,
         DrawNames = 1 << 3,
-        DrawManaBar = 1 << 4,
         DrawThingsAndLights = DrawThings | DrawLights,
-        DrawCreatureInfo = DrawBars | DrawNames | DrawManaBar,
+        DrawCreatureInfo = DrawBars | DrawNames,
     };
 
     enum DatOpts : uint8_t
@@ -122,24 +121,13 @@ namespace Otc
         Experience,
         Level,
         LevelPercent,
-        Mana,
-        MaxMana,
-        MagicLevel,
-        MagicLevelPercent,
-        Soul,
-        Stamina,
+		Stamina,
         LastStatistic
     };
 
     enum Skill : uint8_t
     {
-        Fist = 0,
-        Club,
-        Sword,
-        Axe,
-        Distance,
-        Shielding,
-        Fishing,
+        Fishing = 0,
         LastSkill
     };
 
@@ -172,7 +160,7 @@ namespace Otc
     {
         FluidNone = 0,
         FluidWater,
-        FluidMana,
+        FluidViolet,
         FluidBeer,
         FluidOil,
         FluidBlood,
@@ -245,7 +233,7 @@ namespace Otc
         IconBurn = 2,
         IconEnergy = 4,
         IconDrunk = 8,
-        IconManaShield = 16,
+        IconReserved16 = 16,
         IconParalyze = 32,
         IconHaste = 64,
         IconSwords = 128,
@@ -303,7 +291,7 @@ namespace Otc
         MessageTutorialHint = 38,
         MessageThankyou = 39,
         MessageMarket = 40,
-        MessageMana = 41,
+        MessageReserved41 = 41,
         MessageBeyondLast = 42,
 
         // deprecated
@@ -320,7 +308,7 @@ namespace Otc
         // 12x
         MessageAttention = 52,
         MessageBoostedCreature = 53,
-        MessageOfflineTrainning = 54,
+        MessageReserved54 = 54,
         MessageTransaction = 55,
         MessagePotion = 56,
         LastMessage = 57,
@@ -338,7 +326,7 @@ namespace Otc
         GameDoubleExperience = 7,
         GameReserved8 = 8,
         GameSkillsBase = 9,
-        GamePlayerRegenerationTime = 10,
+        GameReserved10 = 10,
         GameChannelPlayerList = 11,
         GamePlayerMounts = 12,
         GameEnvironmentEffect = 13,
@@ -348,7 +336,7 @@ namespace Otc
         GamePlayerMarket = 17,
         GameSpritesU32 = 18,
         // 19 unused
-        GameOfflineTrainingTime = 20,
+        GameReserved20 = 20,
         GamePurseSlot = 21,
         GameFormatCreatureName = 22,
         GameClientPing = 24,
@@ -402,7 +390,7 @@ namespace Otc
         GameIngameStoreServiceType = 75,
         GameDistanceEffectU16 = 77,
         GameLevelU16 = 78,
-        GameSoul = 79,
+        GameReserved79 = 79,
         GameMapOldEffectRendering = 80,
         GameMapDontCorrectCorpse = 81,
         GameThingQuickLoot = 83,
@@ -565,15 +553,15 @@ namespace Otc
         ITEM_DESC_DECAY_TIME = 6,
         ITEM_DESC_COMBAT = 7,
         ITEM_DESC_MINLEVEL = 8,
-        ITEM_DESC_MINMAGICLEVEL = 9,
-        ITEM_DESC_VOCATION = 10,
+		ITEM_DESC_RESERVED_9 = 9,
+		ITEM_DESC_RESERVED_10 = 10,
 		ITEM_DESC_RESERVED_11 = 11,
         ITEM_DESC_ABILITY = 12,
         ITEM_DESC_CHARGES = 13,
 		ITEM_DESC_RESERVED_14 = 14,
         ITEM_DESC_RESERVED_15 = 15,
         ITEM_DESC_AUGMENT = 16,
-        ITEM_DESC_MAGICSHIELD = 18,
+		ITEM_DESC_RESERVED_18 = 18,
         ITEM_DESC_CLEAVE = 19,
         ITEM_DESC_REFLECTION = 20,
         ITEM_DESC_PERFECT = 21,

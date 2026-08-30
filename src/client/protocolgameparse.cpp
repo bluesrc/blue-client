@@ -1600,186 +1600,40 @@ void ProtocolGame::parsePlayerInfo(const InputMessagePtr& msg) const
     const bool premium = msg->getU8(); // premium
     if (g_game.getFeature(Otc::GamePremiumExpiration))
         msg->getU32(); // premium expiration used for premium advertisement
-    const uint8_t vocation = msg->getU8(); // vocation
-
-    if (g_game.getClientVersion() >= 1281) {
-        msg->getU8(); // reserved legacy flag
-    }
-
     const uint16_t reservedActionCount = msg->getU16();
     for (int_fast32_t i = 0; i < reservedActionCount; ++i) {
         msg->getU8();
     }
 
-    if (g_game.getClientVersion() >= 1281) {
-        msg->getU8(); // is magic shield active (bool)
-    }
-
     m_localPlayer->setPremium(premium);
-    m_localPlayer->setVocation(vocation);
 }
 
 void ProtocolGame::parsePlayerStats(const InputMessagePtr& msg) const
 {
-    uint32_t health;
-    uint32_t maxHealth;
-
-    if (g_game.getFeature(Otc::GameDoubleHealth)) {
-        health = msg->getU32();
-        maxHealth = msg->getU32();
-    } else {
-        health = msg->getU16();
-        maxHealth = msg->getU16();
-    }
-
-    uint64_t experience;
-    if (g_game.getFeature(Otc::GameDoubleExperience))
-        experience = msg->getU64();
-    else
-        experience = msg->getU32();
-
-    uint16_t level;
-    if (g_game.getFeature(Otc::GameLevelU16))
-        level = msg->getU16();
-    else
-        level = msg->getU8();
-
+    const uint32_t health = msg->getU32();
+    const uint32_t maxHealth = msg->getU32();
+    const uint64_t experience = msg->getU64();
+    const uint16_t level = msg->getU16();
     const uint8_t levelPercent = msg->getU8();
-
-    if (g_game.getFeature(Otc::GameExperienceBonus)) {
-        if (g_game.getClientVersion() <= 1096) {
-            msg->getDouble(); // experienceBonus
-        } else {
-            msg->getU16(); // baseXpGain
-            if (g_game.getClientVersion() < 1281) {
-                msg->getU16(); // voucherAddend
-            }
-            msg->getU16(); // grindingAddend
-            msg->getU16(); // storeBoostAddend
-            msg->getU16(); // huntingBoostFactor
-        }
-    }
-
-    uint32_t mana;
-    uint32_t maxMana;
-
-    if (g_game.getFeature(Otc::GameDoubleHealth)) {
-        mana = msg->getU32();
-        maxMana = msg->getU32();
-    } else {
-        mana = msg->getU16();
-        maxMana = msg->getU16();
-    }
-
-    if (g_game.getClientVersion() < 1281) {
-        const uint8_t magicLevel = msg->getU8();
-
-        uint8_t baseMagicLevel = 0;
-        if (g_game.getFeature(Otc::GameSkillsBase))
-            baseMagicLevel = msg->getU8();
-        else
-            baseMagicLevel = magicLevel;
-
-        const uint8_t magicLevelPercent = msg->getU8();
-
-        m_localPlayer->setMagicLevel(magicLevel, magicLevelPercent);
-        m_localPlayer->setBaseMagicLevel(baseMagicLevel);
-    }
-
-    uint8_t soul = 0;
-    if (g_game.getFeature(Otc::GameSoul))
-        soul = msg->getU8();
-
-    uint16_t stamina = 0;
-    if (g_game.getFeature(Otc::GamePlayerStamina))
-        stamina = msg->getU16();
-
-    uint16_t baseSpeed = 0;
-    if (g_game.getFeature(Otc::GameSkillsBase))
-        baseSpeed = msg->getU16();
-
-    uint16_t regeneration = 0;
-    if (g_game.getFeature(Otc::GamePlayerRegenerationTime))
-        regeneration = msg->getU16();
-
-    uint16_t training = 0;
-    if (g_game.getFeature(Otc::GameOfflineTrainingTime)) {
-        training = msg->getU16();
-    }
-
-    if (g_game.getClientVersion() >= 1097) {
-        msg->getU16(); // xp boost time (seconds)
-        msg->getU8(); // enables exp boost in the store
-    }
-
-    if (g_game.getClientVersion() >= 1281) {
-        if (g_game.getFeature(Otc::GameDoubleHealth)) {
-            msg->getU32();  // remaining mana shield
-            msg->getU32();  // total mana shield
-        } else {
-            msg->getU16();  // remaining mana shield
-            msg->getU16();  // total mana shield
-        }
-    }
+    const uint16_t stamina = msg->getU16();
+    const uint16_t speed = msg->getU16();
+    const uint16_t baseSpeed = msg->getU16();
 
     m_localPlayer->setHealth(health, maxHealth);
     m_localPlayer->setExperience(experience);
     m_localPlayer->setLevel(level, levelPercent);
-    m_localPlayer->setMana(mana, maxMana);
     m_localPlayer->setStamina(stamina);
-    m_localPlayer->setSoul(soul);
+    m_localPlayer->setSpeed(speed);
     m_localPlayer->setBaseSpeed(baseSpeed);
-    m_localPlayer->setRegenerationTime(regeneration);
-    m_localPlayer->setOfflineTrainingTime(training);
 }
 
 void ProtocolGame::parsePlayerSkills(const InputMessagePtr& msg) const
 {
-    if (g_game.getClientVersion() >= 1281) {
-        // magic level
-        const uint16_t magicLevel = msg->getU16();
-        const uint16_t baseMagicLevel = msg->getU16();
-        msg->getU16(); // base + loyalty bonus(?)
-        const uint8_t percent = msg->getU16() / 100;
-
-        m_localPlayer->setMagicLevel(magicLevel, percent);
-        m_localPlayer->setBaseMagicLevel(baseMagicLevel);
-    }
-
-    for (int_fast32_t skill = Otc::Fist; skill <= Otc::Fishing; ++skill) {
-        uint16_t level;
-
-        if (g_game.getFeature(Otc::GameDoubleSkills))
-            level = msg->getU16();
-        else
-            level = msg->getU8();
-
-        uint16_t baseLevel;
-        if (g_game.getFeature(Otc::GameSkillsBase))
-            if (g_game.getFeature(Otc::GameBaseSkillU16))
-                baseLevel = msg->getU16();
-            else
-                baseLevel = msg->getU8();
-        else
-            baseLevel = level;
-
-        uint16_t levelPercent = 0;
-
-        if (g_game.getClientVersion() >= 1281) {
-            msg->getU16(); // base + loyalty bonus(?)
-            levelPercent = msg->getU16() / 100;
-        } else {
-            levelPercent = msg->getU8();
-        }
-
-        m_localPlayer->setSkill(static_cast<Otc::Skill>(skill), level, levelPercent);
-        m_localPlayer->setBaseSkill(static_cast<Otc::Skill>(skill), baseLevel);
-    }
-
-    if (g_game.getFeature(Otc::GameConcotions)) {
-        msg->getU8();
-    }
-
+    const uint16_t level = msg->getU16();
+    const uint16_t baseLevel = msg->getU16();
+    const uint8_t levelPercent = msg->getU8();
+    m_localPlayer->setSkill(Otc::Fishing, level, levelPercent);
+    m_localPlayer->setBaseSkill(Otc::Fishing, baseLevel);
 }
 
 void ProtocolGame::parsePlayerState(const InputMessagePtr& msg) const
@@ -1997,7 +1851,6 @@ void ProtocolGame::parseTextMessage(const InputMessagePtr& msg)
             break;
         }
         case Otc::MessageHeal:
-        case Otc::MessageMana:
         case Otc::MessageExp:
         case Otc::MessageHealOthers:
         case Otc::MessageExpOthers:
@@ -3284,13 +3137,14 @@ void ProtocolGame::parseMarketEnter(const InputMessagePtr& msg)
         depotItems.push_back({ itemId, count, itemClass });
     }
 
-    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, -1, -1);
+    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, -1);
 }
 
 void ProtocolGame::parseMarketEnterOld(const InputMessagePtr& msg)
 {
     const uint64_t balance = g_game.getClientVersion() >= 981 ? msg->getU64() : msg->getU32();
-    const uint8_t vocation = g_game.getClientVersion() < 950 ? msg->getU8() : g_game.getLocalPlayer()->getVocation();
+    if (g_game.getClientVersion() < 950)
+        msg->getU8(); // retired profession restriction byte
 
     const uint8_t offers = msg->getU8();
     const uint16_t itemsSent = msg->getU16();
@@ -3302,7 +3156,7 @@ void ProtocolGame::parseMarketEnterOld(const InputMessagePtr& msg)
         depotItems.emplace(itemId, count);
     }
 
-    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, balance, vocation);
+    g_lua.callGlobalField("g_game", "onMarketEnter", depotItems, offers, balance);
 }
 
 void ProtocolGame::parseMarketDetail(const InputMessagePtr& msg)

@@ -39,7 +39,7 @@ enum ItemTypeAttr : uint8_t
 	ItemTypeAttrReserved24 = 24,
 	ItemTypeAttrReserved25 = 25,
     ItemTypeAttrArmor = 26,   // deprecated
-    ItemTypeAttrMagicLevel = 27,   // deprecated
+    ItemTypeAttrReserved27 = 27,
     ItemTypeAttrMagicField = 28,   // deprecated
     ItemTypeAttrWritable = 29,   // deprecated
     ItemTypeAttrRotateTo = 30,   // deprecated

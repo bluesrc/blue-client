@@ -225,7 +225,6 @@ struct MarketData
     std::string name;
     ITEM_CATEGORY category;
     uint16_t requiredLevel;
-    uint16_t restrictVocation;
     uint16_t showAs;
     uint16_t tradeAs;
 };
