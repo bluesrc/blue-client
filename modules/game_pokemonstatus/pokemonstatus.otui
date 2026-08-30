@@ -1,8 +1,8 @@
 PokemonStageIndicator < Panel
   size: 38 22
-  background-color: #11182088
+  background-color: #18181866
   border-width: 1
-  border-color: #63738366
+  border-color: #68686866
   phantom: false
   focusable: false
 
@@ -28,9 +28,9 @@ PokemonStageIndicator < Panel
 PokemonConditionIndicator < Panel
   size: 22 22
   visible: false
-  background-color: #11182088
+  background-color: #18181866
   border-width: 1
-  border-color: #63738366
+  border-color: #68686866
   phantom: false
   focusable: false
 

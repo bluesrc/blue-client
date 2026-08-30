@@ -80,8 +80,8 @@ UIWindow
 
   UITextEdit
     id: commandTextEdit
-    background: #aaaaaa11
-    border-color: #aaaaaa88
+    background: #ffffff0d
+    border-color: #68686888
     &baseHeight: 12
     anchors.bottom: parent.bottom
     anchors.left: commandSymbolLabel.right

@@ -165,7 +165,7 @@ local function clearItemSlot(slot, acceptsDrop)
     slot.offerIndex = nil
     slot.position = nil
     slot:setBorderWidth(1)
-    slot:setBorderColor('#4a5563')
+    slot:setBorderColor('#303030')
     slot.onClick = nil
     slot.onDoubleClick = nil
     slot.onDrop = acceptsDrop and onTradeSlotDrop or nil
@@ -486,9 +486,9 @@ local function refreshState()
     local ownSide = tradeWindow:recursiveGetChildById('ownSide')
     local counterSide = tradeWindow:recursiveGetChildById('counterSide')
     ownSide:setBorderWidth(ownConfirmed and 2 or 1)
-    ownSide:setBorderColor(ownConfirmed and '#e5b93f' or '#4a5563')
+    ownSide:setBorderColor(ownConfirmed and '#ffffff' or '#404040')
     counterSide:setBorderWidth(counterConfirmed and 2 or 1)
-    counterSide:setBorderColor(counterConfirmed and '#e5b93f' or '#4a5563')
+    counterSide:setBorderColor(counterConfirmed and '#ffffff' or '#404040')
 
     tradeWindow:recursiveGetChildById('ownStatus'):setText(ownConfirmed and tr('Items confirmed') or tr('Editing offer'))
     tradeWindow:recursiveGetChildById('counterStatus'):setText(counterConfirmed and tr('Items confirmed') or tr('Editing offer'))

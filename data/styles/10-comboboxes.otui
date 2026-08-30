@@ -3,62 +3,75 @@ ComboBoxPopupScrollMenuButton < UIButton
   font: verdana-11px-antialised
   text-align: left
   text-offset: 4 0
-  color: #dfdfdf
+  color: #e0e0e0
   background-color: alpha
   margin: 1
 
   $hover !disabled:
-    color: #dfdfdf
-    background-color: #355d89
+    color: #101010
+    background-color: #ffffff
 
   $disabled:
-    color: #dfdfdf88
+    color: #a8a8a866
 
 ComboBoxPopupScrollMenu < UIPopupScrollMenu
-  image-source: /images/ui/combobox_square
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_combobox_neutral
+  image-color: #ffffff
   image-clip: 0 69 91 23
-  image-border: 1
+  image-border: 4
 
 ComboBoxPopupMenuButton < UIButton
   height: 23
   font: verdana-11px-antialised
   text-align: left
   text-offset: 4 0
-  color: #dfdfdf
+  color: #e0e0e0
   background-color: alpha
   margin: 1
 
   $hover !disabled:
-    color: #dfdfdf
-    background-color: #355d89
+    color: #101010
+    background-color: #ffffff
 
   $disabled:
-    color: #dfdfdf88
+    color: #a8a8a866
 
 ComboBoxPopupMenu < UIPopupMenu
-  image-source: /images/ui/combobox_square
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_combobox_neutral
+  image-color: #ffffff
   image-clip: 0 69 91 23
-  image-border: 1
+  image-border: 4
 
 ComboBox < UIComboBox
   font: verdana-11px-antialised
-  color: #dfdfdf
+  color: #f2f5f7
   size: 91 23
   text-offset: 3 0
   text-align: left
-  image-source: /images/ui/combobox_square
-  image-border: 3
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_combobox_neutral
+  image-color: #ffffff
+  image-border: 4
   image-border-right: 19
   image-clip: 0 0 91 23
 
   $hover !disabled:
+    image-color: #ffffff
     image-clip: 0 23 91 23
 
   $on:
+    image-color: #ffffff
     image-clip: 0 46 91 23
+    color: #101010
 
   $disabled:
-    color: #dfdfdf88
+    color: #a8a8a866
+    image-color: #70707066
     opacity: 0.8
 
 ComboBoxRoundedPopupScrollMenuButton < UIButton
@@ -66,41 +79,45 @@ ComboBoxRoundedPopupScrollMenuButton < UIButton
   font: verdana-11px-antialised
   text-align: left
   text-offset: 4 0
-  color: #dfdfdf
+  color: #e0e0e0
   background-color: alpha
 
   $hover !disabled:
-    color: #ffffff
-    background-color: #355d89
+    color: #101010
+    background-color: #ffffff
 
   $disabled:
-    color: #dfdfdf88
+    color: #a8a8a866
 
 ComboBoxRoundedPopupScrollMenu < UIPopupScrollMenu
-  image-source: /images/ui/combobox_rounded
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_combobox_neutral
+  image-color: #ffffff
   image-clip: 0 69 91 23
-  image-border: 3
+  image-border: 4
 
 ComboBoxRoundedPopupMenuButton < UIButton
   height: 23
   font: verdana-11px-antialised
   text-align: left
   text-offset: 4 0
-  color: #dfdfdf
+  color: #e0e0e0
   background-color: alpha
 
   $hover !disabled:
-    color: #ffffff
-    background-color: #355d89
+    color: #101010
+    background-color: #ffffff
 
   $disabled:
-    color: #dfdfdf88
+    color: #a8a8a866
 
 ComboBoxRoundedPopupMenu < UIPopupMenu
-  image-source: /images/ui/combobox_rounded
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_combobox_neutral
+  image-color: #ffffff
   image-clip: 0 69 91 23
-  image-border: 3
+  image-border: 4
 
 ComboBoxRounded < ComboBox
-  image-source: /images/ui/combobox_rounded
-  image-border: 3

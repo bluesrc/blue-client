@@ -5,8 +5,8 @@ ConsoleLabel < UITextEdit
   margin-left: 2
   text-wrap: true
   text-auto-resize: true
-  selection-color: #111416
-  selection-background-color: #999999
+  selection-color: #101010
+  selection-background-color: #ffffff
   change-cursor-image: false
   cursor-visible: false
   editable: false
@@ -20,8 +20,8 @@ ConsolePhantomLabel < UILabel
   color: yellow
   text-wrap: true
   text-auto-resize: true
-  selection-color: #111416
-  selection-background-color: #999999
+  selection-color: #101010
+  selection-background-color: #ffffff
 
 ConsoleTabBar < MoveableTabBar
   height: 28
@@ -38,8 +38,8 @@ ConsoleTabBarPanel < MoveableTabBarPanel
       type: verticalBox
       align-bottom: true
     border-width: 1
-    border-color: #202327
-    background: #00000066
+    border-color: #48484888
+    background: #18181844
     inverted-scroll: true
     padding: 1
 

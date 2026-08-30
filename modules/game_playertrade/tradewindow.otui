@@ -1,13 +1,13 @@
 TradeItemSlot < Item
   size: 31 31
   border-width: 1
-  border-color: #4a5563
+  border-color: #303030
   margin: 1
 
 TradeSourceSlot < Item
   size: 26 26
   border-width: 1
-  border-color: #4a5563
+  border-color: #303030
   margin: 1
   !tooltip: tr('Double-click an item to offer it. Double-click a container to open it.')
 
@@ -26,7 +26,7 @@ TradeWindow < MainWindow
     margin-left: 8
     margin-bottom: 12
     border-width: 1
-    border-color: #4a5563
+    border-color: #404040
     padding: 10
 
     Label
@@ -110,7 +110,7 @@ TradeWindow < MainWindow
     margin-left: 8
     margin-bottom: 12
     border-width: 1
-    border-color: #4a5563
+    border-color: #404040
     padding: 10
 
     Label
@@ -295,7 +295,7 @@ TradeWindow < MainWindow
       enabled: false
       @onClick: modules.game_playertrade.sourceNextPage()
 
-  Button
+  SuccessButton
     id: acceptButton
     !text: tr('Accept trade')
     width: 140
@@ -305,7 +305,7 @@ TradeWindow < MainWindow
     visible: false
     @onClick: modules.game_playertrade.acceptOffer()
 
-  Button
+  PrimaryButton
     id: confirmButton
     !text: tr('Confirm items')
     width: 140
@@ -314,7 +314,7 @@ TradeWindow < MainWindow
     margin-right: 8
     @onClick: modules.game_playertrade.confirmOffer()
 
-  Button
+  DangerButton
     id: rejectButton
     !text: tr('Cancel trade')
     width: 140

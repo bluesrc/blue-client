@@ -16,9 +16,9 @@ HotkeyCategoryButton < Button
 
 HotkeyActionRow < Panel
   height: 54
-  background-color: #111820bb
+  background-color: #181818aa
   border-width: 1
-  border-color: #485969
+  border-color: #404040
   margin-bottom: 5
   padding: 6
 
@@ -39,7 +39,7 @@ HotkeyActionRow < Panel
     margin-top: 2
     margin-right: 10
     height: 22
-    color: #8fa8bd
+    color: #a8a8a8
     font: verdana-11px-monochrome
     text-wrap: true
 
@@ -110,7 +110,7 @@ MainWindow
       anchors.top: categoryTitle.bottom
       margin-top: 2
       height: 28
-      color: #8fa8bd
+      color: #a8a8a8
       text-wrap: true
 
     Label
@@ -154,7 +154,7 @@ MainWindow
       step: 59
       pixels-scroll: true
 
-    Button
+    DangerButton
       id: resetCategoryButton
       !text: tr('Reset section')
       anchors.left: parent.left
@@ -190,7 +190,7 @@ MainWindow
       anchors.top: customTitle.bottom
       margin-top: 2
       height: 18
-      color: #8fa8bd
+      color: #a8a8a8
 
     VerticalScrollBar
       id: currentHotkeysScrollBar
@@ -210,7 +210,7 @@ MainWindow
       anchors.bottom: currentHotkeysScrollBar.bottom
       focusable: false
 
-    Button
+    SuccessButton
       id: addHotkeyButton
       !text: tr('Add')
       width: 70
@@ -219,7 +219,7 @@ MainWindow
       margin-top: 6
       @onClick: modules.game_hotkeys.addHotkey()
 
-    Button
+    DangerButton
       id: removeHotkeyButton
       !text: tr('Remove')
       width: 70
@@ -277,7 +277,7 @@ MainWindow
       margin-top: 10
       virtual: true
 
-    Button
+    WarningButton
       id: selectObjectButton
       !text: tr('Select object')
       width: 128
@@ -287,7 +287,7 @@ MainWindow
       margin-left: 10
       @onClick: modules.game_hotkeys.startChooseItem()
 
-    Button
+    DangerButton
       id: clearObjectButton
       !text: tr('Clear object')
       width: 128
@@ -334,7 +334,7 @@ MainWindow
     anchors.bottom: okButton.top
     margin-bottom: 10
 
-  Button
+  DangerButton
     id: resetButton
     width: 105
     !text: tr('Reset all')
@@ -342,7 +342,7 @@ MainWindow
     anchors.bottom: parent.bottom
     @onClick: modules.game_hotkeys.reset()
 
-  Button
+  SuccessButton
     id: okButton
     !text: tr('Ok')
     width: 70
@@ -351,7 +351,7 @@ MainWindow
     margin-right: 10
     @onClick: modules.game_hotkeys.ok()
 
-  Button
+  DangerButton
     id: cancelButton
     !text: tr('Cancel')
     width: 70
@@ -400,7 +400,7 @@ HotkeyAssignWindow < MainWindow
     anchors.bottom: applyButton.top
     margin-bottom: 10
 
-  Button
+  DangerButton
     id: clearButton
     !text: tr('Clear')
     width: 70
@@ -408,7 +408,7 @@ HotkeyAssignWindow < MainWindow
     anchors.bottom: parent.bottom
     @onClick: modules.game_hotkeys.clearCapturedBinding(self:getParent())
 
-  Button
+  PrimaryButton
     id: applyButton
     !text: tr('Apply')
     width: 70
@@ -418,7 +418,7 @@ HotkeyAssignWindow < MainWindow
     margin-right: 10
     @onClick: modules.game_hotkeys.applyCapturedBinding(self:getParent())
 
-  Button
+  DangerButton
     id: cancelAssignButton
     !text: tr('Cancel')
     width: 70

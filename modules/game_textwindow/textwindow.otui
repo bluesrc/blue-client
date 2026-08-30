@@ -37,7 +37,7 @@ TextWindow < MainWindow
     step: 16
     pixels-scroll: true
 
-  Button
+  SuccessButton
     id: okButton
     !text: tr('Ok')
     anchors.bottom: parent.bottom
@@ -45,7 +45,7 @@ TextWindow < MainWindow
     margin-right: 10
     width: 60
 
-  Button
+  DangerButton
     id: cancelButton
     !text: tr('Cancel')
     anchors.bottom: parent.bottom

@@ -83,7 +83,7 @@ Panel
     width: 105
 
     $disabled:
-      color: #aaaaaa44
+      color: #a8a8a855
 
   Label
     id: totalPriceLabel
@@ -105,7 +105,7 @@ Panel
     focusable: true
 
     $disabled:
-      color: #aaaaaa44
+      color: #a8a8a855
 
   Label
     id: piecePriceLabel
@@ -127,7 +127,7 @@ Panel
     focusable: true
 
     $disabled:
-      color: #aaaaaa44
+      color: #a8a8a855
 
   Label
     id: amountLabel
@@ -162,7 +162,7 @@ Panel
     margin-left: 3
     @onClick: Market.incrementAmount()
 
-  Button
+  WarningButton
     id: createOfferButton
     !text: tr('Create Offer')
     anchors.verticalCenter: prev.verticalCenter

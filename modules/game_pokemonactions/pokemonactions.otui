@@ -1,9 +1,9 @@
 PokemonCooldownAction < Panel
   size: 32 32
   visible: false
-  background-color: #111820ee
+  background-color: #181818cc
   border-width: 2
-  border-color: #6d8295
+  border-color: #858585
   padding: 2
   phantom: false
   focusable: false

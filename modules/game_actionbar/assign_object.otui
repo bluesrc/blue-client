@@ -59,7 +59,7 @@ MainWindow
     margin-top: 5
     enabled: false
 
-  Button
+  WarningButton
     id: selectObjectButton
     anchors.left: parent.left
     anchors.top: previewItem.bottom
@@ -75,14 +75,14 @@ MainWindow
     height: 2
     margin-top: 7
 
-  Button
+  PrimaryButton
     id: applyButton
     anchors.left: parent.left
     anchors.bottom: parent.bottom
     text: Apply
     @onClick: modules.game_actionbar.objectAssignAccept()
 
-  Button
+  DangerButton
     id: cancelButton
     anchors.right: parent.right
     anchors.bottom: parent.bottom

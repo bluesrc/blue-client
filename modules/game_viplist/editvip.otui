@@ -122,7 +122,7 @@ MainWindow
     anchors.bottom: next.top
     margin-bottom: 10
 
-  Button
+  SuccessButton
     id: buttonOK
     !text: tr('Ok')
     width: 64
@@ -130,7 +130,7 @@ MainWindow
     anchors.bottom: parent.bottom
     margin-right: 10
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

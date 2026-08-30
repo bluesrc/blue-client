@@ -1,11 +1,14 @@
 Window < UIWindow
-  font: verdana-11px-antialised
+  font: verdana-11px-rounded
   size: 200 200
   opacity: 1
-  color: #dfdfdf
+  color: #ffffff
   text-offset: 0 6
   text-align: top
+  background-color: alpha
+  border-width: 0
   image-source: /images/ui/window
+  image-color: #505050
   image-border: 6
   image-border-top: 27
   padding-top: 36
@@ -14,13 +17,16 @@ Window < UIWindow
   padding-bottom: 16
 
   $disabled:
-    color: #dfdfdf88
+    color: #a8a8a866
 
   $dragging:
     opacity: 0.8
 
 HeadlessWindow < UIWindow
+  background-color: alpha
+  border-width: 0
   image-source: /images/ui/window_headless
+  image-color: #505050
   image-border: 5
   padding: 5
 

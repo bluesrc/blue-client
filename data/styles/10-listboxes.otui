@@ -1,19 +1,19 @@
 TextList < UIScrollArea
   layout: verticalBox
   border-width: 1
-  border-color: #272727
-  background-color: #636363
+  border-color: #484848
+  background-color: #0d0d0dcc
   padding: 1
   auto-focus: none
 
 HorizontalList < UIScrollArea
   layout: horizontalBox
   border-width: 1
-  border-color: #272727
-  background-color: #636363
+  border-color: #484848
+  background-color: #0d0d0dcc
 
 VerticalList < UIScrollArea
   layout: verticalBox
   border-width: 1
-  border-color: #272727
-  background-color: #636363
+  border-color: #484848
+  background-color: #0d0d0dcc

@@ -1,6 +1,17 @@
 SkillButton < UIButton
   height: 21
   margin-bottom: 2
+  background-color: #181818aa
+  border-width: 1
+  border-color: #303030
+
+  $hover:
+    background-color: #242424cc
+    border-color: #606060
+
+  $on:
+    background-color: #ffffff18
+    border-color: #ffffff
 
 SkillNameLabel < GameLabel
   font: verdana-11px-monochrome

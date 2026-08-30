@@ -33,7 +33,7 @@ MarketWindow < MainWindow
     anchors.top: parent.top
     anchors.right: parent.right
 
-  Button
+  DangerButton
     id: closeButton
     !text: tr('Close')
     anchors.top: mainTabContent.bottom
@@ -42,7 +42,7 @@ MarketWindow < MainWindow
     width: 110
     @onClick: Market.close()
 
-  Button
+  WarningButton
     id: refreshOffersButton
     !text: tr('Refresh Offers')
     anchors.top: mainTabContent.bottom
@@ -51,7 +51,7 @@ MarketWindow < MainWindow
     width: 110
     @onClick: Market.refreshOffers()
 
-  Button
+  DangerButton
     id: resetButton
     !text: tr('Reset Market')
     !tooltip: tr('Reset selection, filters & search')

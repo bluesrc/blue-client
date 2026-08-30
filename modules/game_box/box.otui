@@ -1,26 +1,26 @@
 BoxPartySlot < Item
   size: 42 42
   border-width: 1
-  border-color: #5d6d7e
+  border-color: #404040
 
   $on:
     border-width: 2
-    border-color: #65b9e8
+    border-color: #e6e6e6
 
 BoxInventorySlot < Item
   size: 34 34
   padding: 1
   border-width: 1
-  border-color: #4a5563
+  border-color: #303030
 
 BoxItemSlot < Item
   size: 42 42
   border-width: 0
-  border-color: #4a5563
+  border-color: #303030
 
   $on:
     border-width: 2
-    border-color: #65b9e8
+    border-color: #e6e6e6
 
 BoxSelectorButton < TabButton
   size: 42 28
@@ -306,7 +306,7 @@ MainWindow
       margin-bottom: 5
       padding: 10
       border-width: 1
-      border-color: #4f5f70
+      border-color: #404040
 
       Label
         id: pokemonDetailsTitle
@@ -317,7 +317,7 @@ MainWindow
         font: verdana-11px-rounded
         text-auto-resize: true
 
-      Button
+      DangerButton
         id: closePokemonDetailsButton
         !text: tr('Close info')
         size: 84 22
@@ -333,7 +333,7 @@ MainWindow
         anchors.bottom: parent.bottom
         margin-top: 9
 
-  Button
+  DangerButton
     id: closeButton
     !text: tr('Close')
     width: 64

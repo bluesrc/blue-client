@@ -2,16 +2,16 @@ QuestLabel < Label
   font: verdana-11px-monochrome
   text-offset: 2 0
   focusable: true
-  color: #aaaaaa
+  color: #a8a8a8
   background-color: alpha
 
   $on:
     color: #00aa00
   $!on:
-    color: #aaaaaa
+    color: #a8a8a8
 
   $focus:
-    background-color: #444444
+    background-color: #383838
 
   $on focus:
     color: #00ff00
@@ -43,7 +43,7 @@ QuestLogWindow < MainWindow
     step: 14
     pixels-scroll: true
 
-  Button
+  DangerButton
     id: closeButton
     anchors.bottom: parent.bottom
     anchors.right: parent.right

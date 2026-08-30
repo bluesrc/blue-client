@@ -1,7 +1,7 @@
 StatsTableRow < TableRow
   font: verdana-11px-monochrome
   focusable: true
-  color: #cccccc
+  color: #d8e1e8
   height: 20
   focusable: false
 
@@ -9,12 +9,12 @@ StatsTableColumn < TableColumn
   font: verdana-11px-monochrome
   background-color: alpha
   text-offset: 5 3
-  color: #cccccc
+  color: #d8e1e8
   width: 110
   focusable: false
 
 Panel
-  background-color: #22283399
+  background-color: #18181899
   margin: 1
 
   Label
@@ -38,9 +38,9 @@ Panel
     height: 121
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: buyStatsTableData
     row-style: StatsTableRow
     column-style: StatsTableColumn
@@ -79,9 +79,9 @@ Panel
     height: 112
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: sellStatsTableData
     row-style: StatsTableRow
     column-style: StatsTableColumn

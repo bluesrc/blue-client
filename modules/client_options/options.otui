@@ -39,7 +39,7 @@ MainWindow
     anchors.bottom: optionsTabBar.bottom
     margin-left: 10
 
-  Button
+  SuccessButton
     !text: tr('Ok')
     width: 64
     anchors.right: parent.right

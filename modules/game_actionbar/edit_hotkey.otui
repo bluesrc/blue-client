@@ -39,7 +39,7 @@ MainWindow
     anchors.bottom: next.top
     margin-bottom: 10
 
-  Button
+  PrimaryButton
     id: applyButton
     !text: tr('Apply')
     anchors.left: parent.left
@@ -48,7 +48,7 @@ MainWindow
     enabled: false
     @onClick: modules.game_actionbar.hotkeyCaptureOk(self:getParent(), self:getParent():recursiveGetChildById('comboPreview').keyCombo)
 
-  Button
+  DangerButton
     id: clearButton
     !text: tr('Clear')
     width: 80
@@ -56,7 +56,7 @@ MainWindow
     anchors.bottom: parent.bottom
     @onClick: modules.game_actionbar.hotkeyClear(self:getParent())
 
-  Button
+  DangerButton
     id: cancelButton
     !text: tr('Cancel')
     width: 80

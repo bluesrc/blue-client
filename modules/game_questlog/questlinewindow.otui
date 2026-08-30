@@ -42,7 +42,7 @@ QuestLineWindow < MainWindow
     margin-top: 10
     text-wrap: true
 
-  Button
+  DangerButton
     id: closeButton
     anchors.bottom: parent.bottom
     anchors.right: parent.right

@@ -17,7 +17,7 @@ TableRow < UITableRow
   odd-background-color: #00000022
 
   $focus:
-    background-color: #294f6d
+    background-color: #263944
     color: #ffffff
 
 TableColumn < Label
@@ -33,29 +33,29 @@ TableHeaderRow < Label
 
 TableHeaderColumn < UITableHeaderColumn
   font: verdana-11px-antialised
-  background-color: alpha
-  color: #dfdfdfff
+  background-color: #181818e8
+  border-width: 1
+  border-color: #686868
+  color: #f2f5f7
   height: 23
   focusable: true
   text-offset: 0 0
-  image-source: /images/ui/button
-  image-color: #dfdfdf
-  image-clip: 0 0 22 23
-  image-border: 3
   padding: 5 10 5 10
   enabled: false
   focusable: false
 
   $hover !disabled:
-    image-clip: 0 23 22 23
+    background-color: #1b2830ee
+    border-color: #5f9fc4
 
   $pressed:
-    image-clip: 0 46 22 23
+    background-color: #303030ee
+    border-color: #ffffff
     text-offset: 1 1
 
   $disabled:
-    color: #dfdfdf88
-    opacity: 0.8
+    color: #a8a8a8
+    opacity: 0.75
 
 SortableTableHeaderColumn < TableHeaderColumn
   enabled: true

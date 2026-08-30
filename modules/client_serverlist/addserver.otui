@@ -56,7 +56,7 @@ MainWindow
         self:addOption(proto)
       end
 
-  Button
+  SuccessButton
     id: buttonAdd
     !text: tr('Add')
     width: 64
@@ -65,7 +65,7 @@ MainWindow
     margin-right: 2
     @onClick: AddServer.add()
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

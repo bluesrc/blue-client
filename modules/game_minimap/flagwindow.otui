@@ -172,7 +172,7 @@ FlagWindow < MainWindow
     anchors.left: prev.right
     anchors.top: prev.top
 
-  Button
+  SuccessButton
     id: okButton
     !text: tr('Ok')
     width: 64
@@ -180,7 +180,7 @@ FlagWindow < MainWindow
     anchors.bottom: parent.bottom
     margin-right: 10
 
-  Button
+  DangerButton
     id: cancelButton
     !text: tr('Cancel')
     width: 64

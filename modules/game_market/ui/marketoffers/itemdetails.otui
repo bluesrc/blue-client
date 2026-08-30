@@ -1,7 +1,7 @@
 DetailsTableRow < TableRow
   font: verdana-11px-monochrome
   focusable: true
-  color: #cccccc
+  color: #d8e1e8
   height: 45
   focusable: false
   padding: 2
@@ -12,12 +12,12 @@ DetailsTableColumn < TableColumn
   font: verdana-11px-monochrome
   background-color: alpha
   text-offset: 5 2
-  color: #cccccc
+  color: #d8e1e8
   width: 100
   focusable: false
 
 Panel
-  background-color: #22283399
+  background-color: #18181899
   margin: 1
 
   Table
@@ -32,9 +32,9 @@ Panel
     margin-right: 6
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: detailsTableData
     row-style: DetailsTableRow
     column-style: DetailsTableColumn

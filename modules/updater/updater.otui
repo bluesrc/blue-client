@@ -34,7 +34,7 @@ StaticMainWindow
     margin-top: 5
     visible: false
           
-  Button
+  WarningButton
     id: changeUrlButton
     margin-left: 50
     margin-right: 50
@@ -45,9 +45,8 @@ StaticMainWindow
     $!mobile:
       visible: false
 
-  Button
+  DangerButton
     margin-left: 90
     margin-right: 90
     !text: tr('Cancel')
     @onClick: Updater.abort()
-
