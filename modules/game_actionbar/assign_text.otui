@@ -37,13 +37,13 @@ MainWindow
     anchors.right: parent.right
     height: 2
     margin-top: 10
-  Button
+  PrimaryButton
     id: applyButton
     text: Apply
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     @onClick: modules.game_actionbar.textAssignAccept()
-  Button
+  DangerButton
     id: cancelButton
     text: Cancel
     anchors.bottom: parent.bottom

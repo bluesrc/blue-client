@@ -7,7 +7,7 @@ NPCOfferLabel < Label
 NPCItemBox < UICheckBox
   border-width: 1
   border-color: #000000
-  color: #aaaaaa
+  color: #a8a8a8
   text-align: center
   text-offset: 0 20
   @onCheckChange: modules.game_npctrade.onItemBoxChecked(self)
@@ -28,7 +28,7 @@ NPCItemBox < UICheckBox
 
   $!on:
     image-color: #ffffff88
-    color: #aaaaaa88
+    color: #a8a8a866
 
 MainWindow
   id: npcWindow
@@ -209,7 +209,7 @@ MainWindow
       checked: true
       @onCheckChange: modules.game_npctrade.onShowAllItemsChange()
 
-  Button
+  WarningButton
     id: sellAllButton
     !text: tr('Sell All')
     width: 64
@@ -219,7 +219,7 @@ MainWindow
     visible: false
     @onClick: modules.game_npctrade.sellAll()
 
-  Button
+  WarningButton
     id: tradeButton
     !text: tr('Buy')
     width: 64
@@ -228,7 +228,7 @@ MainWindow
     margin-right: 10
     @onClick: modules.game_npctrade.onTradeClick()
 
-  Button
+  DangerButton
     !text: tr('Close')
     width: 64
     anchors.right: parent.right

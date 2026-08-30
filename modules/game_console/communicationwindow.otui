@@ -59,7 +59,7 @@ MainWindow
     width: 110
     margin-top: 5
 
-  Button
+  SuccessButton
     id: buttonIgnoreAdd
     !text: tr('Add')
     width: 48
@@ -68,7 +68,7 @@ MainWindow
     anchors.top: prev.top
     anchors.left: prev.right
 
-  Button
+  DangerButton
     id: buttonIgnoreRemove
     !text: tr('Remove')
     width: 64
@@ -132,7 +132,7 @@ MainWindow
     width: 110
     margin-top: 5
 
-  Button
+  SuccessButton
     id: buttonWhitelistAdd
     !text: tr('Add')
     width: 48
@@ -141,7 +141,7 @@ MainWindow
     anchors.top: prev.top
     anchors.left: prev.right
 
-  Button
+  DangerButton
     id: buttonWhitelistRemove
     !text: tr('Remove')
     width: 64
@@ -174,14 +174,14 @@ MainWindow
       size: 160 30
       anchors.horizontalCenter: parent.horizontalCenter
 
-      Button
+      SuccessButton
         id: buttonSave
         !text: tr('Save')
         width: 75
         anchors.top: parent.top
         anchors.left: parent.left
 
-      Button
+      DangerButton
         id: buttonCancel
         !text: tr('Cancel')
         width: 75

@@ -226,7 +226,9 @@ function load()
     local settings = g_settings.getNode('game_interface')
     if settings then
         if settings.splitterMarginBottom then
-            bottomSplitter:setMarginBottom(settings.splitterMarginBottom)
+            -- The chat is a standalone MiniWindow now. Keep only enough room for
+            -- the action bar instead of restoring the legacy chat panel height.
+            bottomSplitter:setMarginBottom(math.min(settings.splitterMarginBottom, 44))
         end
     end
 end

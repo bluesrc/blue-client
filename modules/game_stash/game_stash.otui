@@ -68,7 +68,7 @@ StashWindow < MainWindow
       width: 113
       @onTextChange: renderItems()
 
-  Button
+  DangerButton
     id: closeButton
     !text: tr('Close')
     anchors.top: mainTabContent.bottom
@@ -81,7 +81,7 @@ StashItemBox < UICheckBox
   id: itemBox
   border-width: 1
   border-color: #000000
-  color: #aaaaaa
+  color: #a8a8a8
   text-align: center
 
   Item
@@ -98,11 +98,11 @@ StashItemBox < UICheckBox
     border-color: #ffffff
 
   $hover !checked:
-    border-color: #aaaaaa
+    border-color: #686868
 
   $disabled:
     image-color: #ffffff88
-    color: #aaaaaa88
+    color: #a8a8a866
 
 StashSelectAmount < MainWindow
   id: stashSelectAmount
@@ -127,7 +127,7 @@ StashSelectAmount < MainWindow
     margin-top: -2
     focusable: false
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     height: 20
@@ -137,7 +137,7 @@ StashSelectAmount < MainWindow
     margin-top: 7
     focusable: false
 
-  Button
+  SuccessButton
     id: buttonOk
     !text: tr('Ok')
     height: 20

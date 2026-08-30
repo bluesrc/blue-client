@@ -10,9 +10,9 @@ PokebarEntry < Panel
     anchors.left: portrait.right
     anchors.verticalCenter: parent.verticalCenter
     margin-left: 6
-    background-color: #11171ddd
+    background-color: #181818cc
     border-width: 1
-    border-color: #27343e
+    border-color: #303030
     phantom: true
 
     ProgressBar
@@ -43,9 +43,9 @@ PokebarEntry < Panel
     size: 52 52
     anchors.left: parent.left
     anchors.verticalCenter: parent.verticalCenter
-    background-color: #11171ddd
+    background-color: #181818cc
     border-width: 1
-    border-color: #27343e
+    border-color: #303030
     phantom: true
 
     UIImageView
@@ -88,9 +88,9 @@ PokebarActive < Panel
     anchors.left: portrait.right
     anchors.verticalCenter: parent.verticalCenter
     margin-left: 6
-    background-color: #11171ddd
+    background-color: #181818cc
     border-width: 1
-    border-color: #27343e
+    border-color: #303030
     phantom: true
 
     ProgressBar
@@ -164,9 +164,9 @@ PokebarActive < Panel
     anchors.verticalCenter: parent.verticalCenter
     margin-left: 6
     visible: false
-    background-color: #111820ee
+    background-color: #181818cc
     border-width: 2
-    border-color: #6d8295
+    border-color: #858585
     padding: 2
     phantom: false
     focusable: false

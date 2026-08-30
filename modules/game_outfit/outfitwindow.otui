@@ -156,7 +156,7 @@ MainWindow
 
   // Action Button Section
 
-  Button
+  WarningButton
     id: randomizeButton
     !text: tr('Randomize')
     !tooltip: tr('Randomize characters outfit')
@@ -173,7 +173,7 @@ MainWindow
     margin-bottom: 10
     margin-top: 5
 
-  Button
+  SuccessButton
     id: outfitOkButton
     !text: tr('Ok')
     width: 64
@@ -182,7 +182,7 @@ MainWindow
     margin-right: 16
     @onClick: modules.game_outfit.accept()
 
-  Button
+  DangerButton
     id: outfitCancelButton
     !text: tr('Cancel')
     width: 64

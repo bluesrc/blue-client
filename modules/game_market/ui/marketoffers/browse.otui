@@ -2,7 +2,7 @@ MarketItemBox < UICheckBox
   id: itemBox
   border-width: 1
   border-color: #000000
-  color: #aaaaaa
+  color: #a8a8a8
   text-align: center
 
   Item
@@ -19,14 +19,14 @@ MarketItemBox < UICheckBox
     border-color: #ffffff
 
   $hover !checked:
-    border-color: #aaaaaa
+    border-color: #686868
 
   $disabled:
     image-color: #ffffff88
-    color: #aaaaaa88
+    color: #a8a8a866
 
 Panel
-  background-color: #22283399
+  background-color: #18181899
   margin: 1
 
   MarketComboBox
@@ -48,7 +48,7 @@ Panel
     margin-left: 3
 
     $disabled:
-      color: #aaaaaa44
+      color: #a8a8a855
 
   MarketButtonBox
     id: filterLevel
@@ -72,7 +72,7 @@ Panel
     margin-left: 3
 
     $disabled:
-      color: #aaaaaa44
+      color: #a8a8a855
 
   MarketButtonBox
     id: filterDepot

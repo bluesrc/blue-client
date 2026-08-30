@@ -22,7 +22,7 @@ MainWindow
     margin: 8 0
     max-length: 255
 
-  Button
+  SuccessButton
     id: buttonOk
     !text: tr('Ok')
     width: 64
@@ -31,7 +31,7 @@ MainWindow
     margin-right: 10
     @onClick: self:getParent():onEnter()
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

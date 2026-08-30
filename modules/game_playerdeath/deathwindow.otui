@@ -13,7 +13,7 @@ DeathWindow < MainWindow
     margin-left: 10
     margin-top: 2
 
-  Button
+  SuccessButton
     id: buttonOk
     !text: tr('Ok')
     width: 64
@@ -21,7 +21,7 @@ DeathWindow < MainWindow
     anchors.bottom: parent.bottom
     margin-left: 160
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

@@ -62,7 +62,7 @@ Panel
     minimum: 30
     maximum: 250
 
-  Button
+  WarningButton
     id: hotkeysButton
     !text: tr('Set hotkeys')
     @onClick: modules.game_hotkeys.show()

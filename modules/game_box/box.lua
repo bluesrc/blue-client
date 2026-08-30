@@ -160,7 +160,7 @@ function closePokemonDetails()
         for _, child in ipairs(contentsPanel:getChildren()) do
             child:setOn(false)
             child:setBorderWidth(0)
-            child:setBorderColor('#4a5563')
+            child:setBorderColor('#303030')
         end
     end
     if partyPanel then
@@ -214,9 +214,11 @@ function selectInventorySource(mode)
 
     if inventoryItemsTab then
         inventoryItemsTab:setChecked(mode == 'items')
+        inventoryItemsTab:setOn(mode == 'items')
     end
     if inventoryLootTab then
         inventoryLootTab:setChecked(mode == 'loot')
+        inventoryLootTab:setOn(mode == 'loot')
     end
 
     if inventorySourceMode == mode then
@@ -482,7 +484,7 @@ local function togglePartyPokemonDetails(slot)
     for _, child in ipairs(contentsPanel:getChildren()) do
         child:setOn(false)
         child:setBorderWidth(0)
-        child:setBorderColor('#4a5563')
+        child:setBorderColor('#303030')
     end
     refreshParty()
 
@@ -675,7 +677,7 @@ function refreshContainerItems()
         local isSelected = selectedType == POKEMON and selectedBoxSlot == slot
         itemWidget:setOn(isSelected)
         itemWidget:setBorderWidth(isSelected and 2 or 0)
-        itemWidget:setBorderColor(isSelected and '#65b9e8' or '#4a5563')
+        itemWidget:setBorderColor(isSelected and '#ffffff' or '#303030')
         itemWidget.position = currentContainer:getSlotPosition(slot)
 
         if selectedType == POKEMON and slotItem then
@@ -684,13 +686,13 @@ function refreshContainerItems()
                 for _, child in ipairs(contentsPanel:getChildren()) do
                     child:setOn(false)
                     child:setBorderWidth(0)
-                    child:setBorderColor('#4a5563')
+                    child:setBorderColor('#303030')
                 end
                 toggleBoxPokemonDetails(currentSlot)
                 if selectedBoxSlot == currentSlot then
                     self:setOn(true)
                     self:setBorderWidth(2)
-                    self:setBorderColor('#65b9e8')
+                    self:setBorderColor('#ffffff')
                 end
             end
         end
@@ -700,7 +702,7 @@ function refreshContainerItems()
             g_dispatcher.scheduleEvent(function()
                 if self and not self:isDestroyed() then
                     self:setBorderWidth(self:isOn() and 2 or 0)
-                    self:setBorderColor(self:isOn() and '#65b9e8' or '#4a5563')
+                    self:setBorderColor(self:isOn() and '#ffffff' or '#303030')
                 end
             end, 1)
             return accepted
@@ -709,7 +711,7 @@ function refreshContainerItems()
         itemWidget.onDragLeave = function(self, droppedWidget, mousePos)
             local accepted = UIItem.onDragLeave(self, droppedWidget, mousePos)
             self:setBorderWidth(self:isOn() and 2 or 0)
-            self:setBorderColor(self:isOn() and '#65b9e8' or '#4a5563')
+            self:setBorderColor(self:isOn() and '#ffffff' or '#303030')
             return accepted
         end
 
@@ -742,7 +744,7 @@ function refreshContainerPages()
     local capacity = currentContainer:getCapacity()
     local currentPage = 1 + math.floor(currentContainer:getFirstIndex() / capacity)
     local pages = 1 + math.floor(math.max(0, currentContainer:getSize() - 1) / capacity)
-    pageLabel:setText(string.format(tr('Page %i of %i'), currentPage, pages))
+    pageLabel:setText(string.format('Page %i of %i', currentPage, pages))
 
 end
 

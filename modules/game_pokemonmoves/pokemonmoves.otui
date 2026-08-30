@@ -1,9 +1,9 @@
 PokemonMoveEntry < Panel
   width: 210
   height: 38
-  background-color: #111820dd
+  background-color: #181818bb
   border-width: 1
-  border-color: #637383
+  border-color: #686868
   padding: 5
   phantom: false
   focusable: false
@@ -24,7 +24,7 @@ PokemonMoveEntry < Panel
     anchors.verticalCenter: parent.verticalCenter
     margin-bottom: 2
     width: 42
-    color: #8fa8bd
+    color: #a8a8a8
     font: verdana-11px-monochrome
     text-align: center
     phantom: true

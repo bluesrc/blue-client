@@ -35,8 +35,9 @@ UIWindow
   anchors.top: parent.top
   anchors.left: parent.left
   anchors.right: parent.right
-  image-source: /images/ui/panel_side
-  image-border: 4
+  background-color: #181818aa
+  border-width: 1
+  border-color: #303030
   padding: 3
   text-align: center
   //background-color: gray

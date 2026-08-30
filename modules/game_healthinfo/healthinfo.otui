@@ -1,6 +1,6 @@
 HealthBar < ProgressBar
   id: healthBar
-  background-color: #ff4444
+  background-color: #4f9f62
   anchors.top: parent.top
   anchors.left: parent.left
   anchors.right: parent.right
@@ -8,7 +8,7 @@ HealthBar < ProgressBar
 
 ExperienceBar < ProgressBar
   id: experienceBar
-  background-color: #B6E866
+  background-color: #50aee8
   anchors.top: prev.bottom
   anchors.left: parent.left
   anchors.right: parent.right

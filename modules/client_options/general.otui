@@ -128,7 +128,7 @@ Panel
     margin-left: 5
     mouse-scroll: false
 
-  Button
+  WarningButton
     id: changeLocale
     !text: tr('Change language')
     @onClick: modules.client_locales.createWindow()

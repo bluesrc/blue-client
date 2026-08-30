@@ -1,6 +1,7 @@
 GameSidePanel < UIMiniWindowContainer
-  image-source: /images/ui/panel_side
-  image-border: 4
+  background-color: alpha
+  border-width: 0
+  border-color: alpha
   padding: 4
   width: 198
   layout:
@@ -14,13 +15,15 @@ SelectColumnButton < CheckBox
     opacity: 1
 
 GameBottomPanel < Panel
-  image-source: /images/ui/panel_bottom
-  image-border: 4
+  background-color: alpha
+  border-width: 0
+  border-color: alpha
 
 GameMapPanel < UIGameMap
   padding: 4
-  image-source: /images/ui/panel_map
-  image-border: 4
+  background-color: #101010
+  border-width: 1
+  border-color: #484848
 
   $on:
     padding: 0
@@ -80,9 +83,9 @@ UIWidget
     anchors.right: parent.horizontalCenter
     anchors.bottom: parent.bottom
     relative-margin: bottom
-    margin-bottom: 172
-    @canUpdateMargin: function(self, newMargin) if modules.client_options.getOption('dontStretchShrink') then return self:getMarginBottom() end return math.max(math.min(newMargin, self:getParent():getHeight() - 300), 162) end
-    @onGeometryChange: function(self) self:setMarginBottom(math.min(math.max(self:getParent():getHeight() - 300, 162), self:getMarginBottom())) end
+    margin-bottom: 44
+    @canUpdateMargin: function(self, newMargin) if modules.client_options.getOption('dontStretchShrink') then return self:getMarginBottom() end return math.max(math.min(newMargin, self:getParent():getHeight() - 300), 42) end
+    @onGeometryChange: function(self) self:setMarginBottom(math.min(math.max(self:getParent():getHeight() - 300, 42), self:getMarginBottom())) end
 
   UIWidget
     id: mouseGrabber

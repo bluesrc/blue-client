@@ -1,6 +1,17 @@
 CreatureButton < UICreatureButton
   height: 20
   margin-bottom: 5
+  background-color: alpha
+  border-width: 1
+  border-color: alpha
+
+  $hover:
+    background-color: #ffffff0c
+    border-color: #686868
+
+  $on:
+    background-color: #ffffff18
+    border-color: alpha
 
   UICreature
     id: creature
@@ -27,7 +38,7 @@ CreatureButton < UICreatureButton
     id: label
     anchors.left: emblem.right
     anchors.top: creature.top
-    color: #888888
+    color: #a8a8a8
     margin-left: 2
     phantom: true
 

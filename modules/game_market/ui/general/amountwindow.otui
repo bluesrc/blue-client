@@ -22,7 +22,7 @@ AmountWindow < MainWindow
     margin-left: 10
     margin-top: -2
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     height: 20
@@ -32,7 +32,7 @@ AmountWindow < MainWindow
     margin-top: 7
     focusable: false
 
-  Button
+  SuccessButton
     id: buttonOk
     !text: tr('Ok')
     height: 20

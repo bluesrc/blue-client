@@ -16,7 +16,7 @@ ServerWidget < UIWidget
 
   Label
     id: details
-    color: #aaaaaa
+    color: #a8a8a8
     anchors.top: parent.top
     anchors.left: parent.left
     font: verdana-11px-monochrome
@@ -30,7 +30,7 @@ ServerWidget < UIWidget
   Label
     id: protocol
     color: #ffffff
-    color: #aaaaaa
+    color: #a8a8a8
     anchors.top: parent.top
     anchors.right: next.left
     margin-right: 5
@@ -42,7 +42,7 @@ ServerWidget < UIWidget
     $on:
       color: #ffffff
 
-  Button
+  DangerButton
     id: remove
     text: x
     width: 12
@@ -92,7 +92,7 @@ MainWindow
     anchors.bottom: parent.bottom
     @onClick: AddServer.show()
 
-  Button
+  SuccessButton
     id: buttonOk
     !text: tr('Select')
     width: 64
@@ -101,7 +101,7 @@ MainWindow
     margin-right: 10
     @onClick: ServerList.select()
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

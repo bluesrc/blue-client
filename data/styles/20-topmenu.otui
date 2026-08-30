@@ -1,37 +1,50 @@
 TopButton < UIButton
   size: 26 26
-  image-source: /images/ui/button_top
-  image-clip: 0 0 26 26
-  image-border: 3
-  image-color: #ffffffff
-  icon-color: #ffffffff
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_tab_neutral
+  image-color: #ffffff
+  image-clip: 0 0 22 23
+  image-border: 4
+  icon-color: #ffffff
 
   $on:
-    image-source: /images/ui/button_top_blink
+    image-color: #ffffff
+    image-clip: 0 46 22 23
+    icon-color: #ffffff
 
   $hover !disabled:
-    image-color: #ffffff99
-    image-clip: 26 0 26 26
+    image-color: #ffffff
+    image-clip: 0 23 22 23
+    icon-color: #ffffff
 
   $pressed:
-    image-clip: 52 0 26 26
+    image-color: #ffffff
+    image-clip: 0 46 22 23
+    icon-color: #ffffff
 
   $disabled:
-    image-color: #ffffff44
-    icon-color: #ffffff44
+    image-color: #70707066
+    icon-color: #60718066
 
 TopToggleButton < UIButton
   size: 26 26
-  image-source: /images/ui/button_topgame
-  image-clip: 26 0 26 26
-  image-color: #ffffffff
-  image-border: 3
-  icon-color: #ffffffff
+  background-color: alpha
+  border-width: 0
+  image-source: /images/ui/theme_tab_neutral
+  image-color: #ffffff
+  image-clip: 0 0 22 23
+  image-border: 4
+  icon-color: #ffffff
 
   $on:
-    image-clip: 0 0 26 26
-    image-color: #ffffffff
-    icon-color: #ffffffff
+    image-color: #ffffff
+    image-clip: 0 46 22 23
+    icon-color: #ffffff
+
+  $hover:
+    image-color: #ffffff
+    image-clip: 0 23 22 23
 
 TopMenuButtonsPanel < Panel
   layout:
@@ -42,13 +55,14 @@ TopMenuButtonsPanel < Panel
 
 TopMenuPanel < Panel
   height: 36
-  image-source: /images/ui/panel_top
-  image-repeated: true
+  background-color: #18181888
+  border-width: 1
+  border-color: #40404088
   focusable: false
 
 TopMenuFrameCounterLabel < Label
   font: verdana-11px-rounded
-  color: white
+  color: #d8e1e8
   margin-top: 4
   margin-left: 5
 

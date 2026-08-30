@@ -9,5 +9,5 @@ MarketButtonBox < ButtonBoxRounded
     color: white
 
   $disabled:
-    color: #666666ff
+    color: #607180
     image-color: #ffffff88

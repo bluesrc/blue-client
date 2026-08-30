@@ -1,20 +1,19 @@
 PokebagEntry < Panel
   height: 58
-  image-source: /images/ui/panel_flat
-  image-border: 1
   border-width: 1
-  border-color: #00000000
-  background-color: #00000000
+  border-color: #303030
+  background-color: #181818bb
   focusable: true
   phantom: false
 
   $hover:
-    background-color: #ffffff10
+    border-color: #5f9fc4
+    background-color: #1b2830ee
 
   $on:
     border-width: 1
-    border-color: #e6bd45
-    background-color: #e6bd4518
+    border-color: #ffffff
+    background-color: #ffffff18
 
   UIImageView
     id: pokemonIcon
@@ -33,7 +32,7 @@ PokebagEntry < Panel
     margin-top: 6
     margin-right: 4
     height: 15
-    color: #f2f2f2
+    color: #f2f5f7
     phantom: true
 
   Label
@@ -42,7 +41,7 @@ PokebagEntry < Panel
     anchors.top: pokemonName.bottom
     margin-top: 2
     height: 13
-    color: #b8b8b8
+    color: #a8a8a8
     phantom: true
 
   ProgressBar
@@ -58,38 +57,37 @@ PokebagEntry < Panel
 PokebagInfoText < Label
   height: 18
   text-align: left
-  color: #dddddd
+  color: #d8e1e8
 
 PokebagStatHeader < Label
   height: 22
   text-align: left
   text-offset: 8 3
-  color: #e6bd45
-  background-color: #ffffff0b
+  color: #ffffff
+  background-color: #ffffff12
 
 PokebagStatCell < Label
   height: 23
   text-align: left
   text-offset: 8 3
-  color: #dddddd
+  color: #d8e1e8
 
 PokebagMoveEntry < Panel
   height: 37
-  image-source: /images/ui/panel_flat
-  image-border: 1
   border-width: 1
-  border-color: #00000000
-  background-color: #00000000
+  border-color: #303030
+  background-color: #181818bb
   focusable: true
   draggable: true
   phantom: false
 
   $hover:
-    background-color: #ffffff10
+    border-color: #5f9fc4
+    background-color: #1b2830ee
 
   $on:
-    border-color: #e6bd45
-    background-color: #e6bd4518
+    border-color: #ffffff
+    background-color: #ffffff18
 
   Label
     id: moveSlot
@@ -98,7 +96,7 @@ PokebagMoveEntry < Panel
     anchors.verticalCenter: parent.verticalCenter
     margin-left: 5
     text-align: center
-    color: #e6bd45
+    color: #78b8db
     phantom: true
 
   Label
@@ -110,7 +108,7 @@ PokebagMoveEntry < Panel
     margin-top: 4
     margin-right: 4
     height: 14
-    color: #eeeeee
+    color: #f2f5f7
     phantom: true
 
   Label
@@ -120,7 +118,7 @@ PokebagMoveEntry < Panel
     anchors.top: moveName.bottom
     margin-right: 4
     height: 13
-    color: #999999
+    color: #a8a8a8
     font: verdana-11px-monochrome
     phantom: true
 
@@ -146,21 +144,20 @@ PokebagMoveEntry < Panel
 
 PokebagLearnedMoveEntry < Panel
   height: 38
-  image-source: /images/ui/panel_flat
-  image-border: 1
   border-width: 1
-  border-color: #00000000
-  background-color: #00000000
+  border-color: #303030
+  background-color: #181818bb
   focusable: true
   draggable: true
   phantom: false
 
   $hover:
-    background-color: #ffffff10
+    border-color: #5f9fc4
+    background-color: #1b2830ee
 
   $on:
-    border-color: #e6bd45
-    background-color: #e6bd4518
+    border-color: #ffffff
+    background-color: #ffffff18
 
   Label
     id: moveName
@@ -171,7 +168,7 @@ PokebagLearnedMoveEntry < Panel
     margin-right: 4
     margin-top: 4
     height: 14
-    color: #eeeeee
+    color: #f2f5f7
     phantom: true
 
   Label
@@ -182,7 +179,7 @@ PokebagLearnedMoveEntry < Panel
     margin-left: 7
     margin-right: 4
     height: 13
-    color: #999999
+    color: #a8a8a8
     font: verdana-11px-monochrome
     phantom: true
 
@@ -330,7 +327,7 @@ MainWindow
         margin-left: 8
         height: 18
         text-align: center
-        color: #aaaaaa
+        color: #a8a8a8
 
       Panel
         id: typesInfo
@@ -425,7 +422,7 @@ MainWindow
           width: 52
           anchors.left: parent.left
           anchors.verticalCenter: parent.verticalCenter
-          color: #dddddd
+          color: #d8e1e8
 
         UIImageView
           id: genderIcon
@@ -469,7 +466,7 @@ MainWindow
         anchors.top: experienceLabel.bottom
         margin-right: 10
         height: 16
-        background-color: #6e56c9
+        background-color: #50aee8
 
       Label
         id: friendshipLabel
@@ -527,7 +524,7 @@ MainWindow
           anchors.right: parent.right
           anchors.top: parent.top
           height: 20
-          color: #e6bd45
+          color: #ffffff
           text-align: center
 
         Panel
@@ -567,7 +564,7 @@ MainWindow
           anchors.top: moveDetailsName.bottom
           anchors.bottom: parent.bottom
           margin-top: 5
-          color: #cccccc
+          color: #d8e1e8
           text-align: topLeft
           text-wrap: true
 
@@ -586,7 +583,7 @@ MainWindow
           anchors.right: parent.right
           anchors.top: parent.top
           height: 20
-          color: #e6bd45
+          color: #ffffff
           text-align: center
 
         VerticalScrollBar
@@ -610,7 +607,7 @@ MainWindow
             type: verticalBox
             spacing: 3
 
-  Button
+  DangerButton
     id: closeButton
     !text: tr('Close')
     width: 64

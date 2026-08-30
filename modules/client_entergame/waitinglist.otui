@@ -36,7 +36,7 @@ MainWindow
     anchors.bottom: next.top
     margin-bottom: 10
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

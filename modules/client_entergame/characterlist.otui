@@ -34,7 +34,7 @@ CharacterWidget < UIWidget
 
   Label
     id: name
-    color: #bbbbbb
+    color: #d2d2d2
     anchors.top: parent.top
     anchors.left: parent.left
     font: verdana-11px-monochrome
@@ -93,7 +93,7 @@ CharacterWidget < UIWidget
 
   Label
     id: level
-    color: #bbbbbb
+    color: #d2d2d2
     anchors.top: parent.top
     anchors.left: parent.left
     margin-left: 350
@@ -111,7 +111,7 @@ CharacterWidget < UIWidget
 
   Label
     id: worldName
-    color: #bbbbbb
+    color: #d2d2d2
     anchors.top: parent.top
     font: verdana-11px-monochrome
     text-auto-resize: true
@@ -325,7 +325,7 @@ MainWindow
   //  margin-left: 18
   //  margin-right: 18
 
-  Button
+  SuccessButton
     id: buttonOk
     !text: tr('Ok')
     width: 64
@@ -334,7 +334,7 @@ MainWindow
     margin-right: 10
     @onClick: CharacterList.doLogin()
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64

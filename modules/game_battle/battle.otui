@@ -4,7 +4,7 @@ BattleIcon < UICheckBox
   image-rect: 0 0 20 20
 
   $hover !disabled:
-    color: #cccccc
+    color: #d8e1e8
 
   $!checked:
     image-clip: 0 0 20 20

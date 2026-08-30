@@ -1,34 +1,31 @@
 MiniPanel < Panel
   text-offset: 0 3
   text-align: top
-  image-source: /images/ui/minipanel
-  image-border: 2
-  image-border-top: 19
+  background-color: #181818bb
+  border-width: 1
+  border-color: #484848
   padding-left: 7
   padding-bottom: 7
   padding-top: 24
   padding-right: 7
 
 SelectionButton < Panel
-  image-source: /images/ui/button
-  image-color: #dfdfdf
-  image-clip: 0 0 22 23
-  image-border: 3
-  border: 1 alpha
+  background-color: #181818e8
+  border: 1 #484848
   focusable: true
   phantom: false
 
   $hover:
-    border: 1 white
+    background-color: #1b2830ee
+    border: 1 #5f9fc4
 
   $focus:
-    border: 1 white
-    image-color: #ffffff
+    background-color: #ffffff18
+    border: 1 #ffffff
 
   Panel
     id: progress
-    image-source: /images/ui/panel_flat
-    image-color: #00ff00
+    background-color: #4f9f6233
     margin-left: 1
     margin-top: 1
     anchors.top: parent.top
@@ -110,8 +107,9 @@ MainWindow
     anchors.bottom: separator.top
     margin-top: 5
     margin-bottom: 5
-    image-source: /images/ui/panel_flat
-    image-border: 1
+    background-color: #1a1a1abb
+    border-width: 1
+    border-color: #484848
     padding: 4
     padding-right: 16
     vertical-scrollbar: selectionScroll
@@ -145,7 +143,7 @@ MainWindow
     text-align: center
     text-wrap: true
 
-  Button
+  DangerButton
     id: toggleButton
     anchors.bottom: parent.bottom
     anchors.right: parent.right
@@ -153,7 +151,7 @@ MainWindow
     width: 65
     @onClick: modules.game_tasks.toggleWindow()
 
-  Button
+  SuccessButton
     id: finishButton
     anchors.bottom: parent.bottom
     anchors.right: toggleButton.left
@@ -162,7 +160,7 @@ MainWindow
     margin-right: 5
     @onClick: modules.game_tasks.finish()
 
-  Button
+  PrimaryButton
     id: startButton
     anchors.bottom: parent.bottom
     anchors.right: toggleButton.left
@@ -171,7 +169,7 @@ MainWindow
     margin-right: 5
     @onClick: modules.game_tasks.start()
 
-  Button
+  DangerButton
     id: abortButton
     anchors.bottom: parent.bottom
     anchors.right: toggleButton.left

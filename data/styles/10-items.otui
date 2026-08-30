@@ -3,8 +3,16 @@ Item < UIItem
   padding: 1
   image-source: /images/ui/item
   font: verdana-11px-rounded
-  border-color: white
-  color: white
+  image-color: #606060
+  border-color: #303030
+  color: #f2f5f7
 
   $disabled:
-    color: #646464
+    color: #607180
+
+  $hover:
+    image-color: #808080
+
+  $on:
+    image-color: #ffffff
+    border-color: #ffffff

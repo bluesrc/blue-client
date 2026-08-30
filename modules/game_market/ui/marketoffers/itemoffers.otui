@@ -1,13 +1,13 @@
 OfferTableRow < TableRow
   font: verdana-11px-monochrome
-  color: #cccccc
+  color: #d8e1e8
   height: 15
 
 OfferTableColumn < TableColumn
   font: verdana-11px-monochrome
   background-color: alpha
   text-offset: 5 0
-  color: #cccccc
+  color: #d8e1e8
   width: 80
 
 OfferTableWarningColumn < OfferTableColumn
@@ -15,23 +15,23 @@ OfferTableWarningColumn < OfferTableColumn
 
 OfferTableHeaderRow < TableHeaderRow
   font: verdana-11px-monochrome
-  color: #cccccc
+  color: #d8e1e8
   height: 20
 
 OfferTableHeaderColumn < SortableTableHeaderColumn
   font: verdana-11px-monochrome
   text-offset: 2 0
-  color: #cccccc
+  color: #d8e1e8
 
   $focus:
-    background-color: #294f6d
+    background-color: #383838
     color: #ffffff
 
 Panel
-  background-color: #22283399
+  background-color: #18181899
   margin: 1
 
-  Button
+  PrimaryButton
     id: buyButton
     !text: tr('Buy Now')
     anchors.right: parent.right
@@ -60,9 +60,9 @@ Panel
     margin-right: 6
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: sellingTableData
     row-style: OfferTableRow
     column-style: OfferTableColumn
@@ -103,7 +103,7 @@ Panel
     step: 28
     pixels-scroll: true
 
-  Button
+  WarningButton
     id: sellButton
     !text: tr('Sell Now')
     anchors.right: parent.right
@@ -133,9 +133,9 @@ Panel
     height: 115
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: buyingTableData
     row-style: OfferTableRow
     column-style: OfferTableColumn

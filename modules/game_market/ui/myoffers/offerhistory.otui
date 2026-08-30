@@ -1,5 +1,5 @@
 Panel
-  background-color: #22283399
+  background-color: #18181899
   margin: 1
 
   Label
@@ -28,9 +28,9 @@ Panel
     margin-right: 6
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: myHistorySellingTableData
     row-style: OfferTableRow
     column-style: OfferTableColumn
@@ -91,9 +91,9 @@ Panel
     height: 150
     padding: 1
     focusable: false
-    background-color: #222833
+    background-color: #181818
     border-width: 1
-    border-color: #191f27
+    border-color: #303030
     table-data: myHistoryBuyingTableData
     row-style: OfferTableRow
     column-style: OfferTableColumn

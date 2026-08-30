@@ -39,7 +39,7 @@ MainWindow
     anchors.bottom: next.top
     margin-bottom: 10
 
-  Button
+  SuccessButton
     id: buttonOpen
     !text: tr('Open')
     width: 64
@@ -48,7 +48,7 @@ MainWindow
     margin-right: 10
     @onClick: self:getParent():onEnter()
 
-  Button
+  DangerButton
     id: buttonCancel
     !text: tr('Cancel')
     width: 64
