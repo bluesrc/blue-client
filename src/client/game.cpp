@@ -731,6 +731,10 @@ void Game::look(const ThingPtr& thing, bool isBattleList)
     if (!canPerformGameAction() || !thing)
         return;
 
+    // Let interface modules associate the server's look description with the
+    // thing that originated the request (the text message itself has no id).
+    g_lua.callGlobalField("g_game", "onLookRequest", thing);
+
     if (thing->isCreature() && isBattleList && m_protocolVersion >= 961)
         m_protocolGame->sendLookCreature(thing->getId());
     else {

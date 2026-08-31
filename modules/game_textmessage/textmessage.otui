@@ -6,10 +6,128 @@ TextMessageLabel < UILabel
   margin-bottom: 2
   visible: false
 
+ItemLookSprite < Item
+  size: 48 48
+  virtual: true
+  draggable: false
+  phantom: true
+  border-width: 1
+  border-color: #303030
+  background-color: #10101099
+  padding: 3
+
+ItemLookCard < Panel
+  width: 220
+  height: 76
+  background-color: #181818ee
+  border-width: 1
+  border-color: #484848
+  padding: 8
+  phantom: false
+  focusable: true
+  visible: false
+
+  Panel
+    id: accent
+    height: 2
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    background-color: #5f9fc4
+    phantom: true
+
+  ItemLookSprite
+    id: itemLookSprite
+    anchors.left: parent.left
+    anchors.top: accent.bottom
+    margin-top: 7
+
+  Label
+    id: itemLookName
+    anchors.left: itemLookSprite.right
+    anchors.right: parent.right
+    anchors.top: itemLookSprite.top
+    margin-left: 8
+    height: 28
+    color: #f3d66c
+    font: verdana-11px-rounded
+    text-wrap: true
+    phantom: true
+
+  Label
+    id: itemLookQuantity
+    anchors.left: itemLookName.left
+    anchors.right: parent.right
+    anchors.top: itemLookName.bottom
+    margin-top: 2
+    height: 14
+    color: #a8a8a8
+    font: verdana-11px-monochrome
+    phantom: true
+
+  HorizontalSeparator
+    id: itemLookSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: itemLookSprite.bottom
+    margin-top: 6
+    visible: false
+
+  Label
+    id: itemLookPropertiesTitle
+    !text: tr('Properties')
+    anchors.left: parent.left
+    anchors.top: itemLookSeparator.bottom
+    margin-top: 7
+    height: 14
+    color: #f3d66c
+    font: verdana-11px-rounded
+    visible: false
+    phantom: true
+
+  Label
+    id: itemLookStaffIds
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: itemLookPropertiesTitle.bottom
+    margin-top: 4
+    height: 28
+    color: #a8a8a8
+    font: verdana-11px-monochrome
+    visible: false
+    phantom: true
+
+  Label
+    id: itemLookTraits
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: itemLookStaffIds.bottom
+    margin-top: 3
+    height: 28
+    color: #78b8db
+    text-wrap: true
+    visible: false
+    phantom: true
+
+  Label
+    id: itemLookDescription
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: itemLookTraits.bottom
+    margin-top: 4
+    color: #d8e1e8
+    text-align: topLeft
+    text-wrap: true
+    visible: false
+    phantom: true
+
 Panel
   anchors.fill: gameMapPanel
   anchors.bottom: gameMapPanel.bottom
   focusable: false
+
+  ItemLookCard
+    id: itemLookCard
 
   Panel
     id: centerTextMessagePanel

@@ -15,11 +15,36 @@ ExperienceBar < ProgressBar
   margin: 1
   margin-top: 3
 
+StaminaBar < ProgressBar
+  id: staminaBar
+  background-color: #d9a441
+  anchors.top: prev.bottom
+  anchors.left: parent.left
+  anchors.right: parent.right
+  margin: 1
+  margin-top: 3
+
+MoneyLabel < Label
+  id: moneyLabel
+  height: 18
+  anchors.top: prev.bottom
+  anchors.left: parent.left
+  anchors.right: parent.right
+  margin: 1
+  margin-top: 3
+  background-color: #181818aa
+  border-width: 1
+  border-color: #303030
+  color: #f3d66c
+  font: verdana-11px-rounded
+  text-align: center
+  text-offset: 0 2
+
 MiniWindow
   icon: /images/topbuttons/healthinfo
   id: healthInfoWindow
   !text: tr('Health Info')
-  height: 65
+  height: 105
   @onOpen: modules.game_healthinfo.onMiniWindowOpen()
   @onClose: modules.game_healthinfo.onMiniWindowClose()
   &save: true
@@ -27,3 +52,5 @@ MiniWindow
   MiniWindowContents
     HealthBar
     ExperienceBar
+    StaminaBar
+    MoneyLabel
