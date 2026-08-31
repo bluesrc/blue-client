@@ -1,0 +1,9 @@
+Module
+  name: game_duel
+  description: Safe virtual-team player duels
+  author: Blue Team
+  sandboxed: true
+  dependencies: [ game_interface ]
+  scripts: [ duel ]
+  @onLoad: init()
+  @onUnload: terminate()

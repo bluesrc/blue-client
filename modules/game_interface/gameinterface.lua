@@ -687,6 +687,11 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
             if creatureThing:isPlayer() then
                 menu:addSeparator()
                 local creatureName = creatureThing:getName()
+                if modules.game_duel and modules.game_duel.requestDuel then
+                    menu:addOption(tr('Duel with %s', creatureName), function()
+                        modules.game_duel.requestDuel(creatureThing)
+                    end)
+                end
                 menu:addOption(tr('Trade with %s', creatureName), function()
                     modules.game_playertrade.requestTrade(creatureThing)
                 end)
