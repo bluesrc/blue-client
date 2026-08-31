@@ -4,6 +4,23 @@ local window
 local protocol
 local loadBox
 
+local function populateWorlds()
+  local worldBox = window:getChildById('world')
+  worldBox:clearOptions()
+
+  local worlds = G.characterAccount and G.characterAccount.worlds or {}
+  local worldIds = {}
+  for worldId in pairs(worlds) do
+    table.insert(worldIds, worldId)
+  end
+  table.sort(worldIds)
+
+  for _, worldId in ipairs(worldIds) do
+    local world = worlds[worldId]
+    worldBox:addOption(world.worldName, world)
+  end
+end
+
 local function finishRequest()
   if loadBox then
     loadBox:destroy()
@@ -69,6 +86,7 @@ function CharacterCreation.show()
     return
   end
   CharacterList.hide()
+  populateWorlds()
   window:show()
   window:raise()
   window:focus()
@@ -87,12 +105,17 @@ end
 function CharacterCreation.doCreate()
   local name = window:getChildById('characterName'):getText()
   local sex = window:getChildById('sex'):getCurrentOption().data
+  local world = window:getChildById('world'):getCurrentOption()
   if #name < 3 or #name > 20 or not name:match('^[%a]+[ %a]*[%a]$') then
     displayErrorBox(tr('Character creation'), tr('Character name must contain 3 to 20 letters and single spaces.'))
     return
   end
   if name:find('  ', 1, true) then
     displayErrorBox(tr('Character creation'), tr('Character name must contain 3 to 20 letters and single spaces.'))
+    return
+  end
+  if not world then
+    displayErrorBox(tr('Character creation'), tr('No world is available for character creation.'))
     return
   end
 
@@ -115,5 +138,5 @@ function CharacterCreation.doCreate()
       CharacterCreation.show()
     end
   })
-  protocol:createCharacter(host, port, G.account, G.password, G.authenticatorToken, name, sex)
+  protocol:createCharacter(host, port, G.account, G.password, G.authenticatorToken, name, sex, world.data.worldName)
 end

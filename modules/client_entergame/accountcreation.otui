@@ -1,7 +1,7 @@
 MainWindow
   id: accountCreationWindow
   !text: tr('Account creation')
-  size: 300 222
+  size: 300 246
   visible: false
   @onEnter: AccountCreation.doCreate()
   @onEscape: AccountCreation.hide(true)
@@ -62,8 +62,8 @@ MainWindow
   HorizontalSeparator
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.bottom: next.top
-    margin-bottom: 10
+    anchors.top: prev.bottom
+    margin-top: 14
 
   SuccessButton
     !text: tr('Create')

@@ -1,7 +1,7 @@
 MainWindow
   id: characterCreationWindow
   !text: tr('Character creation')
-  size: 300 178
+  size: 300 224
   visible: false
   @onEnter: CharacterCreation.doCreate()
   @onEscape: CharacterCreation.hide(true)
@@ -29,6 +29,20 @@ MainWindow
 
   ComboBox
     id: sex
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+
+  MenuLabel
+    !text: tr('World')
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-auto-resize: true
+
+  ComboBox
+    id: world
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: prev.bottom

@@ -112,6 +112,52 @@ local function onUpdateNeeded(protocol, signature)
   end
 end
 
+local function connectToLoginServer(clientVersion, httpLogin, returnToCharacterList)
+  if clientVersion >= 1281 and G.port ~= 7171 then
+    EnterGame.tryHttpLogin(clientVersion, httpLogin)
+    return
+  end
+
+  if protocolLogin then
+    protocolLogin:cancelLogin()
+  end
+  protocolLogin = ProtocolLogin.create()
+  protocolLogin.onLoginError = onError
+  protocolLogin.onMotd = onMotd
+  protocolLogin.onSessionKey = onSessionKey
+  protocolLogin.onCharacterList = onCharacterList
+  protocolLogin.onUpdateNeeded = onUpdateNeeded
+
+  loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to login server...'))
+  connect(loadBox, {
+    onCancel = function()
+      loadBox = nil
+      protocolLogin:cancelLogin()
+      if returnToCharacterList then
+        CharacterList.showAgain()
+      else
+        EnterGame.show()
+      end
+    end
+  })
+
+  g_game.setClientVersion(clientVersion)
+  g_game.setProtocolVersion(g_game.getClientProtocolVersion(clientVersion))
+  g_game.chooseRsa(G.host)
+
+  if modules.game_things.isLoaded() then
+    protocolLogin:login(G.host, G.port, G.account, G.password, G.authenticatorToken, G.stayLogged)
+  else
+    loadBox:destroy()
+    loadBox = nil
+    if returnToCharacterList then
+      CharacterList.showAgain()
+    else
+      EnterGame.show()
+    end
+  end
+end
+
 -- public functions
 function EnterGame.init()
   enterGame = g_ui.displayUI('entergame')
@@ -528,38 +574,31 @@ function EnterGame.doLogin()
   g_settings.set('port', G.port)
   g_settings.set('client-version', clientVersion)
 
-  if clientVersion >= 1281 and G.port ~= 7171 then
-    EnterGame.tryHttpLogin(clientVersion, httpLogin)
-  else
-    protocolLogin = ProtocolLogin.create()
-    protocolLogin.onLoginError = onError
-    protocolLogin.onMotd = onMotd
-    protocolLogin.onSessionKey = onSessionKey
-    protocolLogin.onCharacterList = onCharacterList
-    protocolLogin.onUpdateNeeded = onUpdateNeeded
+  connectToLoginServer(clientVersion, httpLogin, false)
+end
 
-    loadBox = displayCancelBox(tr('Please wait'), tr('Connecting to login server...'))
-    
-    connect(loadBox, {
-      onCancel = function(msgbox)
-        loadBox = nil
-        protocolLogin:cancelLogin()
-        EnterGame.show()
-      end
-    })
-
-    g_game.setClientVersion(clientVersion)
-    g_game.setProtocolVersion(g_game.getClientProtocolVersion(clientVersion))
-    g_game.chooseRsa(G.host)
-
-    if modules.game_things.isLoaded() then
-      protocolLogin:login(G.host, G.port, G.account, G.password, G.authenticatorToken, G.stayLogged)
-    else
-      loadBox:destroy()
-      loadBox = nil
-      EnterGame.show()
-    end
+function EnterGame.refreshCharacterList()
+  if loadBox or g_game.isOnline() then
+    return
   end
+
+  if not G.account or tostring(G.account) == '' or not G.password or G.password == '' or
+      not G.host or G.host == '' or not G.port then
+    CharacterList.showAgain()
+    return
+  end
+
+  local clientVersion = g_settings.getInteger('client-version')
+  if clientVersion == 0 then
+    clientVersion = g_game.getClientVersion()
+  end
+  if clientVersion == 0 then
+    clientVersion = 1074
+  end
+
+  EnterGame.hide()
+  CharacterList.hide()
+  connectToLoginServer(clientVersion, g_settings.getBoolean('httpLogin'), true)
 end
 
 function EnterGame.displayMotd()
