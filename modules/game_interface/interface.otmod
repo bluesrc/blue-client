@@ -23,6 +23,7 @@ Module
     - game_npctrade
     - game_textwindow
     - game_playertrade
+    - game_duel
     - game_bugreport
     - game_playerdeath
     - game_playermount

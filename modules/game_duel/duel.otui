@@ -1,0 +1,43 @@
+DuelRosterWidget < Panel
+  size: 14 18
+  margin-left: -7
+  margin-bottom: 32
+  phantom: true
+  layout:
+    type: horizontalBox
+    spacing: 2
+
+DuelBallIcon < UIWidget
+  size: 14 14
+  image-source: /images/topbuttons/pokeball
+  image-size: 14 14
+  border-width: 0
+  phantom: true
+
+DuelControlWindow < Panel
+  size: 310 34
+  anchors.top: topMenu.bottom
+  anchors.horizontalCenter: parent.horizontalCenter
+  margin-top: 4
+  padding: 4
+  background-color: #10151dee
+  border-width: 1
+  border-color: #6d8295
+
+  Label
+    id: duelTitle
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    width: 220
+    text-align: center
+    color: #ffffff
+
+  Button
+    id: forfeitButton
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 3
+    width: 72
+    height: 22
+    !text: tr('Forfeit')
