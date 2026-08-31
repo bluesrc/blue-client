@@ -62,6 +62,8 @@ function init()
 
     if g_game.isOnline() then
         online()
+    else
+        offline()
     end
 end
 
@@ -79,6 +81,7 @@ function terminate()
 end
 
 function online()
+    topMenu:show()
     showGameButtons()
 
     addEvent(function()
@@ -92,9 +95,14 @@ function online()
 end
 
 function offline()
+    topMenu:hide()
     hideGameButtons()
     pingLabel:hide()
     fpsMin = -1
+
+    if modules.client_background and modules.client_background.getBackground then
+        modules.client_background.getBackground():addAnchor(AnchorTop, 'parent', AnchorTop)
+    end
 end
 
 function updateFps(fps)

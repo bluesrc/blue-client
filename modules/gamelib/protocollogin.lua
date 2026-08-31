@@ -10,6 +10,14 @@ LoginServerUpdateNeeded = 30
 LoginServerSessionKey = 40
 LoginServerCharacterList = 100
 LoginServerExtendedCharacterList = 101
+LoginServerCreationResult = 102
+LoginServerRichCharacterList = 103
+
+LoginActionAuthenticate = 0
+LoginActionCreateAccount = 1
+LoginActionCreateCharacter = 2
+LoginActionCreateCharacterWithWorld = 3
+LoginCustomActionMagic = 0x42524347
 
 -- Since 10.76
 LoginServerRetry = 10
@@ -25,8 +33,32 @@ function ProtocolLogin:login(host, port, accountName, accountPassword, authentic
     self.accountPassword = accountPassword
     self.authenticatorToken = authenticatorToken
     self.stayLogged = stayLogged
+    self.loginAction = LoginActionAuthenticate
     self.connectCallback = self.sendLoginPacket
 
+    self:connect(host, port)
+end
+
+function ProtocolLogin:createAccount(host, port, accountName, accountPassword)
+    self.accountName = accountName
+    self.accountPassword = accountPassword
+    self.authenticatorToken = ''
+    self.stayLogged = false
+    self.loginAction = LoginActionCreateAccount
+    self.connectCallback = self.sendLoginPacket
+    self:connect(host, port)
+end
+
+function ProtocolLogin:createCharacter(host, port, accountName, accountPassword, authenticatorToken, characterName, sex, worldName)
+    self.accountName = accountName
+    self.accountPassword = accountPassword
+    self.authenticatorToken = authenticatorToken or ''
+    self.stayLogged = false
+    self.loginAction = LoginActionCreateCharacterWithWorld
+    self.characterName = characterName
+    self.characterSex = sex
+    self.characterWorld = worldName
+    self.connectCallback = self.sendLoginPacket
     self:connect(host, port)
 end
 
@@ -79,6 +111,19 @@ function ProtocolLogin:sendLoginPacket()
     end
 
     msg:addString(self.accountPassword)
+
+    -- Blue's account management extension lives inside the RSA encrypted
+    -- login block. Old clients remain compatible because the server only
+    -- interprets the extension when this magic value is present.
+    msg:addU32(LoginCustomActionMagic)
+    msg:addU8(self.loginAction or LoginActionAuthenticate)
+    if self.loginAction == LoginActionCreateCharacter or self.loginAction == LoginActionCreateCharacterWithWorld then
+        msg:addString(self.characterName)
+        msg:addU8(self.characterSex)
+        if self.loginAction == LoginActionCreateCharacterWithWorld then
+            msg:addString(self.characterWorld)
+        end
+    end
 
     if self.getLoginExtendedData then
         local data = self:getLoginExtendedData()
@@ -174,6 +219,10 @@ function ProtocolLogin:onRecv(msg)
             self:parseCharacterList(msg)
         elseif opcode == LoginServerExtendedCharacterList then
             self:parseExtendedCharacterList(msg)
+        elseif opcode == LoginServerCreationResult then
+            self:parseCreationResult(msg)
+        elseif opcode == LoginServerRichCharacterList then
+            self:parseRichCharacterList(msg)
         elseif opcode == LoginServerUpdate then
             local signature = msg:getString()
             signalcall(self.onUpdateNeeded, self, signature)
@@ -184,6 +233,69 @@ function ProtocolLogin:onRecv(msg)
         end
     end
     self:disconnect()
+end
+
+function ProtocolLogin:parseRichCharacterList(msg)
+    local worlds = {}
+    local worldsCount = msg:getU8()
+    for i = 1, worldsCount do
+        local worldId = msg:getU8()
+        worlds[worldId] = {
+            worldName = msg:getString(),
+            worldIp = msg:getString(),
+            worldPort = msg:getU16(),
+            previewState = msg:getU8()
+        }
+    end
+
+    local characters = {}
+    local charactersCount = msg:getU8()
+    for i = 1, charactersCount do
+        local worldId = msg:getU8()
+        local world = worlds[worldId]
+        local character = {
+            name = msg:getString(),
+            level = msg:getU32(),
+            outfitid = msg:getU16(),
+            headcolor = msg:getU8(),
+            torsocolor = msg:getU8(),
+            legscolor = msg:getU8(),
+            detailcolor = msg:getU8(),
+            addonsflags = msg:getU8(),
+            pokemon = {},
+            worldName = world.worldName,
+            worldIp = world.worldIp,
+            worldPort = world.worldPort,
+            previewState = world.previewState
+        }
+        for slot = 1, 6 do
+            character.pokemon[slot] = msg:getU16()
+        end
+        characters[i] = character
+    end
+
+    local account = { worlds = worlds }
+    if g_game.getProtocolVersion() > 1077 then
+        account.status = msg:getU8()
+        account.subStatus = msg:getU8()
+        account.premDays = msg:getU32()
+        if account.premDays ~= 0 and account.premDays ~= 65535 then
+            account.premDays = math.floor((account.premDays - os.time()) / 86400)
+        end
+    else
+        account.status = AccountStatus.Ok
+        account.premDays = msg:getU16()
+        account.subStatus = account.premDays > 0 and SubscriptionStatus.Premium or SubscriptionStatus.Free
+    end
+
+    signalcall(self.onCharacterList, self, characters, account)
+end
+
+function ProtocolLogin:parseCreationResult(msg)
+    local action = msg:getU8()
+    local success = msg:getU8() ~= 0
+    local message = msg:getString()
+    signalcall(self.onCreationResult, self, action, success, message)
 end
 
 function ProtocolLogin:parseError(msg)

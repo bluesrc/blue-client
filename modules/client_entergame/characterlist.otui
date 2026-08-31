@@ -1,308 +1,178 @@
+CharacterPokemonSlot < Panel
+  size: 52 52
+  background-color: #181818cc
+  border-width: 1
+  border-color: #303030
+  phantom: true
+
+  UIImageView
+    id: pokemonIcon
+    size: 44 44
+    anchors.centerIn: parent
+    phantom: true
+
 CharacterWidget < UIWidget
-  height: 14
-  background-color: alpha
-  &updateOnStates: |
-    function(self)
-      local children = self:getChildren()
-      for i=1,#children do
-        children[i]:setOn(self:isFocused())
-      end
-    end
-  @onFocusChange: self:updateOnStates()
-  @onSetup: |
-    self:updateOnStates()
-    if g_game.getFeature(GameEnterGameShowAppearance) then
-      self:setHeight(64)
-    end
+  height: 84
+  background-color: #181818bb
+  border-width: 1
+  border-color: #303030
+  focusable: true
+
+  $hover:
+    border-color: #5f9fc4
+    background-color: #1b2830ee
 
   $focus:
-    background-color: #ffffff22
+    border-color: #ffffff
+    background-color: #ffffff18
 
-  Creature
-    id: outfitCreatureBox
-    size: 64 64
-    anchors.top: parent.top
+  Panel
+    id: outfitFrame
+    size: 70 70
     anchors.left: parent.left
-    padding-left: 10
-    padding-bottom: 5
-    creatureDisplay:setCreature(creature)
-    fixed-creature-size: true
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 7
+    background-color: #101010cc
+    border-width: 1
+    border-color: #404040
+    phantom: true
+
+    Creature
+      id: outfitCreatureBox
+      size: 64 64
+      anchors.centerIn: parent
+      background-color: alpha
+      border-width: 0
+      creatureDisplay:setCreature(creature)
+      fixed-creature-size: true
+      phantom: true
 
   Label
     id: name
-    color: #d2d2d2
+    width: 125
+    height: 18
+    anchors.left: outfitFrame.right
     anchors.top: parent.top
-    anchors.left: parent.left
+    margin-left: 12
+    margin-top: 14
     font: verdana-11px-monochrome
-    text-auto-resize: true
-    background-color: alpha
-    text-offset: 2 0
-    @onSetup: |
-      if g_game.getFeature(GameEnterGameShowAppearance) then
-        self:setMarginLeft(65)
-      end
-
-    $on:
-      color: #ffffff
-
-  Label
-    id: mainCharacter
-    size: 9 8
-    anchors.top: parent.top
-    anchors.left: prev.right
-    margin-left: 6
-    margin-top: 2
-    image-source: /images/game/entergame/maincharacter
-    image-clip: 0 0 9 8
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  Label
-    id: statusDailyReward
-    size: 11 19
-    anchors.top: parent.top
-    anchors.left: parent.left
-    margin-left: 252
-    margin-top: 2
-    image-source: /images/game/entergame/dailyreward_collected
-    image-clip: 0 0 11 19
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  Label
-    id: statusHidden
-    size: 11 19
-    anchors.top: parent.top
-    anchors.left: parent.left
-    margin-left: 267
-    margin-top: 2
-    image-source: /images/game/entergame/hidden
-    image-clip: 0 0 11 19
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
+    color: #f2f5f7
+    text-wrap: true
+    phantom: true
 
   Label
     id: level
-    color: #d2d2d2
-    anchors.top: parent.top
-    anchors.left: parent.left
-    margin-left: 350
+    width: 125
+    height: 16
+    anchors.left: name.left
+    anchors.top: name.bottom
+    margin-top: 4
     font: verdana-11px-monochrome
-    text-auto-resize: true
-    background-color: alpha
-    text-offset: 2 0
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-    $on:
-      color: #ffffff
+    color: #a8a8a8
+    phantom: true
 
   Label
-    id: worldName
-    color: #d2d2d2
-    anchors.top: parent.top
+    id: server
+    width: 125
+    height: 16
+    anchors.left: name.left
+    anchors.top: level.bottom
+    margin-top: 2
     font: verdana-11px-monochrome
-    text-auto-resize: true
-    background-color: alpha
-    &baseText: '(%s)'
-    @onSetup: |
-      if g_game.getFeature(GameEnterGameShowAppearance) then
-        self:addAnchor(AnchorLeft, 'parent', AnchorLeft)
-        self:setMarginLeft(502)
-        self.baseText = '%s'
-      else
-        self:addAnchor(AnchorRight, 'parent', AnchorRight)
-        self:setMarginRight(5)
-      end
+    color: #78b8db
+    phantom: true
 
-    $on:
-      color: #ffffff
+  Panel
+    id: pokemonTeam
+    size: 337 52
+    anchors.left: name.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 10
+    phantom: true
+
+    CharacterPokemonSlot
+      id: pokemon1
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+
+    CharacterPokemonSlot
+      id: pokemon2
+      anchors.left: pokemon1.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
+
+    CharacterPokemonSlot
+      id: pokemon3
+      anchors.left: pokemon2.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
+
+    CharacterPokemonSlot
+      id: pokemon4
+      anchors.left: pokemon3.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
+
+    CharacterPokemonSlot
+      id: pokemon5
+      anchors.left: pokemon4.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
+
+    CharacterPokemonSlot
+      id: pokemon6
+      anchors.left: pokemon5.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 5
 
 MainWindow
   id: charactersWindow
   !text: tr('Character List')
+  size: 650 475
   visible: false
   @onEnter: CharacterList.doLogin()
   @onEscape: CharacterList.hide(true)
   @onSetup: |
     g_keyboard.bindKeyPress('Up', function() self:getChildById('characters'):focusPreviousChild(KeyboardFocusReason) end, self)
     g_keyboard.bindKeyPress('Down', function() self:getChildById('characters'):focusNextChild(KeyboardFocusReason) end, self)
-    if g_game.getFeature(GamePreviewState) then
-      if g_game.getFeature(GameEnterGameShowAppearance) then
-        self:setSize({width = 745, height = 430})
-      else
-        self:setSize({width = 350, height = 400})
-      end
-    else
-      self:setSize({width = 250, height = 248})
-    end
 
   TextList
     id: characters
-    background-color: #404040
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: characterListScrollBar.left
     anchors.bottom: accountStatusCaption.top
-    margin-bottom: 5
-    padding: 1
+    margin-bottom: 7
+    padding: 4
+    background-color: #101010dd
     focusable: false
     vertical-scrollbar: characterListScrollBar
     auto-focus: first
-    @onSetup: |
-      if g_game.getFeature(GameEnterGameShowAppearance) then
-        self:setBackgroundColor("#404040")
-        self:setPaddingTop(20)
-      else
-        self:setBackgroundColor("#565656")
-      end
-
-
-  FlatLabel
-    width: 250
-    anchors.left: parent.left
-    anchors.top: characters.top
-    !text: tr('Character') .. ''
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  FlatLabel
-    width: 100
-    anchors.left: parent.left
-    anchors.top: characters.top
-    margin-left: 250
-    !text: tr('Status') .. ''
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  FlatLabel
-    width: 60
-    anchors.left: parent.left
-    anchors.top: characters.top
-    margin-left: 350
-    !text: tr('Level') .. ''
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  FlatLabel
-    width: 200
-    anchors.right: characters.right
-    anchors.top: characters.top
-    margin-left: 550
-    !text: tr('World') .. ''
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
 
   VerticalScrollBar
     id: characterListScrollBar
     anchors.top: parent.top
     anchors.bottom: accountStatusCaption.top
     anchors.right: parent.right
-    margin-bottom: 5
-    step: 14
+    margin-bottom: 7
+    step: 88
     pixels-scroll: true
-
-  VerticalSeparator
-    anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.bottom: prev.bottom
-    margin-left: 249
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  VerticalSeparator
-    anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.bottom: prev.bottom
-    margin-left: 349
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  VerticalSeparator
-    anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.bottom: prev.bottom
-    margin-left: 409
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
-
-  VerticalSeparator
-    anchors.left: parent.left
-    anchors.top: parent.top
-    anchors.bottom: prev.bottom
-    margin-left: 500
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
 
   Label
     id: accountStatusCaption
     !text: tr('Account Status') .. ':'
     anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: next.top
-    @onSetup: |
-      if g_game.getFeature(GameEnterGameShowAppearance) then
-        self:setMarginBottom(5)
-      else
-        self:setMarginBottom(1)
-      end
-
-  Label
-    id: accountStatusIcon
-    size: 22 20
-    anchors.left: parent.left
-    anchors.bottom: next.bottom
-    image-source: /images/game/entergame/premium
-    image-clip: 0 0 22 20
-    @onSetup: |
-      if not(g_game.getFeature(GameEnterGameShowAppearance)) then
-        self:hide()
-      end
+    anchors.bottom: accountStatusLabel.top
+    margin-bottom: 2
 
   Label
     id: accountStatusLabel
     !text: tr('Free Account')
     anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: separator.top
+    margin-bottom: 7
     text-auto-resize: true
-    @onSetup: |
-      if g_game.getFeature(GameEnterGameShowAppearance) then
-        self:setMarginBottom(15)
-        self:setPaddingBottom(2)
-        self:setTextOffset({x = 25, y = 0})
-        self:addAnchor(AnchorBottom, 'next', AnchorBottom)
-      else
-        self:setMarginBottom(5)
-        self:addAnchor(AnchorRight, 'parent', AnchorRight)
-        self:addAnchor(AnchorBottom, 'separator', AnchorTop)
-      end
 
     $on:
       color: #FF0000
@@ -311,25 +181,22 @@ MainWindow
     id: separator
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.bottom: next.top
+    anchors.bottom: buttonOk.top
     margin-bottom: 10
 
-  //CheckBox
-  //  id: charAutoLoginBox
-  //  !text: tr('Auto login')
-  //  !tooltip: tr('Auto login selected character on next charlist load')
-  //  anchors.left: parent.left
-  //  anchors.right: parent.right
-  //  anchors.bottom: next.top
-  //  margin-bottom: 6
-  //  margin-left: 18
-  //  margin-right: 18
+  SuccessButton
+    id: buttonCreateCharacter
+    !text: tr('Create character')
+    width: 110
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    @onClick: CharacterCreation.show()
 
   SuccessButton
     id: buttonOk
     !text: tr('Ok')
     width: 64
-    anchors.right: next.left
+    anchors.right: buttonCancel.left
     anchors.bottom: parent.bottom
     margin-right: 10
     @onClick: CharacterList.doLogin()

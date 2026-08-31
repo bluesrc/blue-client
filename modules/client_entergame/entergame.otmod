@@ -11,9 +11,15 @@ Module
   @onLoad: |
     dofile 'entergame'
     dofile 'characterlist'
+    dofile 'accountcreation'
+    dofile 'charactercreation'
     EnterGame.init()
     CharacterList.init()
+    AccountCreation.init()
+    CharacterCreation.init()
 
   @onUnload: |
-    EnterGame.terminate()
+    CharacterCreation.terminate()
+    AccountCreation.terminate()
     CharacterList.terminate()
+    EnterGame.terminate()

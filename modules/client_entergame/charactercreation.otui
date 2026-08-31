@@ -1,0 +1,70 @@
+MainWindow
+  id: characterCreationWindow
+  !text: tr('Character creation')
+  size: 300 224
+  visible: false
+  @onEnter: CharacterCreation.doCreate()
+  @onEscape: CharacterCreation.hide(true)
+
+  MenuLabel
+    !text: tr('Character name')
+    anchors.left: parent.left
+    anchors.top: parent.top
+    text-auto-resize: true
+
+  TextEdit
+    id: characterName
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+    max-length: 20
+
+  MenuLabel
+    !text: tr('Sex')
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-auto-resize: true
+
+  ComboBox
+    id: sex
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+
+  MenuLabel
+    !text: tr('World')
+    anchors.left: parent.left
+    anchors.top: prev.bottom
+    margin-top: 10
+    text-auto-resize: true
+
+  ComboBox
+    id: world
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+
+  HorizontalSeparator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: next.top
+    margin-bottom: 10
+
+  SuccessButton
+    !text: tr('Create')
+    width: 80
+    anchors.right: next.left
+    anchors.bottom: parent.bottom
+    margin-right: 10
+    @onClick: CharacterCreation.doCreate()
+
+  DangerButton
+    !text: tr('Cancel')
+    width: 80
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    @onClick: CharacterCreation.hide(true)

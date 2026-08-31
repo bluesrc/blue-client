@@ -57,7 +57,7 @@ ComboBox < UIComboBox
   image-source: /images/ui/theme_combobox_neutral
   image-color: #ffffff
   image-border: 4
-  image-border-right: 19
+  image-border-right: 20
   image-clip: 0 0 91 23
 
   $hover !disabled:

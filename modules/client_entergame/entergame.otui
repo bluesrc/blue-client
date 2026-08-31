@@ -199,10 +199,17 @@ EnterGameWindow
     margin-top: 6
 
   EnterGameButton
+    id: createAccountButton
+    !text: tr('Create account')
+    width: 100
+    anchors.left: parent.left
+    anchors.top: prev.top
+    @onClick: AccountCreation.show()
+
+  EnterGameButton
     !text: tr('Ok')
     anchors.right: parent.right
-    anchors.top: prev.bottom
-    margin-top: 4
+    anchors.top: createAccountButton.top
     @onClick: EnterGame.doLogin()
 
   Label

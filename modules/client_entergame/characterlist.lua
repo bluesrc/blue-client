@@ -9,6 +9,7 @@ local waitingWindow
 local updateWaitEvent
 local resendWaitEvent
 local loginEvent
+local refreshEvent
 local outfitCreatureBox
 
 -- private functions
@@ -161,6 +162,22 @@ function onGameUpdateNeeded(signature)
     end
 end
 
+local function refreshAfterLogout()
+    CharacterList.destroyLoadBox()
+
+    if refreshEvent then
+        removeEvent(refreshEvent)
+    end
+    refreshEvent = scheduleEvent(function()
+        refreshEvent = nil
+        if errorBox then
+            CharacterList.showAgain()
+        else
+            EnterGame.refreshCharacterList()
+        end
+    end, 250)
+end
+
 -- public functions
 function CharacterList.init()
     connect(g_game, {
@@ -182,7 +199,7 @@ function CharacterList.init()
         onLoginWait = onLoginWait
     })
     connect(g_game, {
-        onGameEnd = CharacterList.showAgain
+        onGameEnd = refreshAfterLogout
     })
 
     if G.characters then
@@ -210,7 +227,7 @@ function CharacterList.terminate()
         onLoginWait = onLoginWait
     })
     disconnect(g_game, {
-        onGameEnd = CharacterList.showAgain
+        onGameEnd = refreshAfterLogout
     })
 
     if charactersWindow then
@@ -245,6 +262,11 @@ function CharacterList.terminate()
         loginEvent = nil
     end
 
+    if refreshEvent then
+        removeEvent(refreshEvent)
+        refreshEvent = nil
+    end
+
     CharacterList = nil
 end
 
@@ -266,59 +288,37 @@ function CharacterList.create(characters, account, otui)
 
     characterList:destroyChildren()
     local accountStatusLabel = charactersWindow:getChildById('accountStatusLabel')
-    local accountStatusIcon = nil
-    if g_game.getFeature(GameEnterGameShowAppearance) then
-        accountStatusIcon = charactersWindow:getChildById('accountStatusIcon')
-    end
 
     local focusLabel
     for i, characterInfo in ipairs(characters) do
         local widget = g_ui.createWidget('CharacterWidget', characterList)
-        for key, value in pairs(characterInfo) do
-            local subWidget = widget:getChildById(key)
-            if subWidget then
-                if key == 'outfit' then -- it's an exception
-                    subWidget:setOutfit(value)
-                else
-                    local text = value
-                    if subWidget.baseText and subWidget.baseTranslate then
-                        text = tr(subWidget.baseText, text)
-                    elseif subWidget.baseText then
-                        text = string.format(subWidget.baseText, text)
-                    end
-                    subWidget:setText(text)
-                end
-            end
-        end
+        widget:getChildById('name'):setText(characterInfo.name)
+        widget:getChildById('level'):setText(('%s %d'):format(tr('Level'), tonumber(characterInfo.level) or 1))
+        widget:getChildById('server'):setText(tr('Server: %s', characterInfo.worldName or ''))
 
-        if g_game.getFeature(GameEnterGameShowAppearance) then
-            local creatureDisplay = widget:getChildById('outfitCreatureBox', characterList)
-            creatureDisplay:setSize("64 64")
-            local creature = Creature.create()
-            local outfit = {type = characterInfo.outfitid, head = characterInfo.headcolor, body = characterInfo.torsocolor, legs = characterInfo.legscolor, feet = characterInfo.detailcolor, addons = characterInfo.addonsflags}
-            creature:setOutfit(outfit)
-            creature:setDirection(2)
-            creatureDisplay:setCreature(creature)
+        local creatureDisplay = widget:recursiveGetChildById('outfitCreatureBox')
+        local creature = Creature.create()
+        creature:setOutfit({
+            type = tonumber(characterInfo.outfitid) or 136,
+            head = tonumber(characterInfo.headcolor) or 0,
+            body = tonumber(characterInfo.torsocolor) or 0,
+            legs = tonumber(characterInfo.legscolor) or 0,
+            feet = tonumber(characterInfo.detailcolor) or 0,
+            addons = tonumber(characterInfo.addonsflags) or 0
+        })
+        creature:setDirection(2)
+        creatureDisplay:setCreature(creature)
 
-            local mainCharacter = widget:getChildById('mainCharacter', characterList)
-            if characterInfo.main then
-                mainCharacter:setImageSource('/images/game/entergame/maincharacter')
+        for slot = 1, 6 do
+            local pokemonSlot = widget:recursiveGetChildById('pokemon' .. slot)
+            local pokemonIcon = pokemonSlot:getChildById('pokemonIcon')
+            local pokemonNumber = characterInfo.pokemon and tonumber(characterInfo.pokemon[slot]) or 0
+            if pokemonNumber and pokemonNumber > 0 then
+                pokemonIcon:setImage('/images/pokemon/icon/' .. string.format('%04d', pokemonNumber) .. '.png')
+                pokemonSlot:setOpacity(1)
             else
-                mainCharacter:setImageSource('')
-            end
-
-            local statusDailyReward = widget:getChildById('statusDailyReward', characterList)
-            if characterInfo.dailyreward == 0 then
-                statusDailyReward:setImageSource('/images/game/entergame/dailyreward_collected')
-            else
-                statusDailyReward:setImageSource('/images/game/entergame/dailyreward_notcollected')
-            end
-
-            local statusHidden = widget:getChildById('statusHidden', characterList)
-            if characterInfo.hidden then
-                statusHidden:setImageSource('/images/game/entergame/hidden')
-            else
-                statusHidden:setImageSource('')
+                pokemonIcon:setImageSource('')
+                pokemonSlot:setOpacity(0.4)
             end
         end
 
@@ -359,17 +359,11 @@ function CharacterList.create(characters, account, otui)
 
     if account.subStatus == SubscriptionStatus.Free then
         accountStatusLabel:setText(('%s%s'):format(tr('Free Account'), status))
-        if accountStatusIcon ~= nil then
-            accountStatusIcon:setImageSource('/images/game/entergame/nopremium')
-        end
     elseif account.subStatus == SubscriptionStatus.Premium then
         if account.premDays == 0 or account.premDays == 65535 then
             accountStatusLabel:setText(('%s%s'):format(tr('Gratis Premium Account'), status))
         else
             accountStatusLabel:setText(('%s%s'):format(tr('Premium Account (%s) days left', account.premDays), status))
-        end
-        if accountStatusIcon ~= nil then
-            accountStatusIcon:setImageSource('/images/game/entergame/premium')
         end
     end
 
@@ -409,7 +403,7 @@ function CharacterList.hide(showLogin)
 end
 
 function CharacterList.showAgain()
-    if characterList and characterList:hasChildren() then
+    if characterList then
         CharacterList.show()
     end
 end
