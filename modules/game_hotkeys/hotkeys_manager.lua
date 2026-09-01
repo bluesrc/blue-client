@@ -178,11 +178,27 @@ configuredCallbacks = {}
 movementEnabled = true
 captureWindow = nil
 
+local UNASSIGNED_BINDING = '__unassigned__'
+
 local function copyDefaultBindings(binding)
     return {
         primary = binding.defaults[1] or '',
         secondary = binding.defaults[2] or ''
     }
+end
+
+local function decodeStoredBinding(value)
+    if value == UNASSIGNED_BINDING then
+        return ''
+    end
+    return tostring(value)
+end
+
+local function encodeStoredBinding(value)
+    if not value or value == '' then
+        return UNASSIGNED_BINDING
+    end
+    return value
 end
 
 local function getConfiguredSettings(create)
@@ -211,21 +227,28 @@ end
 function loadConfiguredBindings(forceDefaults)
     configuredBindings = {}
     local _, saved = getConfiguredSettings(false)
+    local savedVersion = tonumber(saved and saved.version) or 0
     local savedBindings = saved and (saved.bindings or saved) or {}
 
     for _, binding in ipairs(HotkeyBindings) do
         local values = copyDefaultBindings(binding)
+        -- Version 2 wrote empty strings as empty OTML nodes. Those nodes become
+        -- nil when loaded, so start from unassigned while migrating that format.
+        if not forceDefaults and savedVersion == 2 then
+            values.primary = ''
+            values.secondary = ''
+        end
         local stored = not forceDefaults and savedBindings[binding.id] or nil
         if type(stored) == 'table' then
             if stored.primary ~= nil then
-                values.primary = tostring(stored.primary)
+                values.primary = decodeStoredBinding(stored.primary)
             elseif stored[1] ~= nil then
-                values.primary = tostring(stored[1])
+                values.primary = decodeStoredBinding(stored[1])
             end
             if stored.secondary ~= nil then
-                values.secondary = tostring(stored.secondary)
+                values.secondary = decodeStoredBinding(stored.secondary)
             elseif stored[2] ~= nil then
-                values.secondary = tostring(stored[2])
+                values.secondary = decodeStoredBinding(stored[2])
             end
         end
         configuredBindings[binding.id] = values
@@ -235,12 +258,12 @@ end
 function saveConfiguredBindings()
     local root, settings = getConfiguredSettings(true)
     settings.bindings = {}
-    settings.version = 2
+    settings.version = 3
     for _, binding in ipairs(HotkeyBindings) do
         local values = configuredBindings[binding.id] or copyDefaultBindings(binding)
         settings.bindings[binding.id] = {
-            primary = values.primary or '',
-            secondary = values.secondary or ''
+            primary = encodeStoredBinding(values.primary),
+            secondary = encodeStoredBinding(values.secondary)
         }
     end
     g_settings.setNode('game_keybindings', root)
@@ -369,6 +392,19 @@ function setMovementEnabled(enabled)
     bindConfiguredHotkeys()
 end
 
+local function isEditableTextInputFocused()
+    local focusedWidget = rootWidget
+    while focusedWidget do
+        local focusedChild = focusedWidget:getFocusedChild()
+        if not focusedChild then
+            break
+        end
+        focusedWidget = focusedChild
+    end
+
+    return focusedWidget and focusedWidget:getClassName() == 'UITextEdit' and focusedWidget:isEditable()
+end
+
 local function canExecuteConfigured(binding)
     if captureWindow then
         return false
@@ -380,6 +416,9 @@ local function canExecuteConfigured(binding)
     end
     if modules.game_console and modules.game_console.isChatEnabled and modules.game_console.isChatEnabled() then
         return binding.allowInChat == true
+    end
+    if isEditableTextInputFocused() then
+        return false
     end
     return true
 end

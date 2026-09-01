@@ -540,7 +540,14 @@ void Map::removeUnawareThings()
                     if (!tile->isEmpty())
                         tile->clean();
 
-                    block.remove(pos);
+                    // Effects own their animation timer and remove themselves when it expires.
+                    // Keep their tile alive outside the aware range so returning to the area
+                    // resumes the same animation instead of discarding it prematurely.
+                    if (tile->hasEffect())
+                        blockEmpty = false;
+                    else
+                        block.remove(pos);
+
                     notificateTileUpdate(pos, nullptr, Otc::OPERATION_CLEAN);
                 }
 

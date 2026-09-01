@@ -23,6 +23,7 @@
 #include "localplayer.h"
 #include <framework/core/eventdispatcher.h>
 #include "game.h"
+#include "item.h"
 #include "map.h"
 #include "tile.h"
 
@@ -399,6 +400,12 @@ bool LocalPlayer::hasSight(const Position& pos)
 
 void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
 {
+    if (slot >= Otc::InventorySlotPokeball1 && slot <= Otc::InventorySlotPokeball6) {
+        const auto item = getInventoryItem(static_cast<Otc::InventorySlot>(slot));
+        if (item)
+            item->setPokemonPreview(info.number);
+    }
+
     if (const auto& creature = g_map.getCreatureById(info.p_id)) {
         if (Pokemon* pokemon = creature->getPokemon())
             pokemon->setLevel(info.level);

@@ -100,6 +100,7 @@ local pendingLookItem = nil
 local pendingLookEvent = nil
 local pendingLookPosition = nil
 local itemLookCard = nil
+local itemLookClickCatcher = nil
 
 local function capitalize(text)
     return (text:gsub('^%l', string.upper))
@@ -170,6 +171,10 @@ function prepareItemLook(thing)
 end
 
 local function hideItemLookCard()
+    if itemLookClickCatcher then
+        itemLookClickCatcher:hide()
+    end
+
     if not itemLookCard then
         return
     end
@@ -210,6 +215,9 @@ local function scheduleItemLookCardHide(visibleTime)
         itemLookCard.hideEvent = scheduleEvent(function()
             if itemLookCard and not itemLookCard:isDestroyed() then
                 itemLookCard:hide()
+            end
+            if itemLookClickCatcher and not itemLookClickCatcher:isDestroyed() then
+                itemLookClickCatcher:hide()
             end
         end, 190)
     end, visibleTime)
@@ -268,6 +276,8 @@ local function displayItemLookCard(text)
     g_effects.cancelFade(itemLookCard)
     itemLookCard:setOpacity(1)
     itemLookCard:show()
+    itemLookClickCatcher:show()
+    itemLookClickCatcher:raise()
     itemLookCard:raise()
     g_effects.fadeIn(itemLookCard, 120)
     scheduleItemLookCardHide(math.max(6000, math.min(11000, calculateVisibleTime(text))))
@@ -287,6 +297,18 @@ function init()
     itemLookCard = messagesPanel:recursiveGetChildById('itemLookCard')
     itemLookCard:setParent(rootWidget)
     itemLookCard:breakAnchors()
+
+    itemLookClickCatcher = g_ui.createWidget('Panel', rootWidget)
+    itemLookClickCatcher:setId('itemLookClickCatcher')
+    itemLookClickCatcher:fill('parent')
+    itemLookClickCatcher:setPhantom(true)
+    itemLookClickCatcher:setFocusable(false)
+    itemLookClickCatcher.onMousePress = function()
+        hideItemLookCard()
+        return false
+    end
+    itemLookClickCatcher:hide()
+
     itemLookCard.onClick = hideItemLookCard
 end
 
@@ -302,6 +324,8 @@ function terminate()
     clearPendingLook()
     hideItemLookCard()
     clearMessages()
+    itemLookClickCatcher:destroy()
+    itemLookClickCatcher = nil
     itemLookCard:destroy()
     itemLookCard = nil
     messagesPanel:destroy()

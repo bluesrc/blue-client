@@ -299,7 +299,7 @@ function CharacterList.create(characters, account, otui)
         local creatureDisplay = widget:recursiveGetChildById('outfitCreatureBox')
         local creature = Creature.create()
         creature:setOutfit({
-            type = tonumber(characterInfo.outfitid) or 136,
+            type = tonumber(characterInfo.outfitid) or 905,
             head = tonumber(characterInfo.headcolor) or 0,
             body = tonumber(characterInfo.torsocolor) or 0,
             legs = tonumber(characterInfo.legscolor) or 0,

@@ -698,6 +698,7 @@ function onGameCloseTrade()
 
 	if tradeWindow then
 		closingTradeWindow = true
+		tradeWindow:hide()
 		tradeWindow:destroy()
 		tradeWindow = nil
 		closingTradeWindow = false
