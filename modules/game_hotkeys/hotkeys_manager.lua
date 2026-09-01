@@ -74,6 +74,10 @@ HotkeyBindings = {
     { id = 'pokemon_move_4', category = 'pokemon', text = tr('Pokemon move 4'), description = tr('Use the fourth active move.'), defaults = {'4', ''} },
     { id = 'pokemon_order', category = 'pokemon', text = tr('Order'), description = tr('Move Pokemon to the mouse position.'), defaults = {'', ''} },
     { id = 'pokemon_stop', category = 'pokemon', text = tr('Stop / follow'), description = tr('Toggle Pokemon stop or follow.'), defaults = {'', ''} },
+    { id = 'pokemon_walk_north', category = 'pokemon', text = tr('Move Pokemon north'), description = tr('Move Pokemon one tile north.'), defaults = {'', ''}, pokemonDirection = North },
+    { id = 'pokemon_walk_east', category = 'pokemon', text = tr('Move Pokemon east'), description = tr('Move Pokemon one tile east.'), defaults = {'', ''}, pokemonDirection = East },
+    { id = 'pokemon_walk_south', category = 'pokemon', text = tr('Move Pokemon south'), description = tr('Move Pokemon one tile south.'), defaults = {'', ''}, pokemonDirection = South },
+    { id = 'pokemon_walk_west', category = 'pokemon', text = tr('Move Pokemon west'), description = tr('Move Pokemon one tile west.'), defaults = {'', ''}, pokemonDirection = West },
     { id = 'pokemon_slot_1', category = 'pokemon', text = tr('Pokebag slot 1'), description = tr('Release or recall the Pokemon in slot 1.'), defaults = {'', ''} },
     { id = 'pokemon_slot_2', category = 'pokemon', text = tr('Pokebag slot 2'), description = tr('Release or recall the Pokemon in slot 2.'), defaults = {'', ''} },
     { id = 'pokemon_slot_3', category = 'pokemon', text = tr('Pokebag slot 3'), description = tr('Release or recall the Pokemon in slot 3.'), defaults = {'', ''} },
@@ -289,6 +293,8 @@ function unbindConfiguredHotkeys()
             if modules.game_interface and modules.game_interface.unbindWalkKey then
                 modules.game_interface.unbindWalkKey(record.key)
             end
+        elseif record.pokemonMovement then
+            g_keyboard.unbindKeyPress(record.key, record.callback, record.widget)
         else
             g_keyboard.unbindKeyDown(record.key, record.callback)
         end
@@ -314,6 +320,22 @@ local function bindConfiguredAction(binding, keyCombo)
             modules.game_interface.bindTurnKey(keyCombo, binding.turnDirection)
             table.insert(configuredCallbacks, { key = keyCombo, turning = true })
         end
+        return
+    end
+
+    if binding.pokemonDirection then
+        local actionId = binding.id
+        local callback = function()
+            executeConfiguredAction(actionId)
+        end
+        local widget = modules.game_interface.getRootPanel()
+        g_keyboard.bindKeyPress(keyCombo, callback, widget)
+        table.insert(configuredCallbacks, {
+            key = keyCombo,
+            callback = callback,
+            widget = widget,
+            pokemonMovement = true
+        })
         return
     end
 
@@ -381,6 +403,13 @@ function executeConfiguredAction(actionId)
         return
     end
     if not g_game.isOnline() then
+        return
+    end
+
+    if binding.pokemonDirection then
+        if modules.game_pokemonactions and modules.game_pokemonactions.move then
+            modules.game_pokemonactions.move(binding.pokemonDirection)
+        end
         return
     end
 

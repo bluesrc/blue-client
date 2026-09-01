@@ -141,6 +141,25 @@ function toggleStop()
     end
 end
 
+function move(direction)
+    if not g_game.isOnline() or direction < North or direction > West then
+        return
+    end
+
+    local viewportX = 7
+    local viewportY = 5
+    local mapPanel = modules.game_interface and modules.game_interface.getMapPanel()
+    if mapPanel then
+        local visibleDimension = mapPanel:getVisibleDimension()
+        if visibleDimension then
+            viewportX = math.min(13, math.max(1, math.floor(visibleDimension.width / 2)))
+            viewportY = math.min(7, math.max(1, math.floor(visibleDimension.height / 2)))
+        end
+    end
+
+    sendOrder(string.format('D;%d;%d;%d', direction, viewportX, viewportY))
+end
+
 local function setCooldownReady(cooldown)
     local definition = cooldownDefinitions[cooldown]
     local widget = cooldownWidgets[cooldown]
