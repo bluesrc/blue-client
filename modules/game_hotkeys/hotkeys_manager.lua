@@ -31,7 +31,7 @@ HotkeyCategories = {{
 }, {
     id = 'pokemon',
     text = tr('Pokemon'),
-    description = tr('Use the active Pokemon moves or release a Pokemon from a Pokebag slot.')
+    description = tr('Control the active Pokemon, use moves or release one from a Pokebag slot.')
 }, {
     id = 'combat',
     text = tr('Combat'),
@@ -72,6 +72,8 @@ HotkeyBindings = {
     { id = 'pokemon_move_2', category = 'pokemon', text = tr('Pokemon move 2'), description = tr('Use the second active move.'), defaults = {'2', ''} },
     { id = 'pokemon_move_3', category = 'pokemon', text = tr('Pokemon move 3'), description = tr('Use the third active move.'), defaults = {'3', ''} },
     { id = 'pokemon_move_4', category = 'pokemon', text = tr('Pokemon move 4'), description = tr('Use the fourth active move.'), defaults = {'4', ''} },
+    { id = 'pokemon_order', category = 'pokemon', text = tr('Order'), description = tr('Move Pokemon to the mouse position.'), defaults = {'', ''} },
+    { id = 'pokemon_stop', category = 'pokemon', text = tr('Stop / follow'), description = tr('Toggle Pokemon stop or follow.'), defaults = {'', ''} },
     { id = 'pokemon_slot_1', category = 'pokemon', text = tr('Pokebag slot 1'), description = tr('Release or recall the Pokemon in slot 1.'), defaults = {'', ''} },
     { id = 'pokemon_slot_2', category = 'pokemon', text = tr('Pokebag slot 2'), description = tr('Release or recall the Pokemon in slot 2.'), defaults = {'', ''} },
     { id = 'pokemon_slot_3', category = 'pokemon', text = tr('Pokebag slot 3'), description = tr('Release or recall the Pokemon in slot 3.'), defaults = {'', ''} },
@@ -386,6 +388,14 @@ function executeConfiguredAction(actionId)
         local slot = tonumber(actionId:match('(%d+)$'))
         if modules.game_pokemonmoves and modules.game_pokemonmoves.useMove then
             modules.game_pokemonmoves.useMove(slot)
+        end
+    elseif actionId == 'pokemon_order' then
+        if modules.game_pokemonactions and modules.game_pokemonactions.order then
+            modules.game_pokemonactions.order()
+        end
+    elseif actionId == 'pokemon_stop' then
+        if modules.game_pokemonactions and modules.game_pokemonactions.toggleStop then
+            modules.game_pokemonactions.toggleStop()
         end
     elseif actionId:match('^pokemon_slot_') then
         local partyIndex = tonumber(actionId:match('(%d+)$'))

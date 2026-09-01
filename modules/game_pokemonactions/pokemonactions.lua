@@ -2,10 +2,13 @@ local actionsWindow
 local cooldownWidgets = {}
 local cooldownStates = {}
 local cooldownUpdateEvent
+local orderMouseGrabber
+local positionSelectionActive = false
 
 local ACTION_SIZE = 32
 local ACTION_SPACING = 6
 local UPDATE_INTERVAL = 100
+local POKEMON_ORDER_OPCODE = 79
 
 local cooldownDefinitions = {
     [1] = { id = 'actionCooldown', label = 'Action', icon = '/images/game/pokemonactions/action' },
@@ -43,6 +46,98 @@ local function updateWindowGeometry()
     actionsWindow:setWidth((actionCount * ACTION_SIZE) + ((actionCount - 1) * ACTION_SPACING))
     if g_game.isOnline() then
         actionsWindow:show()
+    end
+end
+
+local function sendOrder(buffer)
+    local protocolGame = g_game.getProtocolGame()
+    if not protocolGame then
+        return false
+    end
+    protocolGame:sendExtendedOpcode(POKEMON_ORDER_OPCODE, buffer)
+    return true
+end
+
+local function finishPositionSelection()
+    if not positionSelectionActive then
+        return
+    end
+    positionSelectionActive = false
+    if orderMouseGrabber then
+        orderMouseGrabber:ungrabMouse()
+    end
+    g_mouse.popCursor('target')
+end
+
+local function onOrderPositionSelected(_, mousePosition, mouseButton)
+    if mouseButton == MouseLeftButton then
+        local rootPanel = modules.game_interface.getRootPanel()
+        local clickedWidget = rootPanel and rootPanel:recursiveGetChildByPos(mousePosition, false)
+        if clickedWidget and clickedWidget:getClassName() == 'UIGameMap' then
+            local position = clickedWidget:getPosition(mousePosition)
+            local player = g_game.getLocalPlayer()
+            if position and player then
+                local playerPosition = player:getPosition()
+                if position.z ~= playerPosition.z then
+                    local dz = position.z - playerPosition.z
+                    position.x = position.x + dz
+                    position.y = position.y + dz
+                    position.z = playerPosition.z
+                end
+                sendOrder(string.format('M;%d;%d;%d', position.x, position.y, position.z))
+            end
+        end
+    end
+
+    finishPositionSelection()
+    return true
+end
+
+local function sendOrderAtMouse(mousePosition)
+    local rootPanel = modules.game_interface.getRootPanel()
+    local clickedWidget = rootPanel and rootPanel:recursiveGetChildByPos(mousePosition, false)
+    if not clickedWidget or clickedWidget:getClassName() ~= 'UIGameMap' then
+        return false
+    end
+
+    local position = clickedWidget:getPosition(mousePosition)
+    local player = g_game.getLocalPlayer()
+    if not position or not player then
+        return false
+    end
+
+    local playerPosition = player:getPosition()
+    if position.z ~= playerPosition.z then
+        local dz = position.z - playerPosition.z
+        position.x = position.x + dz
+        position.y = position.y + dz
+        position.z = playerPosition.z
+    end
+    return sendOrder(string.format('M;%d;%d;%d', position.x, position.y, position.z))
+end
+
+function order()
+    if not g_game.isOnline() then
+        return
+    end
+
+    if sendOrderAtMouse(g_window.getMousePosition()) then
+        return
+    end
+
+    -- If the pointer is outside the map, retain the old crosshair flow as a
+    -- fallback so the configured hotkey is never wasted.
+    if g_ui.isMouseGrabbed() then
+        return
+    end
+    orderMouseGrabber:grabMouse()
+    g_mouse.pushCursor('target')
+    positionSelectionActive = true
+end
+
+function toggleStop()
+    if g_game.isOnline() then
+        sendOrder('T')
     end
 end
 
@@ -171,6 +266,10 @@ function init()
     })
 
     actionsWindow = g_ui.loadUI('pokemonactions', modules.game_interface.getMapPanel())
+	orderMouseGrabber = g_ui.createWidget('UIWidget')
+	orderMouseGrabber:setVisible(false)
+	orderMouseGrabber:setFocusable(false)
+	orderMouseGrabber.onMouseRelease = onOrderPositionSelected
     for cooldown, definition in pairs(cooldownDefinitions) do
         cooldownWidgets[cooldown] = actionsWindow:getChildById(definition.id)
         cooldownWidgets[cooldown]:getChildById('actionIcon'):setImageSource(definition.icon)
@@ -193,6 +292,11 @@ function terminate()
     })
 
     clearCooldowns()
+	finishPositionSelection()
+	if orderMouseGrabber then
+		orderMouseGrabber:destroy()
+		orderMouseGrabber = nil
+	end
     if actionsWindow then
         actionsWindow:destroy()
         actionsWindow = nil
@@ -201,6 +305,7 @@ function terminate()
 end
 
 function offline()
+    finishPositionSelection()
     clearActions()
 end
 
