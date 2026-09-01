@@ -1,0 +1,239 @@
+NpcDialogOptionButton < Button
+  height: 26
+  margin-bottom: 4
+  color: #f2f5f7
+  text-align: left
+  text-offset: 10 0
+
+  $hover !disabled:
+    color: #ffffff
+
+  $pressed:
+    color: #ffffff
+
+NpcDialogInput < TextEdit
+  height: 26
+  margin-bottom: 4
+  color: #f2cf5b
+  placeholder: Type an option and press Enter...
+
+NpcDialogByeButton < DangerButton
+  height: 26
+  margin-bottom: 4
+  text-align: left
+  text-offset: 10 0
+
+NpcDialogTradeButton < WarningButton
+  height: 26
+  margin-bottom: 4
+  text-align: left
+  text-offset: 10 0
+
+NpcDialogOptionRow < Panel
+  height: 26
+  margin-bottom: 4
+
+  CheckBox
+    id: optionCheckBox
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 2
+
+  NpcDialogOptionButton
+    id: optionButton
+    anchors.left: optionCheckBox.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    margin-bottom: 0
+
+NpcDialogInputRow < Panel
+  height: 26
+  margin-bottom: 4
+
+  CheckBox
+    id: optionCheckBox
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 2
+
+  NpcDialogInput
+    id: optionInput
+    anchors.left: optionCheckBox.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    margin-bottom: 0
+
+NpcDialogTradeRow < Panel
+  height: 26
+  margin-bottom: 4
+
+  CheckBox
+    id: optionCheckBox
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 2
+
+  NpcDialogTradeButton
+    id: optionButton
+    anchors.left: optionCheckBox.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    margin-bottom: 0
+
+NpcDialogByeRow < Panel
+  height: 26
+  margin-bottom: 4
+
+  CheckBox
+    id: optionCheckBox
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 2
+
+  NpcDialogByeButton
+    id: optionButton
+    anchors.left: optionCheckBox.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    margin-bottom: 0
+
+NpcDialogNpcMessage < Label
+  height: 14
+  margin-bottom: 4
+  color: #f2f5f7
+  font: verdana-11px-antialised
+  text-align: left
+  text-wrap: true
+  text-auto-resize: true
+
+NpcDialogPlayerMessage < NpcDialogNpcMessage
+  color: #f2cf5b
+  text-align: right
+
+NpcDialogPanel < UIWindow
+  id: npcDialog
+  size: 430 246
+  background-color: #101010ee
+  border-width: 1
+  border-color: #909090
+  padding: 8
+  focusable: true
+  draggable: true
+  visible: false
+  @onEscape: modules.game_npcdialog.sayBye()
+
+  Panel
+    id: header
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: parent.top
+    height: 52
+    background-color: #181818ee
+    border-width: 1
+    border-color: #484848
+
+    Panel
+      id: portraitFrame
+      size: 40 40
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 2
+      background-color: #0b0b0b
+      border-width: 1
+      border-color: #484848
+
+      UICreature
+        id: npcOutfit
+        size: 40 40
+        anchors.centerIn: parent
+        creature-size: 0
+        phantom: true
+
+    Label
+      id: npcName
+      anchors.left: portraitFrame.right
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 12
+      margin-right: 8
+      height: 24
+      font: verdana-11px-rounded
+      color: #f2f5f7
+      text-align: left
+      text-wrap: true
+
+  Panel
+    id: speechFrame
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: header.bottom
+    anchors.bottom: optionsPanel.top
+    margin-top: 7
+    margin-bottom: 7
+    background-color: #0b0b0bdd
+    border-width: 1
+    border-color: #484848
+    padding: 6
+
+    ScrollablePanel
+      id: speechPanel
+      anchors.left: parent.left
+      anchors.right: speechScrollBar.left
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      margin-right: 4
+      vertical-scrollbar: speechScrollBar
+      layout:
+        type: verticalBox
+
+    VerticalScrollBar
+      id: speechScrollBar
+      anchors.top: parent.top
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      step: 14
+      pixels-scroll: true
+
+  Panel
+    id: optionsPanel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: bottomResizeBorder.top
+    height: 30
+    layout:
+      type: verticalBox
+
+  Panel
+    id: bottomResizeGrip
+    size: 96 4
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: parent.bottom
+    margin-bottom: 3
+    background-color: #909090
+    border-width: 1
+    border-color: #d0d0d0
+    phantom: true
+
+  ResizeBorder
+    id: rightResizeBorder
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    width: 3
+    minimum: 320
+    maximum: 900
+    enabled: true
+
+  ResizeBorder
+    id: bottomResizeBorder
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    height: 10
+    minimum: 220
+    maximum: 700
+    enabled: true

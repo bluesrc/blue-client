@@ -1610,6 +1610,12 @@ function onTalk(name, level, mode, message, channelId, creaturePos)
         return
     end
 
+    -- NPC conversations are rendered by the contextual dialog. Keep the old
+    -- console path as a fallback when that module is not available.
+    if isNpcMode and modules.game_npcdialog and modules.game_npcdialog.handlesNpcMessages(name) then
+        return
+    end
+
     local composedMessage = applyMessagePrefixies(name, level, message)
 
     if mode == MessageModes.RVRAnswer then
