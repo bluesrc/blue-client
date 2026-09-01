@@ -96,12 +96,10 @@ HotkeyBindings = {
     { id = 'open_pokebag', category = 'modules', text = tr('Pokebag'), description = tr('Open or close the Pokebag.'), defaults = {'P', ''} },
     { id = 'open_box', category = 'modules', text = tr('Pokemon Box'), description = tr('Open or close Pokemon storage.'), defaults = {'B', ''} },
     { id = 'open_trainer_card', category = 'modules', text = tr('Trainer Card'), description = tr('Open or close the Trainer Card.'), defaults = {'T', ''} },
-    { id = 'open_skills', category = 'modules', text = tr('Skills'), description = tr('Open or close the skills window.'), defaults = {'Alt+S', ''}, allowInChat = true },
     { id = 'open_battle', category = 'modules', text = tr('Battle list'), description = tr('Open or close the battle list.'), defaults = {'Ctrl+B', ''}, allowInChat = true },
     { id = 'open_minimap', category = 'modules', text = tr('Minimap'), description = tr('Open or close the minimap.'), defaults = {'Ctrl+M', ''}, allowInChat = true },
     { id = 'open_vip', category = 'modules', text = tr('VIP list'), description = tr('Open or close the friends list.'), defaults = {'Ctrl+P', ''}, allowInChat = true },
     { id = 'open_tasks', category = 'modules', text = tr('Tasks'), description = tr('Open or close the task window.'), defaults = {'Ctrl+A', ''}, allowInChat = true },
-    { id = 'open_combat_controls', category = 'modules', text = tr('Combat controls'), description = tr('Open or close combat controls.'), defaults = {'', ''} },
     { id = 'open_options', category = 'modules', text = tr('Options'), description = tr('Open or close client options.'), defaults = {'', ''}, allowInChat = true },
     { id = 'open_shaders', category = 'modules', text = tr('Shaders'), description = tr('Open or close shader controls.'), defaults = {'Ctrl+Y', ''}, allowInChat = true },
     { id = 'open_bug_report', category = 'modules', text = tr('Bug report'), description = tr('Open the bug report window.'), defaults = {'Ctrl+Z', ''}, allowInChat = true },
@@ -431,6 +429,15 @@ local function toggleModule(moduleName, functionName)
     end
 end
 
+local function toggleChaseMode()
+    if not g_game.isOnline() then
+        return
+    end
+
+    local chaseMode = g_game.getChaseMode() == ChaseOpponent and DontChase or ChaseOpponent
+    g_game.setChaseMode(chaseMode)
+end
+
 function executeConfiguredAction(actionId)
     local binding = HotkeyBindingsById[actionId]
     if not binding or not canExecuteConfigured(binding) then
@@ -484,7 +491,7 @@ function executeConfiguredAction(actionId)
             modules.game_battle.attackNext(true)
         end
     elseif actionId == 'toggle_chase' then
-        toggleModule('game_combatcontrols', 'toggleChaseMode')
+        toggleChaseMode()
     elseif actionId == 'open_inventory' then
         toggleModule('game_inventory')
     elseif actionId == 'open_pokebag' then
@@ -493,8 +500,6 @@ function executeConfiguredAction(actionId)
         toggleModule('game_box')
     elseif actionId == 'open_trainer_card' then
         toggleModule('game_trainercard')
-    elseif actionId == 'open_skills' then
-        toggleModule('game_skills')
     elseif actionId == 'open_battle' then
         toggleModule('game_battle')
     elseif actionId == 'open_minimap' then
@@ -503,8 +508,6 @@ function executeConfiguredAction(actionId)
         toggleModule('game_viplist')
     elseif actionId == 'open_tasks' then
         toggleModule('game_tasks', 'toggleWindow')
-    elseif actionId == 'open_combat_controls' then
-        toggleModule('game_combatcontrols')
     elseif actionId == 'open_options' then
         toggleModule('client_options')
     elseif actionId == 'open_shaders' then
@@ -1209,7 +1212,7 @@ function doKeyCombo(keyCombo)
         elseif hotKey.action == HOTKEY_ACTION_ATTACK_PREV then
             modules.game_battle.attackNext(true)
         elseif hotKey.action == HOTKEY_ACTION_TOGGLE_CHASE then
-            modules.game_combatcontrols.toggleChaseMode()
+            toggleChaseMode()
         end
 
     elseif hotKey.itemId == nil then

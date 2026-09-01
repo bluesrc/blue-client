@@ -1,4 +1,4 @@
-Panel
+OptionsPage
   OptionCheckBox
     id: vsync
     !text: tr('Enable vertical synchronization')
@@ -7,16 +7,6 @@ Panel
   OptionCheckBox
     id: showFps
     !text: tr('Show frame rate')
-
-  OptionCheckBox
-    id: optimizeFps
-    !text: tr('Optimize FPS')
-    !tooltip: tr('Try to optimize when the frame rate is below 60. VISUAL PROBLEMS MAY OCCUR')
-
-  OptionCheckBox
-    id: forceEffectOptimization
-    !text: tr('Force Effect Optimization')
-    !tooltip: tr('Will avoid drawing effects on certain occasions.')
 
   OptionCheckBox
     id: enableLights
@@ -28,11 +18,6 @@ Panel
     !tooltip: tr('Draw effect after drawing the entire floor.')
 
   OptionCheckBox
-    id: limitVisibleDimension
-    !text: tr('Limit Visible Dimension')
-    !tooltip: tr('The limit is based on your maximum range.')
-
-  OptionCheckBox
     id: floatingEffect
     !text: tr('Draw Floating Effects')
 
@@ -40,15 +25,6 @@ Panel
     id: fullscreen
     !text: tr('Fullscreen')
     tooltip: Ctrl+Shift+F
-
-  OptionCheckBox
-    id: dontStretchShrink
-    !text: tr('Don\'t stretch/shrink Game Window')
-
-  OptionCheckBox
-    id: asyncTxtLoading
-    !text: tr('Async texture loading')
-    !tooltip: tr('This option makes textures load asynchronously and uses less RAM.')
 
   Label
     id: floorViewModeLabel

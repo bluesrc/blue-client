@@ -806,6 +806,7 @@ void Client::registerLuaFunctions()
     g_lua.bindClassMemberFunction<LocalPlayer>("getGuildName", &LocalPlayer::getGuildName);
     g_lua.bindClassMemberFunction<LocalPlayer>("getPokedexCount", &LocalPlayer::getPokedexCount);
     g_lua.bindClassMemberFunction<LocalPlayer>("getTotalCaught", &LocalPlayer::getTotalCaught);
+    g_lua.bindClassMemberFunction<LocalPlayer>("getAccountType", &LocalPlayer::getAccountType);
 
     g_lua.registerClass<Tile, AttachableObject>();
     g_lua.bindClassMemberFunction<Tile>("clean", &Tile::clean);

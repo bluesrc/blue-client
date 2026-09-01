@@ -378,10 +378,12 @@ void LocalPlayer::setResourceBalance(Otc::ResourceTypes_t type, uint64_t value)
 }
 
 void LocalPlayer::setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money,
-                                 const std::string& guild, uint32_t pokedexCount, uint64_t totalCaught)
+                                 const std::string& guild, uint32_t pokedexCount, uint64_t totalCaught,
+                                 uint8_t accountType)
 {
     if (m_hometown == hometown && m_trainerGender == gender && m_trainerMoney == money &&
-        m_guildName == guild && m_pokedexCount == pokedexCount && m_totalCaught == totalCaught)
+        m_guildName == guild && m_pokedexCount == pokedexCount && m_totalCaught == totalCaught &&
+        m_accountType == accountType)
         return;
 
     m_hometown = hometown;
@@ -390,7 +392,8 @@ void LocalPlayer::setTrainerInfo(const std::string& hometown, uint8_t gender, ui
     m_guildName = guild;
     m_pokedexCount = pokedexCount;
     m_totalCaught = totalCaught;
-    callLuaField("onTrainerInfoChange", hometown, gender, money, guild, pokedexCount, totalCaught);
+    m_accountType = accountType;
+    callLuaField("onTrainerInfoChange", hometown, gender, money, guild, pokedexCount, totalCaught, accountType);
 }
 
 bool LocalPlayer::hasSight(const Position& pos)

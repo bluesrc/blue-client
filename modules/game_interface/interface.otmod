@@ -14,9 +14,7 @@ Module
     - game_actionbar
     - game_outfit
     - game_healthinfo
-    - game_skills
     - game_inventory
-    - game_combatcontrols
     - game_containers
     - game_viplist
     - game_battle

@@ -1,16 +1,8 @@
-Panel
+OptionsPage
   OptionCheckBox
     id: showPing
     !text: tr('Show connection ping')
     !tooltip: tr('Display connection speed to the server (milliseconds)')
-
-  OptionCheckBox
-    id: showLeftPanel
-    !text: tr('Show left panel')
-
-  OptionCheckBox
-    id: openMaximized
-    !text: tr('Open containers maximized')
 
   OptionCheckBox
     id: displayNames
