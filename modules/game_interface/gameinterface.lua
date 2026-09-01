@@ -560,7 +560,11 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
     else
         shortcut = nil
     end
-    if useThing then
+    if creatureThing and creatureThing:isNpc() and modules.game_npcdialog then
+        menu:addOption(tr('Use'), function()
+            modules.game_npcdialog.useNpc(creatureThing)
+        end, shortcut)
+    elseif useThing then
         if useThing:isContainer() then
             if useThing:getParentContainer() then
                 menu:addOption(tr('Open'), function()
@@ -812,6 +816,10 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
             (mouseButton == MouseLeftButton or mouseButton == MouseRightButton) then
             g_game.look(lookThing)
             return true
+        elseif creatureThing and creatureThing:isNpc() and keyboardModifiers == KeyboardCtrlModifier and
+            (mouseButton == MouseLeftButton or mouseButton == MouseRightButton) then
+            modules.game_npcdialog.useNpc(creatureThing)
+            return true
         elseif useThing and keyboardModifiers == KeyboardCtrlModifier and
             (mouseButton == MouseLeftButton or mouseButton == MouseRightButton) then
             if useThing:isContainer() then
@@ -848,7 +856,10 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
         if useThing and keyboardModifiers == KeyboardNoModifier and mouseButton == MouseRightButton and
             not g_mouse.isPressed(MouseLeftButton) then
             local player = g_game.getLocalPlayer()
-            if attackCreature and attackCreature ~= player then
+            if creatureThing and creatureThing:isNpc() then
+                modules.game_npcdialog.useNpc(creatureThing)
+                return true
+            elseif attackCreature and attackCreature ~= player then
                 g_game.attack(attackCreature)
                 return true
             elseif creatureThing and creatureThing ~= player and creatureThing:getPosition().z == autoWalkPos.z then

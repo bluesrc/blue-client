@@ -1,0 +1,9 @@
+Module
+  name: game_npcdialog
+  description: Floating NPC conversation interface
+  author: Blue Team
+  sandboxed: true
+  dependencies: [ game_interface, game_console ]
+  scripts: [ npcdialog ]
+  @onLoad: init()
+  @onUnload: terminate()
