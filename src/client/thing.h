@@ -115,7 +115,34 @@ public:
     bool isStackable() { return m_thingType->isStackable(); }
     bool isFluidContainer() { return m_thingType->isFluidContainer(); }
     bool isForceUse() { return m_thingType->isForceUse(); }
-    bool isMultiUse() { return m_thingType->isMultiUse(); }
+    // Pokemon consumables reuse legacy appearances. Some of those appearances
+    // are not marked as multi-use even though the server expects a target.
+    bool isMultiUse() {
+        if (m_thingType->isMultiUse())
+            return true;
+        if (!isItem())
+            return false;
+
+        switch (m_clientId) {
+            case 236:   // Super Potion
+            case 239:   // Hyper Potion
+            case 266:   // Potion
+            case 6569:  // Rare Candy
+            case 7642:  // Full Restore
+            case 7643:  // Max Potion
+            case 7644:  // Antidote
+            case 7876:  // Awakening
+            case 9016:  // Burn Heal
+            case 11466: // Ice Heal
+            case 14054: // Full Heal
+            case 21506: // Paralyze Heal
+            case 23374: // Revive
+            case 23375: // Max Revive
+                return true;
+            default:
+                return false;
+        }
+    }
     bool isWritable() { return m_thingType->isWritable(); }
     bool isChargeable() { return m_thingType->isChargeable(); }
     bool isWritableOnce() { return m_thingType->isWritableOnce(); }

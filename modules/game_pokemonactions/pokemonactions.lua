@@ -14,7 +14,10 @@ local cooldownDefinitions = {
     [1] = { id = 'actionCooldown', label = 'Action', icon = '/images/game/pokemonactions/action' },
     [2] = { id = 'gobackCooldown', label = 'GoBack', icon = '/images/game/pokemonactions/goback' },
     [3] = { id = 'tryCatchCooldown', label = 'TryCatch', icon = '/images/game/pokemonactions/trycatch' },
-    [4] = { id = 'combatCooldown', label = 'Combat lock', icon = '/images/game/pokemonactions/combat' }
+    [4] = { id = 'combatCooldown', label = 'Combat lock', icon = '/images/game/pokemonactions/combat' },
+    [5] = { id = 'potionCooldown', label = 'Potions', icon = '/images/game/states/strengthened' },
+    [6] = { id = 'reviveCooldown', label = 'Revives', icon = '/images/game/states/logout_block' },
+    [7] = { id = 'cureCooldown', label = 'Cures', icon = '/images/game/states/poisoned' }
 }
 
 local function stopCooldownUpdate()

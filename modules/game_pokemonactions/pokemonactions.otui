@@ -57,3 +57,15 @@ Panel
   PokemonCooldownAction
     id: combatCooldown
     tooltip: Combat lock: ready
+
+  PokemonCooldownAction
+    id: potionCooldown
+    tooltip: Potions: ready
+
+  PokemonCooldownAction
+    id: reviveCooldown
+    tooltip: Revives: ready
+
+  PokemonCooldownAction
+    id: cureCooldown
+    tooltip: Cures: ready

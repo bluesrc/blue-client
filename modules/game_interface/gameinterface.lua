@@ -435,11 +435,48 @@ function onMouseGrabberRelease(self, mousePosition, mouseButton)
     return true
 end
 
+local pokemonTargetItemIds = {
+    [236] = true,   -- Super Potion
+    [239] = true,   -- Hyper Potion
+    [266] = true,   -- Potion
+    [6569] = true,  -- Rare Candy
+    [7642] = true,  -- Full Restore
+    [7643] = true,  -- Max Potion
+    [7644] = true,  -- Antidote
+    [7876] = true,  -- Awakening
+    [9016] = true,  -- Burn Heal
+    [11466] = true, -- Ice Heal
+    [14054] = true, -- Full Heal
+    [21506] = true, -- Paralyze Heal
+    [23374] = true, -- Revive
+    [23375] = true  -- Max Revive
+}
+
+local function isTargetedUseItem(thing)
+    return thing and (thing:isMultiUse() or
+               (thing:isItem() and pokemonTargetItemIds[thing:getId()] == true))
+end
+
+local function getPokebarSlot(clickedWidget, mousePosition)
+    local widget = clickedWidget
+    while widget do
+        if widget.pokebarSlot then
+            return widget.pokebarSlot
+        end
+        widget = widget:getParent()
+    end
+
+    if modules.game_pokebar and modules.game_pokebar.getSlotAt then
+        return modules.game_pokebar.getSlotAt(mousePosition)
+    end
+    return nil
+end
+
 function onUseWith(clickedWidget, mousePosition)
     if clickedWidget:getClassName() == 'UIGameMap' then
         local tile = clickedWidget:getTile(mousePosition)
         if tile then
-            if selectedThing:isFluidContainer() or selectedThing:isMultiUse() then
+            if selectedThing:isFluidContainer() or isTargetedUseItem(selectedThing) then
                 g_game.useWith(selectedThing, tile:getTopMultiUseThing())
             else
                 g_game.useWith(selectedThing, tile:getTopUseThing())
@@ -447,10 +484,17 @@ function onUseWith(clickedWidget, mousePosition)
         end
     elseif clickedWidget:getClassName() == 'UIItem' and not clickedWidget:isVirtual() then
         g_game.useWith(selectedThing, clickedWidget:getItem())
-    elseif clickedWidget:getClassName() == 'UICreatureButton' then
-        local creature = clickedWidget:getCreature()
-        if creature then
-            g_game.useWith(selectedThing, creature)
+    else
+        local pokebarSlot = getPokebarSlot(clickedWidget, mousePosition)
+        local player = g_game.getLocalPlayer()
+        local pokemonItem = player and pokebarSlot and player:getInventoryItem(pokebarSlot)
+        if pokemonItem then
+            g_game.useWith(selectedThing, pokemonItem)
+        elseif clickedWidget:getClassName() == 'UICreatureButton' then
+            local creature = clickedWidget:getCreature()
+            if creature then
+                g_game.useWith(selectedThing, creature)
+            end
         end
     end
 end
@@ -579,7 +623,7 @@ function createThingMenu(menuPosition, lookThing, useThing, creatureThing)
                 end, shortcut)
             end
         else
-            if useThing:isMultiUse() then
+            if isTargetedUseItem(useThing) then
                 menu:addOption(tr('Use with ...'), function()
                     startUseWith(useThing)
                 end, shortcut)
@@ -829,7 +873,7 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
                     g_game.open(useThing)
                 end
                 return true
-            elseif useThing:isMultiUse() then
+            elseif isTargetedUseItem(useThing) then
                 startUseWith(useThing)
                 return true
             else
@@ -873,7 +917,7 @@ function processMouseAction(menuPosition, mouseButton, autoWalkPos, lookThing, u
                     g_game.open(useThing)
                     return true
                 end
-            elseif useThing:isMultiUse() then
+            elseif isTargetedUseItem(useThing) then
                 startUseWith(useThing)
                 return true
             else
