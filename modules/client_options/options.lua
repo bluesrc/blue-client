@@ -18,7 +18,7 @@ local defaultOptions = {
     showLeftPanel = true,
     openMaximized = false,
     backgroundFrameRate = 201,
-    enableAudio = true,
+    enableAudio = false,
     enableMusicSound = true,
     musicSoundVolume = 100,
     enableLights = true,
@@ -35,7 +35,7 @@ local defaultOptions = {
     enableHighlightMouseTarget = true,
     antialiasingMode = 1,
     shadowFloorIntensity = 30,
-    optimizeFps = true,
+    optimizeFps = false,
     forceEffectOptimization = false,
     drawEffectOnTop = false,
     floorViewMode = 1,
@@ -48,6 +48,23 @@ local defaultOptions = {
     setMissileAlphaScroll = 100,
 }
 
+local hiddenOptionValues = {
+    showLeftPanel = true,
+    openMaximized = false,
+    preciseControl = false,
+    showLevelsInConsole = true,
+    showInfoMessagesInConsole = true,
+    showEventMessagesInConsole = true,
+    showStatusMessagesInConsole = true,
+    showTimestampsInConsole = true,
+    showPrivateMessagesInConsole = true,
+    optimizeFps = false,
+    forceEffectOptimization = false,
+    limitVisibleDimension = false,
+    dontStretchShrink = false,
+    asyncTxtLoading = false
+}
+
 local optionsWindow
 local optionsButton
 local optionsTabBar
@@ -58,10 +75,30 @@ local consolePanel
 local graphicsPanel
 local soundPanel
 local audioButton
+local categoryTitle
+local categoryDescription
 
 local crosshairCombobox
 local antialiasingModeCombobox
 local floorViewModeCombobox
+
+local function updateCategoryHeader(_, tab)
+    if not tab or not categoryTitle or not categoryDescription then
+        return
+    end
+    categoryTitle:setText(tab:getText())
+    categoryDescription:setText(tab.optionDescription or tr('Configure the options in this section.'))
+end
+
+local function addOptionsCategory(name, panel, icon, description)
+    local tab = optionsTabBar:addTab(name, panel)
+    tab:setWidth(optionsTabBar:getWidth())
+    tab.optionDescription = description
+    if optionsTabBar:getCurrentTab() == tab then
+        updateCategoryHeader(optionsTabBar, tab)
+    end
+    return tab
+end
 
 function init()
     for k, v in pairs(defaultOptions) do
@@ -73,22 +110,30 @@ function init()
     optionsWindow:hide()
 
     optionsTabBar = optionsWindow:getChildById('optionsTabBar')
-    optionsTabBar:setContentWidget(optionsWindow:getChildById('optionsTabContent'))
+    optionsTabBar:setContentWidget(optionsWindow:recursiveGetChildById('optionsTabContent'))
+    categoryTitle = optionsWindow:recursiveGetChildById('categoryTitle')
+    categoryDescription = optionsWindow:recursiveGetChildById('categoryDescription')
+    optionsTabBar.onTabChange = updateCategoryHeader
 
     generalPanel = g_ui.loadUI('general')
-    optionsTabBar:addTab(tr('General'), generalPanel, '/images/optionstab/game')
+    addOptionsCategory(tr('General'), generalPanel, '/images/optionstab/game',
+                       tr('Interface, creature information and visual feedback.'))
 
     controlPanel = g_ui.loadUI('control')
-    optionsTabBar:addTab(tr('Control'), controlPanel, '/images/optionstab/controls')
+    addOptionsCategory(tr('Control'), controlPanel, '/images/optionstab/controls',
+                       tr('Movement, interaction and hotkey response settings.'))
 
     consolePanel = g_ui.loadUI('console')
-    optionsTabBar:addTab(tr('Console'), consolePanel, '/images/optionstab/console')
+    addOptionsCategory(tr('Messages'), consolePanel, '/images/optionstab/console',
+                       tr('Message visibility and on-screen notifications.'))
 
     graphicsPanel = g_ui.loadUI('graphics')
-    optionsTabBar:addTab(tr('Graphics'), graphicsPanel, '/images/optionstab/graphics')
+    addOptionsCategory(tr('Graphics'), graphicsPanel, '/images/optionstab/graphics',
+                       tr('Rendering quality, lighting, effects and performance.'))
 
     soundPanel = g_ui.loadUI('audio')
-    optionsTabBar:addTab(tr('Audio'), soundPanel, '/images/optionstab/audio')
+    addOptionsCategory(tr('Audio'), soundPanel, '/images/optionstab/audio',
+                       tr('Sound output, music and volume controls.'))
 
     optionsButton = modules.client_topmenu.addLeftButton('optionsButton', tr('Options'), '/images/topbuttons/options',
         toggle)
@@ -155,6 +200,10 @@ function setup()
             setOption(k, g_settings.getString(k), true)
         end
     end
+
+    for key, value in pairs(hiddenOptionValues) do
+        setOption(key, value, true)
+    end
 end
 
 function toggle()
@@ -215,8 +264,10 @@ function setOption(key, value, force)
             value = true
         elseif g_app.isEncrypted() then
             local asyncWidget = graphicsPanel:getChildById('asyncTxtLoading')
-            asyncWidget:setEnabled(false)
-            asyncWidget:setChecked(false)
+            if asyncWidget then
+                asyncWidget:setEnabled(false)
+                asyncWidget:setChecked(false)
+            end
             return
         end
 
@@ -376,8 +427,8 @@ function getOption(key)
     return options[key]
 end
 
-function addTab(name, panel, icon)
-    optionsTabBar:addTab(name, panel, icon)
+function addTab(name, panel, icon, description)
+    return addOptionsCategory(name, panel, icon, description or tr('Configure the options in this section.'))
 end
 
 function removeTab(v)

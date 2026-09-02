@@ -50,7 +50,7 @@ public:
     void setBlessings(uint16_t blessings);
     void setResourceBalance(Otc::ResourceTypes_t type, uint64_t value);
     void setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money, const std::string& guild,
-                        uint32_t pokedexCount, uint64_t totalCaught);
+                        uint32_t pokedexCount, uint64_t totalCaught, uint8_t accountType);
 
     uint8_t getLevelPercent() { return m_levelPercent; }
 
@@ -71,6 +71,7 @@ public:
     std::string getGuildName() { return m_guildName; }
     uint32_t getPokedexCount() { return m_pokedexCount; }
     uint64_t getTotalCaught() { return m_totalCaught; }
+    uint8_t getAccountType() { return m_accountType; }
 
     ItemPtr getInventoryItem(Otc::InventorySlot inventory) { return m_inventoryItems[inventory]; }
 
@@ -164,4 +165,5 @@ private:
     std::string m_guildName;
     uint32_t m_pokedexCount{ 0 };
     uint64_t m_totalCaught{ 0 };
+    uint8_t m_accountType{ 0 };
 };

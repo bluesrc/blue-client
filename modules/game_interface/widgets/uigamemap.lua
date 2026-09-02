@@ -2,8 +2,10 @@ UIGameMap = extends(UIMap, 'UIGameMap')
 
 function UIGameMap.create()
     local gameMap = UIGameMap.internalCreate()
+    -- MapView derives the visible area from the protocol viewport (25x13 for 13x7).
+    -- Keep that range fixed and use fractional edge tiles to fill the whole widget.
+    gameMap:setLimitVisibleRange(true)
     gameMap:setKeepAspectRatio(false)
-    gameMap:setZoom(13)
     gameMap:setDrawLights(true)
     return gameMap
 end

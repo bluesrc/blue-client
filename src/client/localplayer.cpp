@@ -23,6 +23,7 @@
 #include "localplayer.h"
 #include <framework/core/eventdispatcher.h>
 #include "game.h"
+#include "item.h"
 #include "map.h"
 #include "tile.h"
 
@@ -377,10 +378,12 @@ void LocalPlayer::setResourceBalance(Otc::ResourceTypes_t type, uint64_t value)
 }
 
 void LocalPlayer::setTrainerInfo(const std::string& hometown, uint8_t gender, uint64_t money,
-                                 const std::string& guild, uint32_t pokedexCount, uint64_t totalCaught)
+                                 const std::string& guild, uint32_t pokedexCount, uint64_t totalCaught,
+                                 uint8_t accountType)
 {
     if (m_hometown == hometown && m_trainerGender == gender && m_trainerMoney == money &&
-        m_guildName == guild && m_pokedexCount == pokedexCount && m_totalCaught == totalCaught)
+        m_guildName == guild && m_pokedexCount == pokedexCount && m_totalCaught == totalCaught &&
+        m_accountType == accountType)
         return;
 
     m_hometown = hometown;
@@ -389,7 +392,8 @@ void LocalPlayer::setTrainerInfo(const std::string& hometown, uint8_t gender, ui
     m_guildName = guild;
     m_pokedexCount = pokedexCount;
     m_totalCaught = totalCaught;
-    callLuaField("onTrainerInfoChange", hometown, gender, money, guild, pokedexCount, totalCaught);
+    m_accountType = accountType;
+    callLuaField("onTrainerInfoChange", hometown, gender, money, guild, pokedexCount, totalCaught, accountType);
 }
 
 bool LocalPlayer::hasSight(const Position& pos)
@@ -399,6 +403,12 @@ bool LocalPlayer::hasSight(const Position& pos)
 
 void LocalPlayer::pokemonInfo(uint16_t slot, PokemonInfo info, bool active)
 {
+    if (slot >= Otc::InventorySlotPokeball1 && slot <= Otc::InventorySlotPokeball6) {
+        const auto item = getInventoryItem(static_cast<Otc::InventorySlot>(slot));
+        if (item)
+            item->setPokemonPreview(info.number);
+    }
+
     if (const auto& creature = g_map.getCreatureById(info.p_id)) {
         if (Pokemon* pokemon = creature->getPokemon())
             pokemon->setLevel(info.level);

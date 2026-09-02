@@ -96,12 +96,10 @@ HotkeyBindings = {
     { id = 'open_pokebag', category = 'modules', text = tr('Pokebag'), description = tr('Open or close the Pokebag.'), defaults = {'P', ''} },
     { id = 'open_box', category = 'modules', text = tr('Pokemon Box'), description = tr('Open or close Pokemon storage.'), defaults = {'B', ''} },
     { id = 'open_trainer_card', category = 'modules', text = tr('Trainer Card'), description = tr('Open or close the Trainer Card.'), defaults = {'T', ''} },
-    { id = 'open_skills', category = 'modules', text = tr('Skills'), description = tr('Open or close the skills window.'), defaults = {'Alt+S', ''}, allowInChat = true },
     { id = 'open_battle', category = 'modules', text = tr('Battle list'), description = tr('Open or close the battle list.'), defaults = {'Ctrl+B', ''}, allowInChat = true },
     { id = 'open_minimap', category = 'modules', text = tr('Minimap'), description = tr('Open or close the minimap.'), defaults = {'Ctrl+M', ''}, allowInChat = true },
     { id = 'open_vip', category = 'modules', text = tr('VIP list'), description = tr('Open or close the friends list.'), defaults = {'Ctrl+P', ''}, allowInChat = true },
     { id = 'open_tasks', category = 'modules', text = tr('Tasks'), description = tr('Open or close the task window.'), defaults = {'Ctrl+A', ''}, allowInChat = true },
-    { id = 'open_combat_controls', category = 'modules', text = tr('Combat controls'), description = tr('Open or close combat controls.'), defaults = {'', ''} },
     { id = 'open_options', category = 'modules', text = tr('Options'), description = tr('Open or close client options.'), defaults = {'', ''}, allowInChat = true },
     { id = 'open_shaders', category = 'modules', text = tr('Shaders'), description = tr('Open or close shader controls.'), defaults = {'Ctrl+Y', ''}, allowInChat = true },
     { id = 'open_bug_report', category = 'modules', text = tr('Bug report'), description = tr('Open the bug report window.'), defaults = {'Ctrl+Z', ''}, allowInChat = true },
@@ -178,11 +176,27 @@ configuredCallbacks = {}
 movementEnabled = true
 captureWindow = nil
 
+local UNASSIGNED_BINDING = '__unassigned__'
+
 local function copyDefaultBindings(binding)
     return {
         primary = binding.defaults[1] or '',
         secondary = binding.defaults[2] or ''
     }
+end
+
+local function decodeStoredBinding(value)
+    if value == UNASSIGNED_BINDING then
+        return ''
+    end
+    return tostring(value)
+end
+
+local function encodeStoredBinding(value)
+    if not value or value == '' then
+        return UNASSIGNED_BINDING
+    end
+    return value
 end
 
 local function getConfiguredSettings(create)
@@ -211,21 +225,28 @@ end
 function loadConfiguredBindings(forceDefaults)
     configuredBindings = {}
     local _, saved = getConfiguredSettings(false)
+    local savedVersion = tonumber(saved and saved.version) or 0
     local savedBindings = saved and (saved.bindings or saved) or {}
 
     for _, binding in ipairs(HotkeyBindings) do
         local values = copyDefaultBindings(binding)
+        -- Version 2 wrote empty strings as empty OTML nodes. Those nodes become
+        -- nil when loaded, so start from unassigned while migrating that format.
+        if not forceDefaults and savedVersion == 2 then
+            values.primary = ''
+            values.secondary = ''
+        end
         local stored = not forceDefaults and savedBindings[binding.id] or nil
         if type(stored) == 'table' then
             if stored.primary ~= nil then
-                values.primary = tostring(stored.primary)
+                values.primary = decodeStoredBinding(stored.primary)
             elseif stored[1] ~= nil then
-                values.primary = tostring(stored[1])
+                values.primary = decodeStoredBinding(stored[1])
             end
             if stored.secondary ~= nil then
-                values.secondary = tostring(stored.secondary)
+                values.secondary = decodeStoredBinding(stored.secondary)
             elseif stored[2] ~= nil then
-                values.secondary = tostring(stored[2])
+                values.secondary = decodeStoredBinding(stored[2])
             end
         end
         configuredBindings[binding.id] = values
@@ -235,12 +256,12 @@ end
 function saveConfiguredBindings()
     local root, settings = getConfiguredSettings(true)
     settings.bindings = {}
-    settings.version = 2
+    settings.version = 3
     for _, binding in ipairs(HotkeyBindings) do
         local values = configuredBindings[binding.id] or copyDefaultBindings(binding)
         settings.bindings[binding.id] = {
-            primary = values.primary or '',
-            secondary = values.secondary or ''
+            primary = encodeStoredBinding(values.primary),
+            secondary = encodeStoredBinding(values.secondary)
         }
     end
     g_settings.setNode('game_keybindings', root)
@@ -369,6 +390,19 @@ function setMovementEnabled(enabled)
     bindConfiguredHotkeys()
 end
 
+local function isEditableTextInputFocused()
+    local focusedWidget = rootWidget
+    while focusedWidget do
+        local focusedChild = focusedWidget:getFocusedChild()
+        if not focusedChild then
+            break
+        end
+        focusedWidget = focusedChild
+    end
+
+    return focusedWidget and focusedWidget:getClassName() == 'UITextEdit' and focusedWidget:isEditable()
+end
+
 local function canExecuteConfigured(binding)
     if captureWindow then
         return false
@@ -381,6 +415,9 @@ local function canExecuteConfigured(binding)
     if modules.game_console and modules.game_console.isChatEnabled and modules.game_console.isChatEnabled() then
         return binding.allowInChat == true
     end
+    if isEditableTextInputFocused() then
+        return false
+    end
     return true
 end
 
@@ -390,6 +427,15 @@ local function toggleModule(moduleName, functionName)
     if callback then
         callback()
     end
+end
+
+local function toggleChaseMode()
+    if not g_game.isOnline() then
+        return
+    end
+
+    local chaseMode = g_game.getChaseMode() == ChaseOpponent and DontChase or ChaseOpponent
+    g_game.setChaseMode(chaseMode)
 end
 
 function executeConfiguredAction(actionId)
@@ -445,7 +491,7 @@ function executeConfiguredAction(actionId)
             modules.game_battle.attackNext(true)
         end
     elseif actionId == 'toggle_chase' then
-        toggleModule('game_combatcontrols', 'toggleChaseMode')
+        toggleChaseMode()
     elseif actionId == 'open_inventory' then
         toggleModule('game_inventory')
     elseif actionId == 'open_pokebag' then
@@ -454,8 +500,6 @@ function executeConfiguredAction(actionId)
         toggleModule('game_box')
     elseif actionId == 'open_trainer_card' then
         toggleModule('game_trainercard')
-    elseif actionId == 'open_skills' then
-        toggleModule('game_skills')
     elseif actionId == 'open_battle' then
         toggleModule('game_battle')
     elseif actionId == 'open_minimap' then
@@ -464,8 +508,6 @@ function executeConfiguredAction(actionId)
         toggleModule('game_viplist')
     elseif actionId == 'open_tasks' then
         toggleModule('game_tasks', 'toggleWindow')
-    elseif actionId == 'open_combat_controls' then
-        toggleModule('game_combatcontrols')
     elseif actionId == 'open_options' then
         toggleModule('client_options')
     elseif actionId == 'open_shaders' then
@@ -1170,7 +1212,7 @@ function doKeyCombo(keyCombo)
         elseif hotKey.action == HOTKEY_ACTION_ATTACK_PREV then
             modules.game_battle.attackNext(true)
         elseif hotKey.action == HOTKEY_ACTION_TOGGLE_CHASE then
-            modules.game_combatcontrols.toggleChaseMode()
+            toggleChaseMode()
         end
 
     elseif hotKey.itemId == nil then

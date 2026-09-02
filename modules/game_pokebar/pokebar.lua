@@ -222,6 +222,7 @@ local function updateSlotWidget(widget, slot, info)
     updateEntryWidget(widget, info, healthPercent, experiencePercent)
 
     widget:setTooltip(pokemonTooltip(slot, info))
+    widget.pokebarSlot = slot
     configureInteraction(widget, slot)
 end
 
@@ -430,6 +431,21 @@ end
 
 function refreshHotkeys()
     scheduleSetup()
+end
+
+function getSlotAt(mousePosition)
+    if not mousePosition then
+        return nil
+    end
+
+    for slot = InventoryPokeballSlotFirst, InventoryPokeballSlotLast do
+        local widget = slotWidgets[slot]
+        if widget and widget:isVisible() and widget:containsPoint(mousePosition) then
+            return slot
+        end
+    end
+
+    return nil
 end
 
 function onPokemonEvolution(_, slot, pokemonId, active, target)

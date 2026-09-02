@@ -144,7 +144,15 @@ void UIMap::setKeepAspectRatio(bool enable)
     if (m_keepAspectRatio = enable)
         m_aspectRatio = getVisibleDimension().ratio();
 
+    m_mapView->setExpandViewToFit(m_limitVisibleRange && !m_keepAspectRatio);
     updateMapSize();
+}
+
+void UIMap::setLimitVisibleRange(bool limitVisibleRange)
+{
+    m_limitVisibleRange = limitVisibleRange;
+    m_mapView->setExpandViewToFit(m_limitVisibleRange && !m_keepAspectRatio);
+    updateVisibleDimension();
 }
 
 void UIMap::onStyleApply(const std::string_view styleName, const OTMLNodePtr& styleNode)

@@ -1,4 +1,4 @@
-Panel
+OptionsPage
   OptionCheckBox
     id: enableAudio
     !text: tr('Enable audio')

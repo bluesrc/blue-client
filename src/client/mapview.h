@@ -106,6 +106,16 @@ public:
     // map dimension related
     Size getVisibleDimension() { return m_visibleDimension; }
     void setVisibleDimension(const Size& visibleDimension);
+    void setExpandViewToFit(bool enable)
+    {
+        if (m_expandViewToFit == enable)
+            return;
+
+        m_expandViewToFit = enable;
+        m_drawViewportEdge = m_forceDrawViewportEdge || m_expandViewToFit;
+        requestUpdateVisibleTiles();
+        requestUpdateMapPosInfo();
+    }
 
     // view mode related
     FloorViewMode getFloorViewMode() const { return m_floorViewMode; }
@@ -314,6 +324,7 @@ private:
     bool m_autoViewMode{ false };
     bool m_drawViewportEdge{ false };
     bool m_forceDrawViewportEdge{ false };
+    bool m_expandViewToFit{ false };
     bool m_drawHighlightTarget{ false };
     bool m_shiftPressed{ false };
 

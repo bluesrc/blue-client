@@ -7,6 +7,7 @@ local LogColors = {
 }
 local MaxLogLines = 128
 local MaxHistory = 1000
+local ACCOUNT_TYPE_GOD = 6
 
 local oldenv = getfenv(0)
 setfenv(0, _G)
@@ -15,7 +16,6 @@ setfenv(0, oldenv)
 
 -- private variables
 local terminalWindow
-local terminalButton
 local logLocked = false
 local commandTextEdit
 local terminalBuffer
@@ -31,6 +31,11 @@ local disabled = false
 local allLines = {}
 
 -- private functions
+local function isGod()
+    local player = g_game.getLocalPlayer()
+    return g_game.isOnline() and player and player:getAccountType() >= ACCOUNT_TYPE_GOD
+end
+
 local function navigateCommand(step)
     if commandTextEdit:isMultiline() then
         return
@@ -148,8 +153,6 @@ function init()
 
     terminalWindow.onDoubleClick = popWindow
 
-    terminalButton = modules.client_topmenu.addLeftButton('terminalButton', tr('Terminal') .. ' (Ctrl + T)',
-                                                          '/images/topbuttons/terminal', toggle)
     g_keyboard.bindKeyDown('Ctrl+T', toggle)
 
     commandHistory = g_settings.getList('terminal-history')
@@ -217,16 +220,13 @@ function terminate()
     g_keyboard.unbindKeyDown('Ctrl+T')
     g_logger.setOnLog(nil)
     terminalWindow:destroy()
-    terminalButton:destroy()
     commandEnv = nil
     terminalWindow = nil
-    terminalButton = nil
 
     _G.terminalLines = allLines
 end
 
 function hideButton()
-    terminalButton:hide()
 end
 
 function popWindow()
@@ -267,6 +267,11 @@ function popWindow()
 end
 
 function toggle()
+    if not isGod() then
+        hide()
+        return
+    end
+
     if terminalWindow:isVisible() then
         hide()
     else
@@ -290,6 +295,11 @@ function toggle()
 end
 
 function show()
+    if not isGod() then
+        hide()
+        return
+    end
+
     terminalWindow:show()
     terminalWindow:raise()
     terminalWindow:focus()
@@ -302,7 +312,6 @@ function hide()
 end
 
 function disable()
-    terminalButton:hide()
     g_keyboard.unbindKeyDown('Ctrl+T')
     disabled = true
 end

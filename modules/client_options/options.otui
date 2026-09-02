@@ -13,35 +13,180 @@ OptionCheckBox < CheckBox
     anchors.top: prev.bottom
     margin-top: 2
 
-OptionScrollbar < HorizontalScrollBar
+OptionScrollbar < UIScrollBar
+  orientation: horizontal
+  height: 15
+  background-color: #252525
+  border-width: 1
+  border-color: #404040
   step: 1
   @onValueChange: modules.client_options.setOption(self:getId(), self:getValue())
+
+  UIButton
+    id: decrementButton
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    size: 13 13
+    image-source: /images/ui/theme_scrollbar
+    image-clip: 0 39 13 13
+    image-color: #ffffff
+
+    $hover:
+      image-clip: 13 39 13 13
+
+    $pressed:
+      image-clip: 26 39 13 13
+
+    $disabled:
+      image-color: #60718066
+
+  UIButton
+    id: incrementButton
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    size: 13 13
+    image-source: /images/ui/theme_scrollbar
+    image-clip: 0 52 13 13
+    image-color: #ffffff
+
+    $hover:
+      image-clip: 13 52 13 13
+
+    $pressed:
+      image-clip: 26 52 13 13
+
+    $disabled:
+      image-color: #60718066
+
+  UIButton
+    id: sliderButton
+    anchors.centerIn: parent
+    size: 11 13
+    background-color: #686868
+    border-width: 1
+    border-color: #858585
+
+    $hover:
+      background-color: #a8a8a8
+
+    $pressed:
+      background-color: #d2d2d2
+
+    $disabled:
+      background-color: #48484866
+
+  Label
+    id: valueLabel
+    anchors.fill: parent
+    text-align: center
+    phantom: true
+
+OptionsPage < Panel
+  background-color: #181818aa
+  border-width: 1
+  border-color: #404040
+  padding: 8
+
+OptionsCategoryTabBar < UITabBar
+  width: 150
+
+  Panel
+    id: buttonsPanel
+    anchors.fill: parent
+    layout:
+      type: verticalBox
+
+OptionsCategoryTabBarButton < Button
+  width: 150
+  height: 34
+  margin-bottom: 4
+  image-source: /images/ui/theme_tab_neutral
+  text-align: left
+  text-offset: 10 0
+
+  $pressed:
+    color: #101010
+    image-color: #ffffff
+    image-clip: 0 46 22 23
+    text-offset: 10 0
+
+  $checked:
+    color: #101010
+    image-color: #ffffff
+    image-clip: 0 46 22 23
+    text-offset: 10 0
 
 MainWindow
   id: optionsWindow
   !text: tr('Options')
-  size: 480 500
+  size: 760 590
 
   @onEnter: modules.client_options.hide()
   @onEscape: modules.client_options.hide()
+  @onClose: modules.client_options.hide()
 
-  TabBarVertical
+  OptionsCategoryTabBar
     id: optionsTabBar
     anchors.top: parent.top
     anchors.left: parent.left
-    anchors.bottom: parent.bottom
+    anchors.bottom: separator.top
+    margin-bottom: 10
+
+  VerticalSeparator
+    id: categorySeparator
+    anchors.left: optionsTabBar.right
+    anchors.top: parent.top
+    anchors.bottom: separator.top
+    margin-left: 10
+    margin-bottom: 10
 
   Panel
-    id: optionsTabContent
-    anchors.top: optionsTabBar.top
-    anchors.left: optionsTabBar.right
+    id: optionsContentPanel
+    anchors.top: parent.top
+    anchors.left: categorySeparator.right
     anchors.right: parent.right
-    anchors.bottom: optionsTabBar.bottom
+    anchors.bottom: separator.top
     margin-left: 10
+    margin-bottom: 10
+
+    Label
+      id: categoryTitle
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      height: 20
+      color: #f2f5f7
+      font: verdana-11px-monochrome
+
+    Label
+      id: categoryDescription
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: categoryTitle.bottom
+      margin-top: 2
+      height: 28
+      color: #a8a8a8
+      text-wrap: true
+
+    Panel
+      id: optionsTabContent
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: categoryDescription.bottom
+      anchors.bottom: parent.bottom
+      margin-top: 10
+
+  HorizontalSeparator
+    id: separator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: okButton.top
+    margin-bottom: 10
 
   SuccessButton
+    id: okButton
     !text: tr('Ok')
-    width: 64
+    width: 70
     anchors.right: parent.right
     anchors.bottom: parent.bottom
     @onClick: modules.client_options.hide()
