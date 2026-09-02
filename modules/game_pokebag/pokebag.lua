@@ -191,24 +191,25 @@ local function renderStats(info)
     local modifiers = natureModifiers[info.nature] or {}
     for _, stat in ipairs(statRows) do
         local modifier = modifiers[stat.key] or 0
-        local statColor
+        local natureColor
         if modifier > 0 then
-            statColor = '#50b96b'
+            natureColor = '#50b96b'
         elseif modifier < 0 then
-            statColor = '#d95757'
+            natureColor = '#d95757'
         end
 
-		local statValue = info.stats[stat.key]
-		local baseValue = info.baseStats and info.baseStats[stat.key] or statValue
-		local battleDelta = info.active and (statValue - baseValue) or 0
-		local displayedValue = statValue
-		if battleDelta ~= 0 then
-			displayedValue = string.format('%d (%+d)', statValue, battleDelta)
-			statColor = battleDelta > 0 and '#50b96b' or '#d95757'
-		end
+        local valueColor
+        local statValue = info.stats[stat.key]
+        local baseValue = info.baseStats and info.baseStats[stat.key] or statValue
+        local battleDelta = info.active and (statValue - baseValue) or 0
+        local displayedValue = statValue
+        if battleDelta ~= 0 then
+            displayedValue = string.format('%d (%+d)', statValue, battleDelta)
+            valueColor = battleDelta > 0 and '#50b96b' or '#d95757'
+        end
 
-        addStatCell('PokebagStatCell', tr(stat.label), statColor)
-        addStatCell('PokebagStatCell', displayedValue, statColor)
+        addStatCell('PokebagStatCell', tr(stat.label), natureColor)
+        addStatCell('PokebagStatCell', displayedValue, valueColor)
         addStatCell('PokebagStatCell', info.ivs[stat.key])
         addStatCell('PokebagStatCell', info.evs[stat.key])
     end
