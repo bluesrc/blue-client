@@ -52,7 +52,7 @@ public:
     void setKeepAspectRatio(bool enable);
     void setShader(const std::string_view name, float fadein, float fadeout) { m_mapView->setShader(name, fadein, fadeout); }
     void setMinimumAmbientLight(float intensity) { m_mapView->setMinimumAmbientLight(intensity); }
-    void setLimitVisibleRange(bool limitVisibleRange) { m_limitVisibleRange = limitVisibleRange; updateVisibleDimension(); }
+    void setLimitVisibleRange(bool limitVisibleRange);
     void setDrawViewportEdge(bool force) { m_mapView->m_forceDrawViewportEdge = force; m_mapView->m_visibleDimension = {}; updateVisibleDimension(); }
 
     bool zoomIn();

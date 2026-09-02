@@ -404,13 +404,9 @@ end
 
 function updateStretchShrink()
     if modules.client_options.getOption('dontStretchShrink') and not alternativeView then
-        gameMapPanel:setVisibleDimension({
-            width = 15,
-            height = 11
-        })
-
-        -- Set gameMapPanel size to height = 11 * 32 + 2
-        bottomSplitter:setMarginBottom(bottomSplitter:getMarginBottom() + (gameMapPanel:getHeight() - 32 * 11) - 10)
+        local visibleDimension = gameMapPanel:getVisibleDimension()
+        local mapHeight = visibleDimension.height * 32
+        bottomSplitter:setMarginBottom(bottomSplitter:getMarginBottom() + (gameMapPanel:getHeight() - mapHeight) - 10)
     end
 end
 

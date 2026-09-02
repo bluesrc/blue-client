@@ -44,7 +44,7 @@ MapView::MapView() : m_pool(g_drawPool.get(DrawPoolType::MAP)), m_lightView(std:
 {
     m_floors.resize(g_gameConfig.getMapMaxZ() + 1);
 
-    setVisibleDimension(Size(25, 13));
+    setVisibleDimension(g_gameConfig.getMapVisibleDimension());
 }
 
 MapView::~MapView()
@@ -559,7 +559,7 @@ void MapView::setVisibleDimension(const Size& visibleDimension)
 
     const auto& awareRangeSize = Size(g_map.getAwareRange().left * 2, g_map.getAwareRange().top * 2);
 
-    m_drawViewportEdge = m_forceDrawViewportEdge;
+    m_drawViewportEdge = m_forceDrawViewportEdge || m_expandViewToFit;
     if (visibleDimension.width() > awareRangeSize.width() || visibleDimension.height() > awareRangeSize.height()) {
         if (m_limitVisibleDimension)
             return;
@@ -679,7 +679,20 @@ Rect MapView::calcFramebufferSource(const Size& destSize)
     const auto& srcVisible = m_visibleDimension * m_tileSize;
 
     Size srcSize = destSize;
-    srcSize.scale(srcVisible, Fw::KeepAspectRatio);
+    srcSize.scale(srcVisible, m_expandViewToFit ? Fw::KeepAspectRatioByExpanding : Fw::KeepAspectRatio);
+
+    if (m_expandViewToFit) {
+        // Keep overscan centered when fitting the destination requires an odd pixel count.
+        if ((srcSize.width() - srcVisible.width()) % 2 != 0)
+            srcSize.setWidth(srcSize.width() + 1);
+        if ((srcSize.height() - srcVisible.height()) % 2 != 0)
+            srcSize.setHeight(srcSize.height() + 1);
+
+        // The protocol supplies one complete guard tile around the requested view.
+        // Beyond that, fill extreme window ratios by scaling instead of reading outside the framebuffer.
+        srcSize = srcSize.boundedTo(srcVisible + Size(m_tileSize * 2));
+    }
+
     drawOffset.x += (srcVisible.width() - srcSize.width()) / 2;
     drawOffset.y += (srcVisible.height() - srcSize.height()) / 2;
 

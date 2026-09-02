@@ -40,6 +40,7 @@ public:
     std::string getTypingIcon() const { return m_typingIcon; }
 
     Size getMapViewPort() const { return m_mapViewPort; }
+    Size getMapVisibleDimension() const { return m_mapViewPort * Size(2) - Size(1); }
     uint8_t getMapMaxZ() const { return m_mapMaxZ; }
     uint8_t getMapSeaFloor() const { return m_mapSeaFloor; }
     uint8_t getMapUndergroundFloorRange() const { return m_mapUndergroundFloorRange; }
